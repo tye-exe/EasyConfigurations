@@ -35,7 +35,7 @@ ___
 Let's look at a bare-bones implementation for configuration, observe the following code snippet:
 
 ```java
-import me.tye.ConfigInstance;
+import me.tye.easyconfigs.ConfigInstance;
 
 public enum Configs implements ConfigInstance {
 
@@ -75,7 +75,7 @@ ___
 A basic implementation of lang would appear as follows:
 
 ```java
-import me.tye.LangInstance;
+import me.tye.easyconfigs.LangInstance;
 
 public enum Langs implements LangInstance {
 
@@ -134,7 +134,7 @@ ___
 ### Setting up keys:
 
 ```java
-import me.tye.KeyInstance;
+import me.tye.easyconfigs.KeyInstance;
 
 public enum Keys implements KeyInstance {
 
@@ -170,8 +170,8 @@ ___
 Before being able to use any lang or configs, you'd first need to register them. This is very simple:
 
 ```java
-import me.tye.EasyConfigurations;
-import me.tye.internalConfigs.Config;
+import me.tye.easyconfigs.EasyConfigurations;
+import me.tye.easyconfigs.internalConfigs.Config;
 
 public class Main() {
 public static void main(String[] args) {
