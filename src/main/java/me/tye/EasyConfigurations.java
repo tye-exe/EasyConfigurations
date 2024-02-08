@@ -3,14 +3,14 @@ package me.tye;
 import me.tye.internalConfigs.Config;
 import me.tye.internalConfigs.Lang;
 import me.tye.utils.Consts;
+import me.tye.utils.YamlHandling;
 import me.tye.utils.annotations.ExternalUse;
 import me.tye.utils.annotations.InternalUse;
 import me.tye.utils.exceptions.MissingInterfaceException;
 import org.jetbrains.annotations.NotNull;
 
 import static me.tye.utils.Consts.*;
-import static me.tye.utils.Utils.notNull;
-import static me.tye.utils.Utils.parseInternalYaml;
+import static me.tye.utils.Utils.*;
 
 /**
  This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
@@ -52,9 +52,8 @@ public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String 
 
   if (!doesImplement(configEnum, ConfigInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(configEnum.getName(), ConfigInstance.class.getName()));
 
+  configMap = YamlHandling.parseInternalYaml(configEnum, resourcePath);
   configInitiated = true;
-  configClass = configEnum;
-  configMap = parseInternalYaml(resourcePath);
 }
 
 /**
@@ -75,9 +74,8 @@ public static void registerLang(@NotNull Class<?> langEnum, @NotNull String reso
 
   if (!doesImplement(langEnum, LangInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
 
+  langMap = YamlHandling.parseInternalYaml(langEnum, resourcePath);
   langInitiated = true;
-  langClass = langEnum;
-  langMap = parseInternalYaml(resourcePath);
 }
 
 /**
@@ -97,7 +95,6 @@ public static void registerKey(@NotNull Class<?> keyEnum) throws MissingInterfac
   if (!doesImplement(keyEnum, KeyInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(keyEnum.getName(), KeyInstance.class.getName()));
 
   keyInitiated = true;
-  keyClass = keyEnum;
 }
 
 /**

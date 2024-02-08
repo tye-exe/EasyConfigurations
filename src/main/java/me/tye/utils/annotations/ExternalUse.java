@@ -8,4 +8,5 @@ import java.lang.annotation.RetentionPolicy;
  They can be safely used anywhere by anything.*/
 @Retention (RetentionPolicy.SOURCE)
 @Documented
+@SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 public @interface ExternalUse {}

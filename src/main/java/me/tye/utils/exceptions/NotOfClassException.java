@@ -20,4 +20,11 @@ public NotOfClassException(String message) {
   super(message);
 }
 
+/**
+ * @param cause The cause of this exception.
+ * @see NotOfClassException
+ */
+public NotOfClassException(Throwable cause) {
+  super(cause);
+}
 }

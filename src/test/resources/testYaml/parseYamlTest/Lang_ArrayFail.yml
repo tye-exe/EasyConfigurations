@@ -1,0 +1,3 @@
+testing: "test"
+
+fail: ["fail", "it must"] # Should fail as arrays aren't supported in lang.

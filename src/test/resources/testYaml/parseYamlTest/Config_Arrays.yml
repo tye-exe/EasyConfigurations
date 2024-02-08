@@ -1,0 +1,10 @@
+arrayTime:
+  - "first!"
+  - "second!"
+  - "last!"
+  - unquoted
+
+
+moreArrays: [3, 2, 1]
+
+booleanArrays: [true, false, true]

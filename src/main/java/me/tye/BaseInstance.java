@@ -3,6 +3,8 @@ package me.tye;
 import me.tye.utils.annotations.InternalUse;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+
 import static me.tye.utils.Utils.notNull;
 
 /**Contains the vars & methods that {@link ConfigInstance} & {@link LangInstance} require.*/
@@ -12,12 +14,12 @@ public interface BaseInstance {
 /**The class that the object stored in the Yaml should be parsed as.*/
 @InternalUse
 @NotNull
-Class<?>[] markedClass = new Class<?>[1];
+static HashMap<BaseInstance, Class<?>> markedClass = new HashMap<>();
 
 /**The path to parse the object from in the Yaml.*/
 @InternalUse
 @NotNull
-String[] yamlPath = new String[1];
+static HashMap<BaseInstance, String> yamlPath = new HashMap<>();
 
 /**
  Creates a new instance of a config or lang enum.
@@ -29,8 +31,25 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
   notNull(markedClass, "Instance of class");
   notNull(yamlPath, "Yaml path");
 
-  this.markedClass[0] = markedClass;
-  this.yamlPath[0] = yamlPath;
+  this.markedClass.put(this, markedClass);
+  this.yamlPath.put(this, yamlPath);
+}
+
+
+/**
+ * @return The class this instance should be parsed as.
+ */
+@InternalUse
+default Class<?> getMarkedClass() {
+  return BaseInstance.markedClass.get(this);
+}
+
+/**
+ * @return The path to this class in the Yaml file.
+ */
+@InternalUse
+default String getYamlPath() {
+  return BaseInstance.yamlPath.get(this);
 }
 
 }

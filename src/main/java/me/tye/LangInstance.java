@@ -7,7 +7,9 @@ import static me.tye.utils.Consts.langMap;
 
 /**
  This interface is designed to be implemented by an enum to define it as a enum containing the different lang options for the program implementing this dependency.<br>
- Please reference the README.md file on github for "EasyConfigurations" for usage information.
+ Please reference the
+ <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README.md</a>
+ file on github for "EasyConfigurations" for usage information.
  */
 @ExternalUse
 public interface LangInstance extends BaseInstance {
@@ -20,7 +22,7 @@ public interface LangInstance extends BaseInstance {
 @ExternalUse
 default @NotNull String get(KeyInstance... keys) {
 
-  String response = langMap.get(yamlPath[0]).toString();
+  String response = langMap.get(getYamlPath()).toString();
 
   // Replaces the keys within the response with their set replace value.
   for (KeyInstance registeredKey : keys) {

@@ -138,7 +138,7 @@ public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull 
 public static @NotNull String unverifiedClass(@NotNull BaseInstance instance, @NotNull Object value) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "No validation could be performed on \"" + instance.yamlPath[0] + ": " + value + "\" as the class \"" + instance.markedClass[0].getName() + "\" is not part of validation test.";
+  case ENGLISH: return "No validation could be performed on \"" + instance.getYamlPath() + ": " + value + "\" as the class \"" + instance.getMarkedClass().getName() + "\" is not part of validation test.";
   default: return  "";
 
   }
@@ -149,10 +149,10 @@ public static @NotNull String unverifiedClass(@NotNull BaseInstance instance, @N
  */
 @Contract(pure = true)
 @InternalUse
-public static @NotNull String notOfClass(@NotNull String yamlPath, @NotNull String classes) {
+public static @NotNull String notOfClass(@NotNull String value, @NotNull String classes) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "\"" + yamlPath + "\" is not of type(s) \"" + classes + "\".";
+  case ENGLISH: return "\"" + value + "\" is not of type(s) \"" + classes + "\".";
   default: return  "";
 
   }
@@ -191,10 +191,10 @@ public static @NotNull String notInDefaultYaml(@NotNull String path, @NotNull St
  */
 @Contract(pure = true)
 @InternalUse
-public static @NotNull String notMarkedClass(@NotNull String path, @NotNull String resourcePath, @NotNull String clazzName) {
+public static @NotNull String notMarkedClass(@NotNull String path, @NotNull String resourcePath, @NotNull Class<?> rawValueClass, @NotNull String clazzName) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "\""+path+"\" in \""+resourcePath+"\" cannot be parsed as given object, \""+clazzName+"\".";
+  case ENGLISH: return "\""+path+"\" in \""+resourcePath+"\" is of class \""+rawValueClass+"\". Therefore, cannot be parsed as given class, \""+clazzName+"\".";
   default: return  "";
 
   }
@@ -205,10 +205,24 @@ public static @NotNull String notMarkedClass(@NotNull String path, @NotNull Stri
  */
 @Contract(pure = true)
 @InternalUse
-public static @NotNull String internalYamlFail() {
+public static @NotNull String internalYamlFail(@NotNull String resourcePath) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "Unable to parsed required internal file. Please reinstall the program.";
+  case ENGLISH: return "Unable to parsed required yaml file at \""+resourcePath+"\".";
+  default: return  "";
+
+  }
+}
+
+/**
+ @see Lang
+ */
+@Contract(pure = true)
+@InternalUse
+public static @NotNull String classNotSupported(String clazzName) {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "\"" + clazzName + "\" is not supported.";
   default: return  "";
 
   }

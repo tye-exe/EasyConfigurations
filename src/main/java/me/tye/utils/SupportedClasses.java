@@ -2,17 +2,18 @@ package me.tye.utils;
 
 import me.tye.internalConfigs.Lang;
 import me.tye.utils.annotations.InternalUse;
+import me.tye.utils.exceptions.NotSupportedException;
 import me.tye.utils.exceptions.NotOfClassException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static me.tye.utils.Utils.toList;
 
 /**
  This enum contains an entry for each type of class that EasyConfigurations can parse.<br>
@@ -21,7 +22,6 @@ import java.util.List;
 @InternalUse
 public enum SupportedClasses {
 
-  OBJECT(Object.class),
   STRING(String.class),
   BOOLEAN(Boolean.class, boolean.class),
   INTEGER(Integer.class, int.class),
@@ -35,21 +35,18 @@ public enum SupportedClasses {
   OFFSET_DATE_TIME(OffsetDateTime.class),
   ZONED_DATE_TIME(ZonedDateTime.class),
 
-  OBJECT_ARRAY(Object[].class),
-  STRING_ARRAY(String[].class),
-  BOOLEAN_ARRAY(Boolean[].class, boolean[].class),
-  INTEGER_ARRAY(Integer[].class, int[].class),
-  DOUBLE_ARRAY(Double[].class, double[].class),
-  FLOAT_ARRAY(Float[].class, float[].class),
-  SHORT_ARRAY(Short[].class, short[].class),
-  LONG_ARRAY(Long[].class, long[].class),
-  BYTE_ARRAY(Byte[].class, byte[].class),
-  CHAR_ARRAY(Character[].class, char[].class),
-  LOCAL_DATE_TIME_ARRAY(LocalDateTime[].class),
-  OFFSET_DATE_TIME_ARRAY(OffsetDateTime[].class),
-  ZONED_DATE_TIME_ARRAY(ZonedDateTime[].class),
-
-  NOT_SUPPORTED();
+  STRING_LIST(String[].class),
+  BOOLEAN_LIST(Boolean[].class, boolean[].class),
+  INTEGER_LIST(Integer[].class, int[].class),
+  DOUBLE_LIST(Double[].class, double[].class),
+  FLOAT_LIST(Float[].class, float[].class),
+  SHORT_LIST(Short[].class, short[].class),
+  LONG_LIST(Long[].class, long[].class),
+  BYTE_LIST(Byte[].class, byte[].class),
+  CHAR_LIST(Character[].class, char[].class),
+  LOCAL_DATE_TIME_LIST(LocalDateTime[].class),
+  OFFSET_DATE_TIME_LIST(OffsetDateTime[].class),
+  ZONED_DATE_TIME_LIST(ZonedDateTime[].class);
 
 /**
  Contains the class values for classes represented by this enum.
@@ -75,330 +72,392 @@ public @NotNull Class<?>[] getClasses() {
 }
 
 /**
+ * @return True is the enum represents a form of array. False otherwise.
+ */
+public boolean representsArray() {
+  return getClasses()[0].isArray();
+}
+
+
+/**
  Checks if the class that this enum represents can parse the given value as represented class.
- * @param value The given value.
- * @return True if it can be parsed or if it is of a class that EasyConfigurations doesn't account for.<br>
- * False only if the value cannot be parsed as its intended class that EasyConfigurations supports.
+ * @param rawValue The given value.
+ * @return True if it can be parsed.<br>
+ * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
+ */
+public boolean canParse(@NotNull Object rawValue) {
+  // Parsing is handled differently for array & non-array values.
+  if (this.representsArray()) {
+    return canParseArray(rawValue);
+  } else {
+    return canParseNonArray(rawValue);
+  }
+}
+
+
+
+/**
+ If this method is used on an array enum then it will always return false.<br>
+ Checks if the class that this enum represents can parse the given value as represented class.
+ * @param rawValue The given value.
+ * @return True if it can be parsed.<br>
+ * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
  */
 @Contract(pure = true)
 @InternalUse
 @SuppressWarnings ("ResultOfMethodCallIgnored")
-public boolean canParse(@NotNull Object value) {
-  String stringValue = value.toString();
+private boolean canParseNonArray(@NotNull Object rawValue) {
+  String value = rawValue.toString();
 
   // Tries to parse the string value of the object in accordance with the enum.
   // If their is an error parsing, then it's caught & false is returned.
   // If it parses successfully, then true is returned.
   try {
-    // Parses the non-array values //
     switch (this) {
 
-    // Can always be parsed
-    case NOT_SUPPORTED:
-    case OBJECT:
-    case STRING:
+    // String & Boolean are handled uniquely due to the behaviour or their respective parsing method.
+    case STRING: {
+      if (rawValue instanceof String) {
+        return true;
+      }
+    }
     case BOOLEAN: {
-      return true;
+      return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
     }
 
     case INTEGER: {
-      Integer.parseInt(stringValue);
+      Integer.parseInt(value);
       return true;
     }
     case DOUBLE: {
-      Double.parseDouble(stringValue);
+      Double.parseDouble(value);
       return true;
     }
     case FLOAT: {
-      Float.parseFloat(stringValue);
+      Float.parseFloat(value);
       return true;
     }
     case SHORT: {
-      Short.parseShort(stringValue);
+      Short.parseShort(value);
       return true;
     }
     case LONG: {
-      Long.parseLong(stringValue);
+      Long.parseLong(value);
       return true;
     }
     case BYTE: {
-      Byte.parseByte(stringValue);
+      Byte.parseByte(value);
       return true;
     }
     case CHAR: {
-      return stringValue.length() == 1;
+      return value.length() == 1;
     }
     case LOCAL_DATE_TIME: {
-      LocalDateTime.parse(stringValue);
+      LocalDateTime.parse(value);
       return true;
     }
     case OFFSET_DATE_TIME: {
-      OffsetDateTime.parse(stringValue);
+      OffsetDateTime.parse(value);
       return true;
     }
     case ZONED_DATE_TIME: {
-      ZonedDateTime.parse(stringValue);
+      ZonedDateTime.parse(value);
       return true;
     }
     }
 
     // If there was an error parsing the value then it isn't a valid value
-  } catch (NullPointerException | NumberFormatException | DateTimeException e) {
-    return false;
-  }
+  } catch (Exception ignore) {}
 
-  // If it's not of a List or Object[] then it can't be parsed by any of following cases.
-  if (!(value instanceof List || value instanceof Object[])) {
-    return true;
-  }
-
-
-  // Parses the array values //
-  List<Object> objectList = toList(value);
-
-  // Checks that each of the objects within the list can be parsed as it's intended class.
-  for (Object containedObject : objectList) {
-    switch (this) {
-
-    // Can always be parsed
-    case OBJECT_ARRAY:
-    case STRING_ARRAY:
-    case BOOLEAN_ARRAY: {
-      return true;
-    }
-
-    case INTEGER_ARRAY: {
-      return INTEGER.canParse(containedObject);
-    }
-    case DOUBLE_ARRAY: {
-      return DOUBLE.canParse(containedObject);
-    }
-    case FLOAT_ARRAY: {
-      return FLOAT.canParse(containedObject);
-    }
-    case SHORT_ARRAY: {
-      return SHORT.canParse(containedObject);
-    }
-    case LONG_ARRAY: {
-      return LONG.canParse(containedObject);
-    }
-    case BYTE_ARRAY: {
-      return BYTE.canParse(containedObject);
-    }
-    case CHAR_ARRAY: {
-      return CHAR.canParse(containedObject);
-    }
-    case LOCAL_DATE_TIME_ARRAY: {
-      return LOCAL_DATE_TIME.canParse(containedObject);
-    }
-    case OFFSET_DATE_TIME_ARRAY: {
-      return OFFSET_DATE_TIME.canParse(containedObject);
-    }
-    case ZONED_DATE_TIME_ARRAY: {
-      return ZONED_DATE_TIME.canParse(containedObject);
-    }
-    }
-  }
-
-  // Returns true if the class isn't one known to EasyConfigurations.
-  return true;
+  return false;
 }
 
 /**
- Parses the give value to the class specified by this enum.
- * @param value The given value.
- * @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
- * @throws NotOfClassException If the object passed in isn't of a class that this enum represents
+ If this method is used on a non-array enum then it will always return false.<br>
+ Checks if the class that this enum represents can parse the given value as represented class.
+ * @param rawValue The given array or List value.
+ * @return True if it can be parsed.<br>
+ * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
  */
 @Contract(pure = true)
 @InternalUse
-public @NotNull Object parse(@NotNull Object value) throws NotOfClassException {
-  String stringValue = value.toString();
+private <T> boolean canParseArray(@NotNull T rawValue) {
+  List<String> value;
+
+  try {
+    value = toList(rawValue);
+
+    // If there was an error attempting to parse the input then it wasn't an array or list.
+  } catch (Exception ignore) {
+    return false;
+  }
+
+  boolean couldParseValue = false;
+
+  // Checks that each of the objects within the list can be parsed as it's intended class.
+  for (String stringValue : value) {
+    switch (this) {
+
+    // Can always be parsed
+    case STRING_LIST:
+    case BOOLEAN_LIST: {
+      return true;
+    }
+
+    case INTEGER_LIST: {
+      couldParseValue = INTEGER.canParseNonArray(stringValue);
+      break;
+    }
+    case DOUBLE_LIST: {
+      couldParseValue = DOUBLE.canParseNonArray(stringValue);
+      break;
+    }
+    case FLOAT_LIST: {
+      couldParseValue = FLOAT.canParseNonArray(stringValue);
+      break;
+    }
+    case SHORT_LIST: {
+      couldParseValue = SHORT.canParseNonArray(stringValue);
+      break;
+    }
+    case LONG_LIST: {
+      couldParseValue = LONG.canParseNonArray(stringValue);
+      break;
+    }
+    case BYTE_LIST: {
+      couldParseValue = BYTE.canParseNonArray(stringValue);
+      break;
+    }
+    case CHAR_LIST: {
+      couldParseValue = CHAR.canParseNonArray(stringValue);
+      break;
+    }
+    case LOCAL_DATE_TIME_LIST: {
+      couldParseValue = LOCAL_DATE_TIME.canParseNonArray(stringValue);
+      break;
+    }
+    case OFFSET_DATE_TIME_LIST: {
+      couldParseValue = OFFSET_DATE_TIME.canParseNonArray(stringValue);
+      break;
+    }
+    case ZONED_DATE_TIME_LIST: {
+      couldParseValue = ZONED_DATE_TIME.canParseNonArray(stringValue);
+      break;
+    }
+    }
+
+    if (!couldParseValue) return false;
+  }
+
+  // True is returned since to make it to here the parse must have been successful every time.
+  return couldParseValue;
+}
+
+/**
+ Parses the give value to the class specified by this enum.<br>
+ <br>
+ Note: {@link #canParse(Object)} should be performed first to check if the object can be parsed.
+ * @param rawValue The given value.
+ * @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
+ * @throws NotOfClassException If the object passed in isn't of a class that this enum represents
+ */
+@InternalUse
+public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassException {
+  // Parsing is handled differently for array & non-array values.
+  if (this.representsArray()) {
+    return parseArray(rawValue);
+  } else {
+    return parseNonArray(rawValue);
+  }
+}
+
+/**
+ If this method is used on an array enum then it will always throw {@link NotOfClassException}.<br>
+ Parses the give value to the class specified by this enum.
+ * @param rawValue The given value.
+ * @return The value as its intended object.
+ * @throws NotOfClassException If the object passed in isn't of a class that this enum represents.
+ */
+@InternalUse
+private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClassException {
+  String value = rawValue.toString();
 
   try {
     // Parses the non-array values //
     switch (this) {
 
-    case NOT_SUPPORTED:
-    case OBJECT: {
-      return value;
-    }
+    // String & Boolean are handled uniquely due to the behaviour or their respective parsing method.
     case STRING: {
-      return String.valueOf(value);
+      if (rawValue instanceof String) {
+        return value;
+      }
     }
     case BOOLEAN: {
-      return Boolean.valueOf(stringValue);
+      if (value.equalsIgnoreCase("true")) return true;
+      if (value.equalsIgnoreCase("false")) return false;
     }
+
     case INTEGER: {
-      return Integer.parseInt(stringValue);
+      return Integer.parseInt(value);
     }
     case DOUBLE: {
-      return Double.parseDouble(stringValue);
+      return Double.parseDouble(value);
     }
     case FLOAT: {
-      return Float.parseFloat(stringValue);
+      return Float.parseFloat(value);
     }
     case SHORT: {
-      return Short.parseShort(stringValue);
+      return Short.parseShort(value);
     }
     case LONG: {
-      return Long.parseLong(stringValue);
+      return Long.parseLong(value);
     }
     case BYTE: {
-      return Byte.parseByte(stringValue);
+      return Byte.parseByte(value);
     }
     case CHAR: {
-      return stringValue.charAt(0);
+      return value.charAt(0);
     }
     case LOCAL_DATE_TIME: {
-      return LocalDateTime.parse(stringValue);
+      return LocalDateTime.parse(value);
     }
     case OFFSET_DATE_TIME: {
-      return OffsetDateTime.parse(stringValue);
+      return OffsetDateTime.parse(value);
     }
     case ZONED_DATE_TIME: {
-      return ZonedDateTime.parse(stringValue);
+      return ZonedDateTime.parse(value);
     }
     }
 
-
-    // Parses the array values //
-    List<Object> objectList = toList(value);
-
-    // Checks that each of the objects within the list can be parsed as it's intended class.
-    switch (this) {
-
-    // Can always be parsed
-    case OBJECT_ARRAY: {
-      List<Object> objects = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        objects.add(OBJECT.parse(o));
-      }
-      return objects;
-    }
-    case STRING_ARRAY: {
-      List<String> strings = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        strings.add((String) STRING.parse(o));
-      }
-      return strings;
-    }
-    case BOOLEAN_ARRAY: {
-      List<Boolean> booleans = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        booleans.add((Boolean) BOOLEAN.parse(o));
-      }
-      return booleans;
-    }
-    case INTEGER_ARRAY: {
-      List<Integer> ints = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        ints.add((Integer) INTEGER.parse(o));
-      }
-      return ints;
-    }
-    case DOUBLE_ARRAY: {
-      List<Double> doubles = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        doubles.add((Double) DOUBLE.parse(o));
-      }
-      return doubles;
-    }
-    case FLOAT_ARRAY: {
-      List<Float> floats = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        floats.add((Float) FLOAT.parse(o));
-      }
-      return floats;
-    }
-    case SHORT_ARRAY: {
-      List<Short> shorts = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        shorts.add((Short) SHORT.parse(o));
-      }
-      return shorts;
-    }
-    case LONG_ARRAY: {
-      List<Long> longs = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        longs.add((Long) LONG.parse(o));
-      }
-      return longs;
-    }
-    case BYTE_ARRAY: {
-      List<Byte> bytes = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        bytes.add((Byte) BYTE.parse(o));
-      }
-      return bytes;
-    }
-    case CHAR_ARRAY: {
-      List<Character> chars = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        chars.add((Character) CHAR.parse(o));
-      }
-      return chars;
-    }
-    case LOCAL_DATE_TIME_ARRAY: {
-      List<LocalDateTime> time = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        time.add((LocalDateTime) LOCAL_DATE_TIME.parse(o));
-      }
-      return time;
-    }
-    case OFFSET_DATE_TIME_ARRAY: {
-      List<OffsetDateTime> time = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        time.add((OffsetDateTime) OFFSET_DATE_TIME.parse(o));
-      }
-      return time;
-    }
-    case ZONED_DATE_TIME_ARRAY: {
-      List<ZonedDateTime> time = new ArrayList<>(objectList.size());
-      for (Object o : objectList) {
-        time.add((ZonedDateTime) ZONED_DATE_TIME.parse(o));
-      }
-      return time;
-    }
-    }
   } catch (RuntimeException e) {
-    throw new NotOfClassException(Lang.notOfClass(stringValue, this.toString()));
+    throw new NotOfClassException(Lang.notOfClass(value, this.toString()));
   }
 
   return value;
 }
 
 /**
- Converts the given value to {@literal List<Object>}.
- * @param value The given value. It must be an instance of {@link List} or an Object[].
- * @return The given value converted to an object list.
+ If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.<br>
+ Parses the give value to the class specified by this enum.
+ * @param value The given array or List value.
+ * @return The value as its intended object.
+ * @throws NotOfClassException If the object passed in isn't of a class that this enum represents.
  */
 @InternalUse
-private @NotNull List<Object> toList(@NotNull Object value) {
-  ArrayList<Object> objectList;
+private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassException {
+  try {
+    List<String> stringsToParse;
+    stringsToParse = toList(value);
 
-  // Converts the List or array into an Object list.
-  if (value instanceof List) {
-    List<?> valueList = (List<?>) value;
-    objectList = new ArrayList<>(valueList.size());
-    objectList.addAll(valueList);
+    List<Object> outputList = new ArrayList<>(stringsToParse.size());
+
+    for (String str : stringsToParse) {
+
+      switch (this) {
+
+      case STRING_LIST: {
+        outputList.add(STRING.parse(str));
+        break;
+      }
+      case BOOLEAN_LIST: {
+        outputList.add(BOOLEAN.parse(str));
+        break;
+      }
+      case INTEGER_LIST: {
+        outputList.add(INTEGER.parse(str));
+        break;
+      }
+      case DOUBLE_LIST: {
+        outputList.add(DOUBLE.parse(str));
+        break;
+      }
+      case FLOAT_LIST: {
+        outputList.add(FLOAT.parse(str));
+        break;
+      }
+      case SHORT_LIST: {
+        outputList.add(SHORT.parse(str));
+        break;
+      }
+      case LONG_LIST: {
+        outputList.add(LONG.parse(str));
+        break;
+      }
+      case BYTE_LIST: {
+        outputList.add(BYTE.parse(str));
+        break;
+      }
+      case CHAR_LIST: {
+        outputList.add(CHAR.parse(str));
+        break;
+      }
+      case LOCAL_DATE_TIME_LIST: {
+        outputList.add(LOCAL_DATE_TIME.parse(str));
+        break;
+      }
+      case OFFSET_DATE_TIME_LIST: {
+        outputList.add(OFFSET_DATE_TIME.parse(str));
+        break;
+      }
+      case ZONED_DATE_TIME_LIST: {
+        outputList.add(ZONED_DATE_TIME.parse(str));
+        break;
+      }
+      }
+    }
+
+    // If the outputList is empty then then given array or list isn't one supported by EasyConfigurations.
+    if (outputList.isEmpty()) {
+      throw new Exception();
+    }
+
+    return outputList;
+
+    // Catches any exceptions & then formats them.
+  } catch (Exception e) {
+
+    // If it's a NotOfClassException thrown by one of the parse methods then just throw that.
+    if (e.getClass().equals(NotOfClassException.class)) throw new NotOfClassException(e);
+
+    // Tries to get the canonical name of the class, but a canonical name doesn't exist for every class.
+    // So the regular name is used as a fall bac
+    String className = value.getClass().getCanonicalName();
+    if (className == null) {
+      className = value.getClass().getName();
+    }
+
+    throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
   }
-  else {
-    Object[] objArray = ((Object[]) value);
-    objectList = new ArrayList<>(objArray.length);
-    objectList.addAll(Arrays.asList(objArray));
+}
+
+
+/**
+ Checks if the given class is represented by any existing enum in {@link SupportedClasses}
+ * @param classToMatch The given class.
+ * @return True if the given class is represented. False otherwise.
+ */
+@InternalUse
+public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
+  SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
+
+  // Loops over this class to find if any enums support the class to match
+  for (SupportedClasses supportedClass : supportedClasses) {
+    for (Class<?> alikeClass : supportedClass.getClasses()) {
+      if (classToMatch.equals(alikeClass)) return true;
+    }
   }
 
-  return objectList;
+  return false;
 }
 
 /**
  Matches the given class to an enum inside {@link SupportedClasses}.
  * @param classToMatch The given class.
- * @return The enum that represents the given class. If none match then SupportedClasses.NOT_SUPPORTED is returned.
+ * @return The enum that represents the given class.
+ * @throws NotSupportedException If the given classes doesn't match any supported classes.
  */
 @InternalUse
-public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) {
+public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws NotSupportedException {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
 
   // Loops over this class to find if any enums support the class to match
@@ -408,7 +467,7 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
     }
   }
 
-  return NOT_SUPPORTED;
+  throw new NotSupportedException(Lang.classNotSupported(classToMatch.getName()));
 }
 
 }

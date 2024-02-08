@@ -1,8 +1,6 @@
 package me.tye;
 
-import me.tye.internalConfigs.Lang;
 import me.tye.utils.Consts;
-import me.tye.utils.SupportedClasses;
 import me.tye.utils.annotations.ExternalUse;
 import me.tye.utils.annotations.InternalUse;
 import me.tye.utils.exceptions.NotOfClassException;
@@ -14,15 +12,18 @@ import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static me.tye.utils.SupportedClasses.OBJECT_ARRAY;
+import static me.tye.utils.SupportedClasses.*;
+import static me.tye.utils.Utils.classCheck;
 
 /**
  This interface is designed to be implemented by an enum to define it as a enum containing the different config options for the program implementing this dependency.<br>
- Please reference the README.md file on github for "EasyConfigurations" for usage information.
+ Please reference the
+ <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README.md</a>
+ file on github for "EasyConfigurations" for usage information.
  */
-@SuppressWarnings ("unchecked") // I had to use unchecked casts to tell java that a certain object is indeed the class i say it is.
+@SuppressWarnings ("unchecked") // Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCHeck() preceding the cast & at config initiation.
 @ExternalUse
-public interface  ConfigInstance extends BaseInstance {
+public interface ConfigInstance extends BaseInstance {
 
 /**
   Creates a new instance of a config enum.
@@ -36,306 +37,276 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
 }
 
 /**
- Checks if the enum is of the given classes.
- * @param isInstancesOf The given classes.
- * @throws NotOfClassException If it's not of the given classes.
+ * @return The object in the config HashMap that this enum represents.
  */
+@Contract(pure = true)
 @InternalUse
-default void classCheck(@NotNull Class<?>... isInstancesOf) throws NotOfClassException {
-  StringBuilder classes = new StringBuilder();
-
-  for (Class<?> isInstanceOf : isInstancesOf) {
-    if (markedClass[0].equals(isInstanceOf)) return;
-
-    classes.append(isInstanceOf.getName()).append(" ");
-  }
-
-  throw new NotOfClassException(Lang.notOfClass(yamlPath[0], classes.toString()));
+default @NotNull Object getValue() {
+  return Consts.configMap.get(getYamlPath());
 }
 
-
 /**
- This method can be used regardless of the marked class.
- * @return Gets the config response for the selected enum.
+ * @return Gets a {@link String} config response.
+ * @throws NotOfClassException If the selected config isn't a String value.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull Object getAsObject() {
-  return Consts.configMap.get(yamlPath[0]);
+default @NotNull String getAsString() throws NotOfClassException {
+  classCheck(STRING, this);
+  return (String) getValue();
 }
 
 /**
- This method can be used regardless of the marked class.
- Gets the config response for the selected enum wrapped with {@link String#valueOf(Object)}.
- * @return The string parsed from the internal file that represents this enum.
- */
-@Contract(pure = true)
-@ExternalUse
-default @NotNull String getAsString() {
-  return String.valueOf(getAsObject());
-}
-
-/**
- * @return Gets the config response for the selected enum wrapped with {@link Boolean#parseBoolean(String)}.
+ * @return Gets a {@link Boolean} config response.
  * @throws NotOfClassException If the selected config isn't a Boolean value.
  */
 @Contract(pure = true)
 @ExternalUse
 default boolean getAsBoolean() throws NotOfClassException {
-  classCheck(Boolean.class, boolean.class);
-  return Boolean.parseBoolean(getAsString());
+  classCheck(BOOLEAN, this);
+  return (boolean) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Integer#parseInt(String)}.
+ * @return Gets a {@link Integer} config response.
  * @throws NotOfClassException If the selected config isn't a Integer value.
  */
 @Contract(pure = true)
 @ExternalUse
 default int getAsInteger() throws NotOfClassException {
-  classCheck(Integer.class, int.class);
-  return Integer.parseInt(getAsString());
+  classCheck(INTEGER, this);
+  return (int) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Double#parseDouble(String)}.
+ * @return Gets a {@link Double} config response.
  * @throws NotOfClassException If the selected config isn't a Double value.
  */
 @Contract(pure = true)
 @ExternalUse
 default double getAsDouble() throws NotOfClassException {
-  classCheck(Double.class, double.class);
-  return Double.parseDouble(getAsString());
+  classCheck(DOUBLE, this);
+  return (double) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Float#parseFloat(String)}.
+ * @return Gets a {@link Float} config response.
  * @throws NotOfClassException If the selected config isn't a Float value.
  */
 @Contract(pure = true)
 @ExternalUse
 default float getAsFloat() throws NotOfClassException {
-  classCheck(Float.class, float.class);
-  return Float.parseFloat(getAsString());
+  classCheck(FLOAT, this);
+  return (float) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Short#parseShort(String)}.
+ * @return Gets a {@link Short} config response.
  * @throws NotOfClassException If the selected config isn't a Short value.
  */
 @Contract(pure = true)
 @ExternalUse
 default short getAsShort() throws NotOfClassException {
-  classCheck(Short.class, short.class);
-  return Short.parseShort(getAsString());
+  classCheck(SHORT, this);
+  return (short) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Long#parseLong(String)}.
+ * @return Gets a {@link Long} config response.
  * @throws NotOfClassException If the selected config isn't a Long value.
  */
 @Contract(pure = true)
 @ExternalUse
 default long getAsLong() throws NotOfClassException {
-  classCheck(Long.class, long.class);
-  return Long.parseLong(getAsString());
+  classCheck(LONG, this);
+  return (long) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Byte#parseByte(String)}.
+ * @return Gets a {@link Byte} config response.
  * @throws NotOfClassException If the selected config isn't a Byte value.
  */
 @Contract(pure = true)
 @ExternalUse
 default byte getAsByte() throws NotOfClassException {
-  classCheck(Byte.class, byte.class);
-  return Byte.parseByte(getAsString());
+  classCheck(BYTE, this);
+  return (byte) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link Byte#parseByte(String)}.
+ * @return Gets a {@link Character} config response.
  * @throws NotOfClassException If the selected config isn't a Char value.
  */
 @Contract(pure = true)
 @ExternalUse
 default char getAsChar() throws NotOfClassException {
-  classCheck(Character.class, char.class);
-  return getAsString().toCharArray()[0];
+  classCheck(CHAR, this);
+  return (char) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link LocalDateTime#parse(CharSequence)}.
+ * @return Gets a {@link LocalDateTime} config response.
  * @throws NotOfClassException If the selected config isn't a LocalDateTime value.
  */
 @Contract(pure = true)
 @ExternalUse
 default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException {
-  classCheck(LocalDateTime.class);
-  return LocalDateTime.parse(getAsString());
+  classCheck(LOCAL_DATE_TIME, this);
+  return (LocalDateTime) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link OffsetDateTime#parse(CharSequence)}}.
+ * @return Gets a {@link OffsetDateTime} config response.
  * @throws NotOfClassException If the selected config isn't an OffsetDateTime value.
  */
 @Contract(pure = true)
 @ExternalUse
 default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException {
-  classCheck(OffsetDateTime.class);
-  return OffsetDateTime.parse(getAsString());
+  classCheck(OFFSET_DATE_TIME, this);
+  return (OffsetDateTime) getValue();
 }
 
 /**
- * @return Gets the config response for the selected enum wrapped with {@link ZonedDateTime#parse(CharSequence)}.
+ * @return Gets a {@link ZonedDateTime} config response.
  * @throws NotOfClassException If the selected config isn't a ZonedDateTime value.
  */
 @Contract(pure = true)
 @ExternalUse
 default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException {
-  classCheck(ZonedDateTime.class);
-  return ZonedDateTime.parse(getAsString());
+  classCheck(ZONED_DATE_TIME, this);
+  return (ZonedDateTime) getValue();
 }
 
-/**
- * @return Gets the config response from the selected enum as an object list.
- * @throws NotOfClassException If the selected config isn't an object list.
- */
-@Contract(pure = true)
-@ExternalUse
-default @NotNull List<Object> getAsObjectArray() {
-  classCheck(Object[].class, List.class);
-  return (List<Object>) OBJECT_ARRAY.parse(getAsObject());
-}
 
 /**
- * @return Gets the config response from the selected enum as a string list.
+ * @return Gets a {@link String} list config response.
  * @throws NotOfClassException If the selected config isn't a string list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<String> getAsStringArray() {
-  classCheck(String[].class);
-  return (List<String>) SupportedClasses.STRING_ARRAY.parse(getAsObject());
+default @NotNull List<String> getAsStringList() {
+  classCheck(STRING_LIST, this);
+  return (List<String>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a boolean list.
+ * @return Gets an {@link Boolean} list config response.
  * @throws NotOfClassException If the selected config isn't a boolean list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Boolean> getAsBooleanArray() throws NotOfClassException {
-  classCheck(boolean[].class, Boolean[].class);
-  return (List<Boolean>) SupportedClasses.BOOLEAN_ARRAY.parse(getAsObject());
+default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException {
+  classCheck(BOOLEAN_LIST, this);
+  return (List<Boolean>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as an integer list.
+ * @return Gets an {@link Integer} list config response.
  * @throws NotOfClassException If the selected config isn't an integer list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Integer> getAsIntegerArray() throws NotOfClassException {
-  classCheck(Integer[].class, int[].class);
-  return (List<Integer>) SupportedClasses.INTEGER_ARRAY.parse(getAsObject());
+default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException {
+  classCheck(INTEGER_LIST, this);
+  return (List<Integer>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a double list.
+ * @return Gets a {@link Double} list config response.
  * @throws NotOfClassException If the selected config isn't a double list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Double> getAsDoubleArray() throws NotOfClassException {
-  classCheck(Double[].class, double[].class);
-  return (List<Double>) SupportedClasses.DOUBLE_ARRAY.parse(getAsObject());
+default @NotNull List<Double> getAsDoubleList() throws NotOfClassException {
+  classCheck(DOUBLE_LIST, this);
+  return (List<Double>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a float list.
+ * @return Gets a {@link Float} list config response.
  * @throws NotOfClassException If the selected config isn't a float list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Float> getAsFloatArray() throws NotOfClassException {
-  classCheck(Float[].class, float[].class);
-  return (List<Float>) SupportedClasses.FLOAT_ARRAY.parse(getAsObject());
+default @NotNull List<Float> getAsFloatList() throws NotOfClassException {
+  classCheck(FLOAT_LIST, this);
+  return (List<Float>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a short list.
+ * @return Gets a {@link Short} list config response.
  * @throws NotOfClassException If the selected config isn't a short list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Short> getAsShortArray() throws NotOfClassException {
-  classCheck(Short[].class, short[].class);
-  return (List<Short>) SupportedClasses.SHORT_ARRAY.parse(getAsObject());
+default @NotNull List<Short> getAsShortList() throws NotOfClassException {
+  classCheck(SHORT_LIST, this);
+  return (List<Short>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a long list.
+ * @return Gets a {@link Long} list config response.
  * @throws NotOfClassException If the selected config isn't a long list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Long> getAsLongArray() throws NotOfClassException {
-  classCheck(Long[].class, long[].class);
-  return (List<Long>) SupportedClasses.LONG_ARRAY.parse(getAsObject());
+default @NotNull List<Long> getAsLongList() throws NotOfClassException {
+  classCheck(LONG_LIST, this);
+  return (List<Long>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a byte list.
+ * @return Gets a {@link Byte} list config response.
  * @throws NotOfClassException If the selected config isn't a byte list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Byte> getAsByteArray() throws NotOfClassException {
-  classCheck(Byte[].class, byte[].class);
-  return (List<Byte>) SupportedClasses.BYTE_ARRAY.parse(getAsObject());
+default @NotNull List<Byte> getAsByteList() throws NotOfClassException {
+  classCheck(BYTE_LIST, this);
+  return (List<Byte>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a char list.
+ * @return Gets a {@link Character} list config response.
  * @throws NotOfClassException If the selected config isn't a char list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<Character> getAsCharArray() throws NotOfClassException {
-  classCheck(Character[].class, char[].class);
-  return (List<Character>) SupportedClasses.CHAR_ARRAY.parse(getAsObject());
+default @NotNull List<Character> getAsCharList() throws NotOfClassException {
+  classCheck(CHAR_LIST, this);
+  return (List<Character>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a {@link LocalDateTime} list.
- * @throws NotOfClassException If the selected config isn't a {@link LocalDateTime} list.
+ * @return Gets a {@link LocalDateTime} list config response.
+ * @throws NotOfClassException If the selected config isn't a local date time list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<LocalDateTime> getAsLocalDateTimeArray() throws NotOfClassException {
-  classCheck(LocalDateTime[].class);
-  return (List<LocalDateTime>) SupportedClasses.LOCAL_DATE_TIME_ARRAY.parse(getAsObject());
+default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassException {
+  classCheck(LOCAL_DATE_TIME_LIST, this);
+  return (List<LocalDateTime>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a {@link OffsetDateTime} list.
- * @throws NotOfClassException If the selected config isn't a {@link OffsetDateTime} list.
+ * @return Gets a {@link OffsetDateTime} list config response.
+ * @throws NotOfClassException If the selected config isn't a offset date time list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<OffsetDateTime> getAsOffsetDateTimeArray() throws NotOfClassException {
-  classCheck(OffsetDateTime[].class);
-  return (List<OffsetDateTime>) SupportedClasses.OFFSET_DATE_TIME_ARRAY.parse(getAsObject());
+default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClassException {
+  classCheck(OFFSET_DATE_TIME_LIST, this);
+  return (List<OffsetDateTime>) getValue();
 }
 
 /**
- * @return Gets the config response from the selected enum as a {@link ZonedDateTime} list.
- * @throws NotOfClassException If the selected config isn't a {@link ZonedDateTime} list.
+ * @return Gets a {@link ZonedDateTime} list config response.
+ * @throws NotOfClassException If the selected config isn't a zoned date time list.
  */
 @Contract(pure = true)
 @ExternalUse
-default @NotNull List<ZonedDateTime> getAsZonedDateTimeArray() throws NotOfClassException {
-  classCheck(ZonedDateTime[].class);
-  return (List<ZonedDateTime>) SupportedClasses.ZONED_DATE_TIME_ARRAY.parse(getAsObject());
+default @NotNull List<ZonedDateTime> getAsZonedDateTimeList() throws NotOfClassException {
+  classCheck(ZONED_DATE_TIME_LIST, this);
+  return (List<ZonedDateTime>) getValue();
 }
 }

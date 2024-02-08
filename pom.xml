@@ -6,7 +6,7 @@
 
     <groupId>me.tye</groupId>
     <artifactId>EasyConfigurations</artifactId>
-    <version>1.0</version>
+    <version>0.2</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -25,6 +25,12 @@
             <artifactId>annotations</artifactId>
             <version>24.0.1</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

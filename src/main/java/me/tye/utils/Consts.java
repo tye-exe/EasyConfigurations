@@ -15,23 +15,12 @@ public final class Consts {
 /**This class is a utility class & should not be instantiated.*/
 private Consts() {}
 
+
 /**Contains the default logger for the EasyConfigurations dependency.*/
 @InternalUse
 public static final @NotNull Logger logger = Logger.getLogger("me.tye.EasyConfigurations");
 
-/**Determines which language the EasyConfigurations outputs should be logged in.*/
-@InternalUse
-public static @NotNull Config.InternalLanguages language = Config.InternalLanguages.ENGLISH;
 
-/**Stores the enum class that implements {@link me.tye.KeyInstance KeyInstance}.*/
-@InternalUse
-public static @NotNull Class<?> keyClass;
-/**Stores the enum class that implements {@link me.tye.LangInstance LangInstance}.*/
-@InternalUse
-public static @NotNull Class<?> langClass;
-/**Stores the enum class that implements {@link me.tye.ConfigInstance ConfigInstance}.*/
-@InternalUse
-public static @NotNull Class<?> configClass;
 /**Stores the parsed config options.*/
 @InternalUse
 public static @NotNull HashMap<String, Object> langMap;

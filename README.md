@@ -234,7 +234,6 @@ ___
 ##### Supported parsing classes:
 Several classes are supported by EasyConfigurations to mark/retrieve a configs enum as. They are as follows:
 
-- Object.class
 - String.class
 - Boolean.class & boolean.class
 - Integer.class & int.class
@@ -247,7 +246,7 @@ Several classes are supported by EasyConfigurations to mark/retrieve a configs e
 - LocalDateTime.class
 - OffsetDateTime.class
 - ZonedDateTime.class
-- All of the above as an array (e.g Object[].class)
+- All of the above as an array (e.g String[].class)
 
 You can still mark a config as a class that isn't on this list. However, EasyConfigurations won't be able to perform
 any validation checks on the correlating value. This could lead to unforeseen issues later on during the program.  
