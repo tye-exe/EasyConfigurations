@@ -79,7 +79,6 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
   boolean isSupposedToBeParsed = Utils.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
   boolean couldBeParsed = representingEnum.canParse(valueToParse);
 
-  // Boolean & String values can always be parsed due to how their parse methods are implemented.
   if (isSupposedToBeParsed) {
     assertTrue(couldBeParsed,  classToParse.getName() + " class should be able to be parsed.");
   } else {
