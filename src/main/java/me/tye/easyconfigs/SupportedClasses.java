@@ -198,12 +198,14 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
   for (String stringValue : value) {
     switch (this) {
 
-    // Can always be parsed
-    case STRING_LIST:
-    case BOOLEAN_LIST: {
-      return true;
+    case STRING_LIST: {
+      couldParseValue = STRING.canParseNonArray(stringValue);
+      break;
     }
-
+    case BOOLEAN_LIST: {
+      couldParseValue = BOOLEAN.canParseNonArray(stringValue);
+      break;
+    }
     case INTEGER_LIST: {
       couldParseValue = INTEGER.canParseNonArray(stringValue);
       break;
