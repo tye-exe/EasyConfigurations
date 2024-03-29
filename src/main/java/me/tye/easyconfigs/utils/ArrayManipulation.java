@@ -8,18 +8,25 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ This class contains methods that are use while working with arrays in EasyConfigurations.
+ */
 public final class ArrayManipulation {
+
+/**
+ This class is a utility class & should not be instantiated. */
+private ArrayManipulation() {}
+
 /**
  Checks if the given object is contained within the given array.
- * @param array The given array to check.
- * @param object The given object to check if it's present in the array.
- * @return True if any object in the given array is equal (using it's respective #equals() method) to the given object.
- */
-@Contract (pure = true)
+ @param array  The given array to check.
+ @param object The given object to check if it's present in the array.
+ @return True if any object in the given array is equal (using it's respective #equals() method) to the given object. */
+@Contract(pure=true)
 @Utilities
 public static boolean arrayContains(@NotNull Object array, @NotNull Object object) {
-  Utils.notNull(array , "array");
-  Utils.notNull(array , "object");
+  Utils.notNull(array, "array");
+  Utils.notNull(array, "object");
 
   if (!array.getClass().isArray()) return false;
 
@@ -34,10 +41,9 @@ public static boolean arrayContains(@NotNull Object array, @NotNull Object objec
 
 /**
  Converts the given value to {@literal List<Object>}.
- * @param value The given value. It must be an instance of {@link List} or an array of any type.
- * @return The given value converted to an object list.
- * @throws IllegalArgumentException If the given value isn't a list or an array.
- */
+ @param value The given value. It must be an instance of {@link List} or an array of any type.
+ @return The given value converted to an object list.
+ @throws IllegalArgumentException If the given value isn't a list or an array. */
 @Utilities
 public static @NotNull List<String> toList(@NotNull Object value) throws IllegalArgumentException {
   ArrayList<String> stringList;
