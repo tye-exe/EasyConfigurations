@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.tye.easyconfigs.utils.Utils.toList;
+import static me.tye.easyconfigs.utils.ArrayManipulation.toList;
 
 /**
  This enum contains an entry for each type of class that EasyConfigurations can parse.<br>

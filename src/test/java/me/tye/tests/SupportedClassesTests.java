@@ -1,7 +1,7 @@
 package me.tye.tests;
 
 import me.tye.easyconfigs.SupportedClasses;
-import me.tye.easyconfigs.utils.Utils;
+import me.tye.easyconfigs.utils.ArrayManipulation;
 import me.tye.easyconfigs.utils.exceptions.NotOfClassException;
 import me.tye.easyconfigs.utils.exceptions.NotSupportedException;
 import org.junit.jupiter.api.Order;
@@ -43,7 +43,7 @@ void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) {
     assertDoesNotThrow(() -> getAsEnum(clazzToMatch), "Classes that are represented should be parsed.");
     SupportedClasses asEnum = getAsEnum(clazzToMatch);
 
-    boolean isRepresented = Utils.arrayContains(asEnum.getClasses(), clazzToMatch);
+    boolean isRepresented = ArrayManipulation.arrayContains(asEnum.getClasses(), clazzToMatch);
     assertTrue(isRepresented, "The enum should represent the class.");
   }
   else {
@@ -76,7 +76,7 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
 <T> void Enums_can_parse_respective_class(T valueToParse, Class<?> classToParse) {
   SupportedClasses representingEnum = SupportedClasses.getAsEnum(classToParse);
 
-  boolean isSupposedToBeParsed = Utils.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
+  boolean isSupposedToBeParsed = ArrayManipulation.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
   boolean couldBeParsed = representingEnum.canParse(valueToParse);
 
   if (isSupposedToBeParsed) {

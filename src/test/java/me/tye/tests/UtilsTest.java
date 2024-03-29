@@ -1,5 +1,6 @@
 package me.tye.tests;
 
+import me.tye.easyconfigs.utils.ArrayManipulation;
 import me.tye.easyconfigs.utils.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,7 +37,7 @@ private static Stream<Arguments> array_provider() {
 @ParameterizedTest
 @MethodSource("array_provider")
 void arrayContains(Object array, Object valueToCheck, boolean isContained) {
-  boolean determinedToContain = Utils.arrayContains(array, valueToCheck);
+  boolean determinedToContain = ArrayManipulation.arrayContains(array, valueToCheck);
 
   if (isContained) {
     assertTrue(determinedToContain ,"Array should contain the provided value.");
