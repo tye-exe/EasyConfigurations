@@ -1,7 +1,7 @@
 package io.github.tye.easyconfigs.utils.exceptions;
 
 /**
- This exception is thrown when you try & retrieve a config as a class it wasn't marked as in the enum.<br>
+ This exception is thrown when you try &amp; retrieve a config as a class it wasn't marked as in the enum.<br>
  For example:<br>
  <br>
  enum : "USERNAME(String.class, "name");"

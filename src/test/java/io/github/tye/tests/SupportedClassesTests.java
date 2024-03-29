@@ -18,8 +18,7 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import static io.github.tye.easyconfigs.SupportedClasses.existsAsEnum;
-import static io.github.tye.easyconfigs.SupportedClasses.getAsEnum;
+import static io.github.tye.easyconfigs.SupportedClasses.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 

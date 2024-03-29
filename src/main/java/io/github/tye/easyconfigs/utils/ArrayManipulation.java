@@ -14,7 +14,7 @@ import java.util.List;
 public final class ArrayManipulation {
 
 /**
- This class is a utility class & should not be instantiated. */
+ This class is a utility class &amp; should not be instantiated. */
 private ArrayManipulation() {}
 
 /**

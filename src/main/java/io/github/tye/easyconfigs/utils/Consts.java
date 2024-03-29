@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 @SuppressWarnings ({"NotNullFieldNotInitialized"})
 public final class Consts {
 
-/**This class is a utility class & should not be instantiated.*/
+/**This class is a utility class &amp; should not be instantiated.*/
 private Consts() {}
 
 

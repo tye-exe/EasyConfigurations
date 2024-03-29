@@ -8,14 +8,13 @@ import io.github.tye.easyconfigs.utils.annotations.InternalUse;
 import io.github.tye.easyconfigs.utils.exceptions.MissingInterfaceException;
 import org.jetbrains.annotations.NotNull;
 
-import static io.github.tye.easyconfigs.utils.Consts.configMap;
-import static io.github.tye.easyconfigs.utils.Consts.langMap;
-import static io.github.tye.easyconfigs.utils.Utils.notNull;
+import static io.github.tye.easyconfigs.utils.Consts.*;
+import static io.github.tye.easyconfigs.utils.Utils.*;
 
 /**
  This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
  <br>
- EasyConfigurations provides an easy & simplistic way to implement a highly customizable config & lang system into your java 8+ projects.<br>
+ EasyConfigurations provides an easy &amp; simplistic way to implement a highly customizable config &amp; lang system into your java 8+ projects.<br>
  Read the README.md file on GitHub for more information!
  */
 @ExternalUse
@@ -37,7 +36,7 @@ private static boolean keyInitiated = false;
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
  Only one class can be registered as the config enum. If you try to register a second class, the second class will be discarded.<br>
  <br>
- Configs are used to store data persistently between a program, closing & ro-opening.
+ Configs are used to store data persistently between a program, closing &amp; ro-opening.
  It specializes in storing values that are often uses as settings within programs.
  * @param configEnum The class of your config enum.
  * @param resourcePath The path to the yaml file within the resource folder that contains the config values.
@@ -60,7 +59,7 @@ public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String 
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
  Only one class can be registered as the lang enum. If you try to register a second class, the second class will be discarded.<br>
  <br>
- Lang is used to provide the user with a standardized response based upon the language of the program & variables at runtime.
+ Lang is used to provide the user with a standardized response based upon the language of the program &amp; variables at runtime.
  * @param langEnum The class of your lang enum.
  * @param resourcePath The path to the yaml file within the resource folder that contains the lang values.
  * @throws MissingInterfaceException If the given class doesn't implement {@link LangInstance}.
@@ -113,8 +112,8 @@ private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Clas
 }
 
 /**
- Sets the strings of text that appear at the start & at the end of a key within a lang response.<br>
- By default, the keyStart is "{" & the keyEnd is "}".
+ Sets the strings of text that appear at the start &amp; at the end of a key within a lang response.<br>
+ By default, the keyStart is "{" &amp; the keyEnd is "}".
  * @param keyStart The string sequence that indicated the start of a key.
  * @param keyEnd The string sequence that indicated the end of a key.
  */

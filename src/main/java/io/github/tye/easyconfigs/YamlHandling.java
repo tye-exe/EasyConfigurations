@@ -18,12 +18,12 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- This class is a utility class for EasyConfigurations that handles parsing & formatting internal Yaml files. */
+ This class is a utility class for EasyConfigurations that handles parsing &amp; formatting internal Yaml files. */
 @Utilities
 public final class YamlHandling {
 
 /**
- This class is a utility class & should not be instantiated. */
+ This class is a utility class &amp; should not be instantiated. */
 private YamlHandling() {}
 
 
@@ -114,7 +114,7 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
 
 
 /**
- Parses & formats data from the given inputStream to a Yaml resource.
+ Parses &amp; formats data from the given inputStream to a Yaml resource.
  @param yamlInputStream The given inputStream to a Yaml resource.
  @return The parsed values in the format key: "test1.log" value: "works!"<br>
  Or an empty hashMap if the given inputStream is null.
@@ -209,7 +209,7 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
 /**
  Validates that the values in the given HashMap can be parsed as the value indicated by its corresponding enum.<br>
  If it can be parsed then the value in the given map is replaced with the parsed value.
- * @param mapToFormat The given map, which contains the keys & values to check against the given enum.
+ * @param mapToFormat The given map, which contains the keys &amp; values to check against the given enum.
  * @param internalInstance The given enum to check the given map against.
  * @param resourcePath The path to the internal Yaml file. This is purely used for logging purposes during exceptions.
  * @return The given HashMap with the values parsed into the classes specified by the given enum.

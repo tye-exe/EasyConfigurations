@@ -1,8 +1,8 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
+import io.github.tye.easyconfigs.utils.annotations.NotImplemented;
 import io.github.tye.easyconfigs.BaseInstance;
 import io.github.tye.easyconfigs.utils.annotations.InternalUse;
-import io.github.tye.easyconfigs.utils.annotations.NotImplemented;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

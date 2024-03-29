@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-/**Contains the vars & methods that {@link ConfigInstance} & {@link LangInstance} require.*/
+/**Contains the vars &amp; methods that {@link ConfigInstance} &amp; {@link LangInstance} require.*/
 @SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 @InternalUse
 public interface BaseInstance {

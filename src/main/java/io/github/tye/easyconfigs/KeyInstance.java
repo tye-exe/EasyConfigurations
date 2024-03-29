@@ -27,7 +27,7 @@ default void init(@NotNull String toReplace) {
 }
 
 /**
- Runs #toString() on the object passed into this method & sets this key to be replaced with the value returned from the #toString() method.<br>
+ Runs #toString() on the object passed into this method &amp; sets this key to be replaced with the value returned from the #toString() method.<br>
  In the case that the object pass into this method doesn't override {@link Object#toString()} then the name of the object class is used instead.
  * @param object The object to get the string value of.
  * @return The modified key object.
@@ -47,7 +47,7 @@ default @NotNull KeyInstance replaceWith(@NotNull Object object) {
 }
 
 /**
- * @return The key value (with starting & ending markers included) that should be replaced.
+ * @return The key value (with starting &amp; ending markers included) that should be replaced.
  */
 @InternalUse
 default @NotNull String getReplacementValue() {
