@@ -261,7 +261,6 @@ to & from a string.
   will still be used for fallback purposes).
 - Adding support for parsing binary strings from config files to allow for data serialization.
 - Adding example code.
-- Adding tests to ensure I can actually code properly.
 - More? Open an issue if you have a suggestion!
 
 ___
