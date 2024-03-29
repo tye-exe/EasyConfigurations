@@ -1,6 +1,6 @@
 package io.github.tye.tests.instancesTests.parseYamlTest;
 
-import io.github.tye.easyconfigs.LangInstance;
+import io.github.tye.easyconfigs.instances.LangInstance;
 
 public enum Lang_General implements LangInstance {
   lyrics_never("lyrics.never"),

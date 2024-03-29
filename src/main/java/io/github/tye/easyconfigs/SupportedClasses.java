@@ -1,23 +1,22 @@
 package io.github.tye.easyconfigs;
 
+import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.exceptions.NotSupportedException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
-import io.github.tye.easyconfigs.utils.annotations.InternalUse;
-import io.github.tye.easyconfigs.utils.exceptions.NotOfClassException;
-import io.github.tye.easyconfigs.utils.exceptions.NotSupportedException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.tye.easyconfigs.utils.ArrayManipulation.toList;
-
 /**
  This enum contains an entry for each class EasyConfigurations can parse.<br>
- Trying to parse the value of an object from a string is a nightmare, since each class implements parsing slightly differently.
+ If an unsupported class is given, it will still be parsed. However, EasyConfigurations won't be able to perform any validation on the supplied value.
  */
 @InternalUse
 public enum SupportedClasses {
@@ -51,6 +50,7 @@ public enum SupportedClasses {
 /**
  Contains the class values for classes represented by this enum.
  */
+@InternalUse
 private final @NotNull Class<?>[] classes;
 
 /**
@@ -74,6 +74,8 @@ public @NotNull Class<?>[] getClasses() {
 /**
  * @return True is the enum represents a form of array. False otherwise.
  */
+@Contract(pure = true)
+@InternalUse
 public boolean representsArray() {
   return getClasses()[0].isArray();
 }
@@ -85,6 +87,8 @@ public boolean representsArray() {
  * @return True if it can be parsed.<br>
  * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
  */
+@Contract(pure = true)
+@InternalUse
 public boolean canParse(@NotNull Object rawValue) {
   // Parsing is handled differently for array & non-array values.
   if (this.representsArray()) {
@@ -98,7 +102,7 @@ public boolean canParse(@NotNull Object rawValue) {
 
 /**
  If this method is used on an array enum then it will always return false.<br>
- Checks if the class this enum represents can parse the given value as represented class.
+ Checks if the given value can be parsed as the class this enum represents.
  * @param rawValue The given value.
  * @return True if it can be parsed.<br>
  * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
@@ -174,7 +178,7 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
 
 /**
  If this method is used on a non-array enum then it will always return false.<br>
- Checks if the class this enum represents can parse the given value as represented class.
+ Checks if the given value can be parsed as the class this enum represents.
  * @param rawValue The given array or List value.
  * @return True if it can be parsed.<br>
  * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
@@ -275,7 +279,7 @@ public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassExceptio
 
 /**
  If this method is used on an array enum then it will always throw {@link NotOfClassException}.<br>
- Parses the give value to the class specified by this enum.
+ Checks if the given value can be parsed as the class this enum represents.
  * @param rawValue The given value.
  * @return The value as its intended object.
  * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
@@ -340,7 +344,7 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
 
 /**
  If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.<br>
- Parses the give value to the class specified by this enum.
+ Checks if the given value can be parsed as the class this enum represents.
  * @param value The given array or List value.
  * @return The value as its intended object.
  * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
@@ -438,6 +442,7 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
  * @param classToMatch The given class.
  * @return True if the given class is represented. False otherwise.
  */
+@Contract(pure = true)
 @InternalUse
 public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
@@ -456,7 +461,7 @@ public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
  Matches the given class to an enum inside {@link SupportedClasses}.
  * @param classToMatch The given class.
  * @return The enum that represents the given class.
- * @throws NotSupportedException If the given classes doesn't match any supported classes.
+ * @throws NotSupportedException If the given class doesn't match any supported classes.
  */
 @InternalUse
 public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws NotSupportedException {
@@ -472,4 +477,35 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
   throw new NotSupportedException(Lang.classNotSupported(classToMatch.getName()));
 }
 
+
+
+/**
+ Converts the given value to {@literal List<Object>}.
+ @param value The given value. It must be an instance of {@link List} or an array of any type.
+ @return The given value converted to an object list.
+ @throws IllegalArgumentException If the given value isn't a list or an array. */
+@InternalUse
+private static @NotNull List<String> toList(@NotNull Object value) throws IllegalArgumentException {
+  ArrayList<String> stringList;
+
+  // Converts the List or array into an Object list.
+  if (value instanceof List) {
+    List<?> valueList = (List<?>) value;
+    stringList = new ArrayList<>(valueList.size());
+
+    for (Object obj : valueList) {
+      stringList.add(obj.toString());
+    }
+  }
+  else {
+    int length = Array.getLength(value);
+    stringList = new ArrayList<>(length);
+
+    for (int i = 0; i < length; ++i) {
+      stringList.add(Array.get(value, i).toString());
+    }
+  }
+
+  return stringList;
+}
 }

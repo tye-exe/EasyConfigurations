@@ -1,10 +1,11 @@
-package io.github.tye.easyconfigs;
+package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.utils.Consts;
-import io.github.tye.easyconfigs.utils.Utils;
-import io.github.tye.easyconfigs.utils.annotations.ExternalUse;
-import io.github.tye.easyconfigs.utils.annotations.InternalUse;
-import io.github.tye.easyconfigs.utils.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.EasyConfigurations;
+import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.annotations.ExternalUse;
+import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  This interface is designed to be implemented by an enum to define it as an enum containing the different config options for the program implementing this dependency.<br>
  Please reference the
- <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README.md</a>
+ <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README.md</a>
  file on GitHub for "EasyConfigurations" for usage information.
  */
 @SuppressWarnings ({"unused", "unchecked"})
@@ -42,7 +43,7 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
 @Contract(pure = true)
 @InternalUse
 default @NotNull Object getValue() {
-  return Consts.configMap.get(getYamlPath());
+  return EasyConfigurations.configMap.get(getYamlPath());
 }
 
 /**
@@ -52,7 +53,7 @@ default @NotNull Object getValue() {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull String getAsString() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.STRING, this);
+  classCheck(SupportedClasses.STRING, this);
   return (String) getValue();
 }
 
@@ -63,7 +64,7 @@ default @NotNull String getAsString() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default boolean getAsBoolean() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.BOOLEAN, this);
+  classCheck(SupportedClasses.BOOLEAN, this);
   return (boolean) getValue();
 }
 
@@ -74,7 +75,7 @@ default boolean getAsBoolean() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default int getAsInteger() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.INTEGER, this);
+  classCheck(SupportedClasses.INTEGER, this);
   return (int) getValue();
 }
 
@@ -85,7 +86,7 @@ default int getAsInteger() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default double getAsDouble() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.DOUBLE, this);
+  classCheck(SupportedClasses.DOUBLE, this);
   return (double) getValue();
 }
 
@@ -96,7 +97,7 @@ default double getAsDouble() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default float getAsFloat() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.FLOAT, this);
+  classCheck(SupportedClasses.FLOAT, this);
   return (float) getValue();
 }
 
@@ -107,7 +108,7 @@ default float getAsFloat() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default short getAsShort() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.SHORT, this);
+  classCheck(SupportedClasses.SHORT, this);
   return (short) getValue();
 }
 
@@ -118,7 +119,7 @@ default short getAsShort() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default long getAsLong() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.LONG, this);
+  classCheck(SupportedClasses.LONG, this);
   return (long) getValue();
 }
 
@@ -129,7 +130,7 @@ default long getAsLong() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default byte getAsByte() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.BYTE, this);
+  classCheck(SupportedClasses.BYTE, this);
   return (byte) getValue();
 }
 
@@ -140,7 +141,7 @@ default byte getAsByte() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default char getAsChar() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.CHAR, this);
+  classCheck(SupportedClasses.CHAR, this);
   return (char) getValue();
 }
 
@@ -151,7 +152,7 @@ default char getAsChar() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.LOCAL_DATE_TIME, this);
+  classCheck(SupportedClasses.LOCAL_DATE_TIME, this);
   return (LocalDateTime) getValue();
 }
 
@@ -162,7 +163,7 @@ default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.OFFSET_DATE_TIME, this);
+  classCheck(SupportedClasses.OFFSET_DATE_TIME, this);
   return (OffsetDateTime) getValue();
 }
 
@@ -173,7 +174,7 @@ default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException
 @Contract(pure = true)
 @ExternalUse
 default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.ZONED_DATE_TIME, this);
+  classCheck(SupportedClasses.ZONED_DATE_TIME, this);
   return (ZonedDateTime) getValue();
 }
 
@@ -185,7 +186,7 @@ default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<String> getAsStringList() {
-  Utils.classCheck(SupportedClasses.STRING_LIST, this);
+  classCheck(SupportedClasses.STRING_LIST, this);
   return (List<String>) getValue();
 }
 
@@ -196,7 +197,7 @@ default @NotNull List<String> getAsStringList() {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.BOOLEAN_LIST, this);
+  classCheck(SupportedClasses.BOOLEAN_LIST, this);
   return (List<Boolean>) getValue();
 }
 
@@ -207,7 +208,7 @@ default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.INTEGER_LIST, this);
+  classCheck(SupportedClasses.INTEGER_LIST, this);
   return (List<Integer>) getValue();
 }
 
@@ -218,7 +219,7 @@ default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Double> getAsDoubleList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.DOUBLE_LIST, this);
+  classCheck(SupportedClasses.DOUBLE_LIST, this);
   return (List<Double>) getValue();
 }
 
@@ -229,7 +230,7 @@ default @NotNull List<Double> getAsDoubleList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Float> getAsFloatList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.FLOAT_LIST, this);
+  classCheck(SupportedClasses.FLOAT_LIST, this);
   return (List<Float>) getValue();
 }
 
@@ -240,7 +241,7 @@ default @NotNull List<Float> getAsFloatList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Short> getAsShortList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.SHORT_LIST, this);
+  classCheck(SupportedClasses.SHORT_LIST, this);
   return (List<Short>) getValue();
 }
 
@@ -251,7 +252,7 @@ default @NotNull List<Short> getAsShortList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Long> getAsLongList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.LONG_LIST, this);
+  classCheck(SupportedClasses.LONG_LIST, this);
   return (List<Long>) getValue();
 }
 
@@ -262,7 +263,7 @@ default @NotNull List<Long> getAsLongList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Byte> getAsByteList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.BYTE_LIST, this);
+  classCheck(SupportedClasses.BYTE_LIST, this);
   return (List<Byte>) getValue();
 }
 
@@ -273,7 +274,7 @@ default @NotNull List<Byte> getAsByteList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<Character> getAsCharList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.CHAR_LIST, this);
+  classCheck(SupportedClasses.CHAR_LIST, this);
   return (List<Character>) getValue();
 }
 
@@ -284,7 +285,7 @@ default @NotNull List<Character> getAsCharList() throws NotOfClassException {
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.LOCAL_DATE_TIME_LIST, this);
+  classCheck(SupportedClasses.LOCAL_DATE_TIME_LIST, this);
   return (List<LocalDateTime>) getValue();
 }
 
@@ -295,7 +296,7 @@ default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassE
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.OFFSET_DATE_TIME_LIST, this);
+  classCheck(SupportedClasses.OFFSET_DATE_TIME_LIST, this);
   return (List<OffsetDateTime>) getValue();
 }
 
@@ -306,7 +307,34 @@ default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClas
 @Contract(pure = true)
 @ExternalUse
 default @NotNull List<ZonedDateTime> getAsZonedDateTimeList() throws NotOfClassException {
-  Utils.classCheck(SupportedClasses.ZONED_DATE_TIME_LIST, this);
+  classCheck(SupportedClasses.ZONED_DATE_TIME_LIST, this);
   return (List<ZonedDateTime>) getValue();
+}
+
+
+/**
+ Checks if the intendedType matches the actual object type in the map that the instance points to.
+ * @param instance The instance of config or lang to check against.
+ * @param intendedType The {@link SupportedClasses} that the map value should be.
+ * @throws NotOfClassException If the intended type doesn't match the actual type in the map.
+ */
+@InternalUse
+static void classCheck(@NotNull SupportedClasses intendedType, @NotNull BaseInstance instance) throws NotOfClassException {
+  StringBuilder classNames = new StringBuilder();
+
+  for (Class<?> clazz : intendedType.getClasses()) {
+    if (instance.getMarkedClass().equals(clazz)) return;
+
+    // Not all classes have canonical names
+    if (clazz.getCanonicalName() != null) {
+      classNames.append(clazz.getCanonicalName());
+    } else {
+      classNames.append(clazz.getName());
+    }
+
+    classNames.append(" ");
+  }
+
+  throw new NotOfClassException(Lang.notOfClass(instance.getYamlPath(), classNames.toString()));
 }
 }

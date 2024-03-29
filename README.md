@@ -35,7 +35,7 @@ ___
 Let's look at a bare-bones implementation for configuration, observe the following code snippet:
 
 ```java
-import io.github.tye.easyconfigs.ConfigInstance;
+import io.github.tye.easyconfigs.instances.ConfigInstance;
 
 public enum Configs implements ConfigInstance {
 
@@ -75,7 +75,7 @@ ___
 A basic implementation of lang would appear as follows:
 
 ```java
-import io.github.tye.easyconfigs.LangInstance;
+import io.github.tye.easyconfigs.instances.LangInstance;
 
 public enum Langs implements LangInstance {
 
@@ -134,7 +134,7 @@ ___
 ### Setting up keys:
 
 ```java
-import io.github.tye.easyconfigs.KeyInstance;
+import io.github.tye.easyconfigs.instances.KeyInstance;
 
 public enum Keys implements KeyInstance {
 
@@ -221,9 +221,6 @@ it is only use elements marked with "@ExternalUse". A more descriptive explanati
 
 - @ExternalUse – These methods are safe to use as you see fit, anywhere & in anyway. This is because these methods
   implement guards to prevent arbitrary values from being passed into places they shouldn't.
-
-- @Utilities – These methods are general utility methods that EasyConfigurations uses. I would advise
-  against using them as consistency between versions is **NOT** guaranteed or taken into consideration.
 
 - @NotImplemented – These methods **SHOULD NOT** be used any circumstances. Either internally or externally as they
   are still being developed.

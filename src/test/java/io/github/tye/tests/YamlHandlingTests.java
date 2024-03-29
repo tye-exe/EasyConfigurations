@@ -1,13 +1,12 @@
 package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.YamlHandling;
-import io.github.tye.easyconfigs.utils.exceptions.DefaultConfigurationException;
-import io.github.tye.easyconfigs.utils.exceptions.NotSupportedException;
-import io.github.tye.easyconfigs.utils.exceptions.YamlParseException;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.NotSupportedException;
+import io.github.tye.easyconfigs.exceptions.YamlParseException;
+import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_Empty;
 import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_General;
 import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_HasNull;
-import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_Empty;
-import io.github.tye.tests.instancesTests.parseYamlTest.*;
 import io.github.tye.tests.instancesTests.parseYamlTest.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

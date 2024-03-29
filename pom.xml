@@ -60,7 +60,7 @@
     <!-- Necessary information for uploading to OSSRH. -->
     <name>Easy Configurations</name>
     <description>Provides a simple, easy, &amp; powerful implementation of lang &amp; configs for java </description>
-    <url>https://github.com/Mapty231/EasyConfigurations</url>
+    <url>https://github.com/tye-exe/EasyConfigurations</url>
 
     <licenses>
         <license>
@@ -73,15 +73,15 @@
         <developer>
             <name>Tye</name>
             <email>tye@mailbox.org</email>
-            <organization>com.github.Mapty231</organization>
-            <organizationUrl>https://github.com/Mapty231</organizationUrl>
+            <organization>com.github.tye-exe</organization>
+            <organizationUrl>https://github.com/tye-exe</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/Mapty231/EasyConfigurations.git</connection>
-        <developerConnection>scm:git:ssh://github.com:Mapty231/EasyConfigurations.git</developerConnection>
-        <url>https://github.com/Mapty231/EasyConfigurations/tree/master</url>
+        <connection>scm:git:git://github.com/tye-exe/EasyConfigurations.git</connection>
+        <developerConnection>scm:git:ssh://github.com:tye-exe/EasyConfigurations.git</developerConnection>
+        <url>https://github.com/tye-exe/EasyConfigurations/tree/master</url>
     </scm>
     <!-- -->
 

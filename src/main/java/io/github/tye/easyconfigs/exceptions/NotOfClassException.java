@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.utils.exceptions;
+package io.github.tye.easyconfigs.exceptions;
 
 /**
  This exception is thrown when you try &amp; retrieve a config as a class it wasn't marked as in the enum.<br>

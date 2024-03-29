@@ -1,6 +1,6 @@
 package io.github.tye.tests.instancesTests.parseYamlTest;
 
-import io.github.tye.easyconfigs.ConfigInstance;
+import io.github.tye.easyconfigs.instances.ConfigInstance;
 
 import java.util.List;
 

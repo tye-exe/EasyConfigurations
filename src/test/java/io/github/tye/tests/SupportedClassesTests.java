@@ -1,9 +1,8 @@
 package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.SupportedClasses;
-import io.github.tye.easyconfigs.utils.ArrayManipulation;
-import io.github.tye.easyconfigs.utils.exceptions.NotOfClassException;
-import io.github.tye.easyconfigs.utils.exceptions.NotSupportedException;
+import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.exceptions.NotSupportedException;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,7 +17,8 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import static io.github.tye.easyconfigs.SupportedClasses.*;
+import static io.github.tye.easyconfigs.SupportedClasses.existsAsEnum;
+import static io.github.tye.easyconfigs.SupportedClasses.getAsEnum;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -43,7 +43,7 @@ void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) {
     assertDoesNotThrow(() -> getAsEnum(clazzToMatch), "Classes that are represented should be parsed.");
     SupportedClasses asEnum = getAsEnum(clazzToMatch);
 
-    boolean isRepresented = ArrayManipulation.arrayContains(asEnum.getClasses(), clazzToMatch);
+    boolean isRepresented = ArrayContains.arrayContains(asEnum.getClasses(), clazzToMatch);
     assertTrue(isRepresented, "The enum should represent the class.");
   }
   else {
@@ -76,7 +76,7 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
 <T> void Enums_can_parse_respective_class(T valueToParse, Class<?> classToParse) {
   SupportedClasses representingEnum = SupportedClasses.getAsEnum(classToParse);
 
-  boolean isSupposedToBeParsed = ArrayManipulation.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
+  boolean isSupposedToBeParsed = ArrayContains.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
   boolean couldBeParsed = representingEnum.canParse(valueToParse);
 
   if (isSupposedToBeParsed) {

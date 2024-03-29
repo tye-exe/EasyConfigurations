@@ -1,15 +1,17 @@
 package io.github.tye.easyconfigs;
 
+import io.github.tye.easyconfigs.annotations.ExternalUse;
+import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.MissingInterfaceException;
+import io.github.tye.easyconfigs.instances.ConfigInstance;
+import io.github.tye.easyconfigs.instances.KeyInstance;
+import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
-import io.github.tye.easyconfigs.utils.Consts;
-import io.github.tye.easyconfigs.utils.annotations.ExternalUse;
-import io.github.tye.easyconfigs.utils.annotations.InternalUse;
-import io.github.tye.easyconfigs.utils.exceptions.MissingInterfaceException;
 import org.jetbrains.annotations.NotNull;
 
-import static io.github.tye.easyconfigs.utils.Consts.*;
-import static io.github.tye.easyconfigs.utils.Utils.*;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
@@ -20,17 +22,19 @@ import static io.github.tye.easyconfigs.utils.Utils.*;
 @ExternalUse
 public class EasyConfigurations {
 
+/**Contains the default logger for EasyConfigurations.*/
+@InternalUse
+public static final @NotNull Logger logger = Logger.getLogger("io.github.tye.easyconfigs.EasyConfigurations");
+
+
+
+/**Stores the parsed config responses.*/
+@InternalUse
+public static @NotNull HashMap<String, Object> configMap = new HashMap<>();
+
 /**Stores if the config enum has already been initiated.*/
 @InternalUse
 private static boolean configInitiated = false;
-
-/**Stores if the config enum has already been initiated.*/
-@InternalUse
-private static boolean langInitiated = false;
-
-/**Stores if the config enum has already been initiated.*/
-@InternalUse
-private static boolean keyInitiated = false;
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
@@ -46,14 +50,24 @@ private static boolean keyInitiated = false;
 public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String resourcePath) throws MissingInterfaceException {
   if (configInitiated) return;
 
-  notNull(configEnum, "Config enum");
-  notNull(resourcePath, "Resource path");
+  NullCheck.notNull(configEnum, "Config enum");
+  NullCheck.notNull(resourcePath, "Resource path");
 
   if (!doesImplement(configEnum, ConfigInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(configEnum.getName(), ConfigInstance.class.getName()));
 
   configMap = YamlHandling.parseInternalYaml(configEnum, resourcePath);
   configInitiated = true;
 }
+
+
+
+/**Stores the parsed language options.*/
+@InternalUse
+public static @NotNull HashMap<String, Object> langMap = new HashMap<>();
+
+/**Stores if the lang enum has already been initiated.*/
+@InternalUse
+private static boolean langInitiated = false;
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
@@ -68,14 +82,20 @@ public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String 
 public static void registerLang(@NotNull Class<?> langEnum, @NotNull String resourcePath) throws MissingInterfaceException {
   if (langInitiated) return;
 
-  notNull(langEnum, "Lang enum");
-  notNull(resourcePath, "Resource path");
+  NullCheck.notNull(langEnum, "Lang enum");
+  NullCheck.notNull(resourcePath, "Resource path");
 
   if (!doesImplement(langEnum, LangInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
 
   langMap = YamlHandling.parseInternalYaml(langEnum, resourcePath);
   langInitiated = true;
 }
+
+
+
+/**Stores if the key enum has already been initiated.*/
+@InternalUse
+private static boolean keyInitiated = false;
 
 /**
  Registers the given enum as the key enum. Without using this method keys won't work.<br>
@@ -89,12 +109,13 @@ public static void registerLang(@NotNull Class<?> langEnum, @NotNull String reso
 @ExternalUse
 public static void registerKey(@NotNull Class<?> keyEnum) throws MissingInterfaceException {
   if (keyInitiated) return;
-  notNull(keyEnum, "Key enum");
+  NullCheck.notNull(keyEnum, "Key enum");
 
   if (!doesImplement(keyEnum, KeyInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(keyEnum.getName(), KeyInstance.class.getName()));
 
   keyInitiated = true;
 }
+
 
 /**
  * @param givenClazz The given clazz to check.
@@ -111,6 +132,16 @@ private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Clas
   return false;
 }
 
+
+
+
+/**Stores the string that proceeds a key*/
+@InternalUse
+public static @NotNull String keyStart = "{";
+/**Stores the string that terminates a key*/
+@InternalUse
+public static @NotNull String keyEnd = "}";
+
 /**
  Sets the strings of text that appear at the start &amp; at the end of a key within a lang response.<br>
  By default, the keyStart is "{" &amp; the keyEnd is "}".
@@ -119,11 +150,11 @@ private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Clas
  */
 @ExternalUse
 public static void setKeyCharacters(@NotNull String keyStart, @NotNull String keyEnd) {
-  notNull(keyStart, "Starting key string");
-  notNull(keyEnd, "Ending key string");
+  NullCheck.notNull(keyStart, "Starting key string");
+  NullCheck.notNull(keyEnd, "Ending key string");
 
-  Consts.keyStart = keyStart;
-  Consts.keyEnd = keyEnd;
+  EasyConfigurations.keyStart = keyStart;
+  EasyConfigurations.keyEnd = keyEnd;
 }
 
 
@@ -134,7 +165,7 @@ public static void setKeyCharacters(@NotNull String keyStart, @NotNull String ke
  */
 @ExternalUse
 public static void setEasyConfigurationLanguage(@NotNull Config.InternalLanguages language) {
-  notNull(language, "EasyConfigurations language");
+  NullCheck.notNull(language, "EasyConfigurations language");
 
   Config.setLanguage(language);
 }

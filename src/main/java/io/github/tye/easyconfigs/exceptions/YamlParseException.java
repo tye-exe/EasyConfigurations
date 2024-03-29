@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.utils.exceptions;
+package io.github.tye.easyconfigs.exceptions;
 
 /**
  This exception will be thrown if a Yaml file of configs or lang contains a null value. */

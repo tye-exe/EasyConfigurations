@@ -1,6 +1,7 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
-import io.github.tye.easyconfigs.utils.annotations.InternalUse;
+import io.github.tye.easyconfigs.annotations.ExternalUse;
+import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +12,7 @@ public class Config {
 
 /**
  The languages that are supported for logging. */
-@InternalUse
+@ExternalUse
 public enum InternalLanguages {
   ENGLISH()
 }
@@ -32,7 +33,8 @@ public static @NotNull InternalLanguages getLanguage() {
 }
 
 /**
- Sets the current language being used for logging. English is the default.
+ Sets the current language being used for logging. English is the default.<br>
+ See {@link InternalLanguages} for available languages.
  @param lang Which language to use for logging. */
 @InternalUse
 public static void setLanguage(@NotNull InternalLanguages lang) {

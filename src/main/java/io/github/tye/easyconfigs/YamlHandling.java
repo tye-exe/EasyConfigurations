@@ -1,11 +1,10 @@
 package io.github.tye.easyconfigs;
 
+import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.YamlParseException;
+import io.github.tye.easyconfigs.instances.BaseInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
-import io.github.tye.easyconfigs.utils.Consts;
-import io.github.tye.easyconfigs.utils.Utils;
-import io.github.tye.easyconfigs.utils.annotations.Utilities;
-import io.github.tye.easyconfigs.utils.exceptions.DefaultConfigurationException;
-import io.github.tye.easyconfigs.utils.exceptions.YamlParseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,8 +18,8 @@ import java.util.logging.Level;
 
 /**
  This class is a utility class for EasyConfigurations that handles parsing &amp; formatting internal Yaml files. */
-@Utilities
-public final class YamlHandling {
+@InternalUse
+public class YamlHandling {
 
 /**
  This class is a utility class &amp; should not be instantiated. */
@@ -33,7 +32,7 @@ private YamlHandling() {}
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
 @Contract (pure=true)
-@Utilities
+@InternalUse
 public static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?, ?> baseMap) {
   // In more words, this method takes the nested sub-maps that snakeYaml returns
   // & converts it into a non-nested HashMap, with the key being the exact key from the Yaml file, but with the ":" removed.
@@ -64,7 +63,7 @@ public static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?,
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
 @Contract (pure=true)
-@Utilities
+@InternalUse
 private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String keyPath, @NotNull Map<?, ?> baseMap) {
   if (!keyPath.isEmpty()) keyPath += ".";
 
@@ -95,9 +94,9 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String
  @throws YamlParseException If there was an error parsing the given Yaml file.
  @throws DefaultConfigurationException If the parsed map doesn't contain a key that is present in the enum. Or if the parsed map contains a value that cannot be parsed as it's intended class.*/
 @Contract (pure=true)
-@Utilities
+@InternalUse
 public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<?> internalInstance, @NotNull String resourcePath) throws YamlParseException, DefaultConfigurationException {
-  try (InputStream resourceInputStream = Utils.class.getResourceAsStream(resourcePath)) {
+  try (InputStream resourceInputStream = EasyConfigurations.class.getResourceAsStream(resourcePath)) {
 
     Objects.requireNonNull(resourceInputStream);
 
@@ -122,7 +121,7 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
  @throws YamlParseException If the parsed yaml contained a null value or key.
  */
 @Contract (pure=true)
-@Utilities
+@InternalUse
 private static @NotNull HashMap<String, Object> parseYaml(@Nullable InputStream yamlInputStream) throws IOException, YamlParseException {
   if (yamlInputStream == null) return new HashMap<>();
 
@@ -162,7 +161,7 @@ private static @NotNull HashMap<String, Object> parseYaml(@Nullable InputStream 
  @param list The list to check recursively.
  @return True if any object was null. */
 @Contract (pure=true)
-@Utilities
+@InternalUse
 private static boolean recursiveListNullCheck(@NotNull List<?> list) {
   for (Object listObject : list) {
     if (listObject == null) return true;
@@ -183,7 +182,7 @@ private static boolean recursiveListNullCheck(@NotNull List<?> list) {
  * @param internalInstance The given internal instance to check.
  * @param resourcePath The path to the Yaml file. This is used purely for logging.
  */
-@Utilities
+@InternalUse
 private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, @NotNull Class<?> internalInstance, @NotNull String resourcePath) {
   // Checks if any default values in the file are missing from the enum.
   for (String yamlPath : mapToCheck.keySet()) {
@@ -201,7 +200,7 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
     // Logs a warning if there's an unused path.
     if (contains) continue;
 
-    Consts.logger.log(Level.WARNING, Lang.unusedYamlPath(yamlPath, resourcePath));
+    EasyConfigurations.logger.log(Level.WARNING, Lang.unusedYamlPath(yamlPath, resourcePath));
   }
 }
 
@@ -216,7 +215,7 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
  * @throws DefaultConfigurationException If the map doesn't contain a key that is present in the enum. Or if the map contains a value that cannot be parsed as it's intended class.
  */
 @Contract()
-@Utilities
+@InternalUse
 private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap<String, Object> mapToFormat, @NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException {
   BaseInstance[] enums = (BaseInstance[]) internalInstance.getEnumConstants();
 

@@ -1,13 +1,13 @@
-package io.github.tye.easyconfigs;
+package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.utils.Consts;
-import io.github.tye.easyconfigs.utils.annotations.ExternalUse;
+import io.github.tye.easyconfigs.EasyConfigurations;
+import io.github.tye.easyconfigs.annotations.ExternalUse;
 import org.jetbrains.annotations.NotNull;
 
 /**
  This interface is designed to be implemented by an enum to define it as an enum containing the different lang options for the program implementing this dependency.<br>
  Please reference the
- <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README.md</a>
+ <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README.md</a>
  file on GitHub for "EasyConfigurations" for usage information.
  */
 @SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
@@ -22,7 +22,7 @@ public interface LangInstance extends BaseInstance {
 @ExternalUse
 default @NotNull String get(KeyInstance... keys) {
 
-  String response = Consts.langMap.get(getYamlPath()).toString();
+  String response = EasyConfigurations.langMap.get(getYamlPath()).toString();
 
   // Replaces the keys within the response with their set replace value.
   for (KeyInstance registeredKey : keys) {

@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.utils.annotations;
+package io.github.tye.easyconfigs.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

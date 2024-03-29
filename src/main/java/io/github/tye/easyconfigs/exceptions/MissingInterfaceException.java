@@ -1,8 +1,8 @@
-package io.github.tye.easyconfigs.utils.exceptions;
+package io.github.tye.easyconfigs.exceptions;
 
-import io.github.tye.easyconfigs.ConfigInstance;
-import io.github.tye.easyconfigs.KeyInstance;
-import io.github.tye.easyconfigs.LangInstance;
+import io.github.tye.easyconfigs.instances.ConfigInstance;
+import io.github.tye.easyconfigs.instances.KeyInstance;
+import io.github.tye.easyconfigs.instances.LangInstance;
 
 /**
  This error is thrown when a class doesn't implement its intended interface (see bellow) is registered as a config/lang/key.

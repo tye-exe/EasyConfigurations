@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.utils.exceptions;
+package io.github.tye.easyconfigs.exceptions;
 
 /**
  The name of this exception is self-explanatory, when it is used no circumstance (that I'm aware of) could lead to it being thrown.<br>

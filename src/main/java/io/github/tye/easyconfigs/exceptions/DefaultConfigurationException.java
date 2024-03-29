@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.utils.exceptions;
+package io.github.tye.easyconfigs.exceptions;
 
 /**
  This error is thrown when there was a mistake within a Yaml file parsed by EasyConfigurations.<br>

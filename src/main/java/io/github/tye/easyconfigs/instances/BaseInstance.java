@@ -1,7 +1,7 @@
-package io.github.tye.easyconfigs;
+package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.utils.Utils;
-import io.github.tye.easyconfigs.utils.annotations.InternalUse;
+import io.github.tye.easyconfigs.NullCheck;
+import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -26,8 +26,8 @@ public interface BaseInstance {
  */
 @InternalUse
 default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
-  Utils.notNull(markedClass, "Instance of class");
-  Utils.notNull(yamlPath, "Yaml path");
+  NullCheck.notNull(markedClass, "Instance of class");
+  NullCheck.notNull(yamlPath, "Yaml path");
 
   this.markedClass.put(this, markedClass);
   this.yamlPath.put(this, yamlPath);
