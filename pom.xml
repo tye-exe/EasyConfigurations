@@ -4,9 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.tye</groupId>
+    <groupId>me.tye.easyconfigs</groupId>
     <artifactId>EasyConfigurations</artifactId>
     <version>0.2</version>
+    <packaging>jar</packaging>
+
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -52,5 +54,35 @@
             </plugin>
         </plugins>
     </build>
+    <!-- -->
+
+
+    <!-- Necessary information for uploading to OSSRH. -->
+    <name>Easy Configurations</name>
+    <description>Provides a simple, easy, &amp; powerful implementation of lang &amp; configs for java </description>
+    <url>https://github.com/Mapty231/EasyConfigurations</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Tye</name>
+            <email>tye@mailbox.org</email>
+            <organization>com.github.Mapty231</organization>
+            <organizationUrl>https://github.com/Mapty231</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Mapty231/EasyConfigurations.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Mapty231/EasyConfigurations.git</developerConnection>
+        <url>https://github.com/Mapty231/EasyConfigurations/tree/master</url>
+    </scm>
+    <!-- -->
 
 </project>
