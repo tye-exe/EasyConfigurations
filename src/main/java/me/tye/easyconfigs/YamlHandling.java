@@ -183,6 +183,7 @@ private static boolean recursiveListNullCheck(@NotNull List<?> list) {
  * @param internalInstance The given internal instance to check.
  * @param resourcePath The path to the Yaml file. This is used purely for logging.
  */
+@Utilities
 private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, @NotNull Class<?> internalInstance, @NotNull String resourcePath) {
   // Checks if any default values in the file are missing from the enum.
   for (String yamlPath : mapToCheck.keySet()) {
