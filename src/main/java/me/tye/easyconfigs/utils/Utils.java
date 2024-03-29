@@ -54,23 +54,22 @@ public static boolean usesDefaultToString(@NotNull Class<?> clazz) {
  */
 @Utilities
 public static void classCheck(@NotNull SupportedClasses intendedType, @NotNull BaseInstance instance) throws NotOfClassException {
-  // Will contain the names of classes that the were given in the case of them not matching the intended class.
-  StringBuilder classes = new StringBuilder();
+  StringBuilder classNames = new StringBuilder();
 
   for (Class<?> clazz : intendedType.getClasses()) {
     if (instance.getMarkedClass().equals(clazz)) return;
 
     // Not all classes have canonical names
     if (clazz.getCanonicalName() != null) {
-      classes.append(clazz.getCanonicalName());
+      classNames.append(clazz.getCanonicalName());
     } else {
-      classes.append(clazz.getName());
+      classNames.append(clazz.getName());
     }
 
-    classes.append(" ");
+    classNames.append(" ");
   }
 
-  throw new NotOfClassException(Lang.notOfClass(instance.getYamlPath(), classes.toString()));
+  throw new NotOfClassException(Lang.notOfClass(instance.getYamlPath(), classNames.toString()));
 }
 
 }

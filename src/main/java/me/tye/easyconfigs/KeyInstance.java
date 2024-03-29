@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import static me.tye.easyconfigs.utils.Utils.notNull;
 import static me.tye.easyconfigs.utils.Utils.usesDefaultToString;
 
+@SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
 public interface KeyInstance {
 
@@ -28,7 +29,7 @@ default void init(@NotNull String toReplace) {
 }
 
 /**
- Runs #toString() on the object passed into this method & sets this key to be replaced with with the value returned from the #toString() method.<br>
+ Runs #toString() on the object passed into this method & sets this key to be replaced with the value returned from the #toString() method.<br>
  In the case that the object pass into this method doesn't override {@link Object#toString()} then the name of the object class is used instead.
  * @param object The object to get the string value of.
  * @return The modified key object.

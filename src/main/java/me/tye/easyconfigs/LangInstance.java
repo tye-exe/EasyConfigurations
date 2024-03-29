@@ -1,18 +1,17 @@
 package me.tye.easyconfigs;
 
-import me.tye.easyconfigs.BaseInstance;
-import me.tye.easyconfigs.KeyInstance;
 import me.tye.easyconfigs.utils.annotations.ExternalUse;
 import org.jetbrains.annotations.NotNull;
 
 import static me.tye.easyconfigs.utils.Consts.langMap;
 
 /**
- This interface is designed to be implemented by an enum to define it as a enum containing the different lang options for the program implementing this dependency.<br>
+ This interface is designed to be implemented by an enum to define it as an enum containing the different lang options for the program implementing this dependency.<br>
  Please reference the
  <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README.md</a>
- file on github for "EasyConfigurations" for usage information.
+ file on GitHub for "EasyConfigurations" for usage information.
  */
+@SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
 public interface LangInstance extends BaseInstance {
 

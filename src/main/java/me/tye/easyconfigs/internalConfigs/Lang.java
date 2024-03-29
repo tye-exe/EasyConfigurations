@@ -9,9 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  Contains the internal lang responses for EasyConfigurations.<br>
- Each method contains a text response which is returned in the configured language.<br>
+ Each method contains a text response that is returned in the configured language.<br>
  Methods that take arguments replace certain parts of the response with the given arguments.
  */
+@SuppressWarnings("SwitchStatementWithTooFewBranches") // More languages might be added in the future.
 @InternalUse
 public class Lang {
 
@@ -124,7 +125,7 @@ public static @NotNull String badYaml() {
 public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull String filePath) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "The yaml path \"" + yamlPath + "\" in \"" +filePath+ "\" is an path that isn't being used by EasyConfigurations.";
+  case ENGLISH: return "The yaml path \"" + yamlPath + "\" in \"" +filePath+ "\" is a path that isn't being used by EasyConfigurations.";
   default: return  "";
 
   }

@@ -15,7 +15,7 @@ import static me.tye.easyconfigs.utils.Utils.*;
  This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
  <br>
  EasyConfigurations provides an easy & simplistic way to implement a highly customizable config & lang system into your java 8+ projects.<br>
- Read the README.md file on github for more information!
+ Read the README.md file on GitHub for more information!
  */
 @ExternalUse
 public class EasyConfigurations {
@@ -37,7 +37,7 @@ private static boolean keyInitiated = false;
  Only one class can be registered as the config enum. If you try to register a second class, the second class will be discarded.<br>
  <br>
  Configs are used to store data persistently between a program, closing & ro-opening.
- It specialises in storing values that are often uses as settings within programs.
+ It specializes in storing values that are often uses as settings within programs.
  * @param configEnum The class of your config enum.
  * @param resourcePath The path to the yaml file within the resource folder that contains the config values.
  * @throws MissingInterfaceException If the given class doesn't implement {@link ConfigInstance}.
@@ -101,6 +101,7 @@ public static void registerKey(@NotNull Class<?> keyEnum) throws MissingInterfac
  * @param givenInterface The given interface to check.
  * @return True if the given clazz implements the given interface.
  */
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Class<?> givenInterface) {
   for (Class<?> implemented : givenClazz.getInterfaces()) {
     if (!implemented.equals(givenInterface)) continue;
@@ -112,7 +113,7 @@ private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Clas
 
 /**
  Sets the strings of text that appear at the start & at the end of a key within a lang response.<br>
- By default the keyStart is "{" & the keyEnd is "}".
+ By default, the keyStart is "{" & the keyEnd is "}".
  * @param keyStart The string sequence that indicated the start of a key.
  * @param keyEnd The string sequence that indicated the end of a key.
  */
@@ -127,7 +128,7 @@ public static void setKeyCharacters(@NotNull String keyStart, @NotNull String ke
 
 
 /**
- Sets the internal language that EasyConfigurations should output it's log messages in.<br>
+ Sets the internal language that EasyConfigurations should output its log messages in.<br>
  A list of languages can be seen at {@link Config.InternalLanguages}.
  * @param language The language that EasyConfigurations should log messages as.
  */

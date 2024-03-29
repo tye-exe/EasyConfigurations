@@ -16,7 +16,7 @@ import java.util.List;
 import static me.tye.easyconfigs.utils.ArrayManipulation.toList;
 
 /**
- This enum contains an entry for each type of class that EasyConfigurations can parse.<br>
+ This enum contains an entry for each class EasyConfigurations can parse.<br>
  Trying to parse the value of an object from a string is a nightmare, since each class implements parsing slightly differently.
  */
 @InternalUse
@@ -80,10 +80,10 @@ public boolean representsArray() {
 
 
 /**
- Checks if the class that this enum represents can parse the given value as represented class.
+ Checks if the class this enum represents can parse the given value as represented class.
  * @param rawValue The given value.
  * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
+ * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
  */
 public boolean canParse(@NotNull Object rawValue) {
   // Parsing is handled differently for array & non-array values.
@@ -98,10 +98,10 @@ public boolean canParse(@NotNull Object rawValue) {
 
 /**
  If this method is used on an array enum then it will always return false.<br>
- Checks if the class that this enum represents can parse the given value as represented class.
+ Checks if the class this enum represents can parse the given value as represented class.
  * @param rawValue The given value.
  * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
+ * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
  */
 @Contract(pure = true)
 @InternalUse
@@ -109,8 +109,8 @@ public boolean canParse(@NotNull Object rawValue) {
 private boolean canParseNonArray(@NotNull Object rawValue) {
   String value = rawValue.toString();
 
-  // Tries to parse the string value of the object in accordance with the enum.
-  // If their is an error parsing, then it's caught & false is returned.
+  // Tries to parse the string value of the object based on the enum.
+  // If there is an error parsing, then it's caught & false is returned.
   // If it parses successfully, then true is returned.
   try {
     switch (this) {
@@ -166,7 +166,7 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
     }
     }
 
-    // If there was an error parsing the value then it isn't a valid value
+    // If there was an error parsing the value then it isn't a valid value.
   } catch (Exception ignore) {}
 
   return false;
@@ -174,10 +174,10 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
 
 /**
  If this method is used on a non-array enum then it will always return false.<br>
- Checks if the class that this enum represents can parse the given value as represented class.
+ Checks if the class this enum represents can parse the given value as represented class.
  * @param rawValue The given array or List value.
  * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one that EasyConfigurations hasn't accounted for.
+ * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
  */
 @Contract(pure = true)
 @InternalUse
@@ -194,7 +194,7 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
 
   boolean couldParseValue = false;
 
-  // Checks that each of the objects within the list can be parsed as it's intended class.
+  // Checks that all the objects within the list can be parsed as their intended class.
   for (String stringValue : value) {
     switch (this) {
 
@@ -251,7 +251,7 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
     if (!couldParseValue) return false;
   }
 
-  // True is returned since to make it to here the parse must have been successful every time.
+  // True is returned since to make it to here parsing must be successful every time.
   return couldParseValue;
 }
 
@@ -261,7 +261,7 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
  Note: {@link #canParse(Object)} should be performed first to check if the object can be parsed.
  * @param rawValue The given value.
  * @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
- * @throws NotOfClassException If the object passed in isn't of a class that this enum represents
+ * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
  */
 @InternalUse
 public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassException {
@@ -278,7 +278,7 @@ public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassExceptio
  Parses the give value to the class specified by this enum.
  * @param rawValue The given value.
  * @return The value as its intended object.
- * @throws NotOfClassException If the object passed in isn't of a class that this enum represents.
+ * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
  */
 @InternalUse
 private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClassException {
@@ -343,7 +343,7 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
  Parses the give value to the class specified by this enum.
  * @param value The given array or List value.
  * @return The value as its intended object.
- * @throws NotOfClassException If the object passed in isn't of a class that this enum represents.
+ * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
  */
 @InternalUse
 private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassException {
@@ -408,7 +408,7 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
       }
     }
 
-    // If the outputList is empty then then given array or list isn't one supported by EasyConfigurations.
+    // If the outputList is empty, then the given array or list isn't one supported by EasyConfigurations.
     if (outputList.isEmpty()) {
       throw new Exception();
     }
@@ -422,7 +422,7 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
     if (e.getClass().equals(NotOfClassException.class)) throw new NotOfClassException(e);
 
     // Tries to get the canonical name of the class, but a canonical name doesn't exist for every class.
-    // So the regular name is used as a fall bac
+    // So the regular name is used as a fallback.
     String className = value.getClass().getCanonicalName();
     if (className == null) {
       className = value.getClass().getName();
@@ -442,7 +442,7 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
 public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
 
-  // Loops over this class to find if any enums support the class to match
+  // Loops over this class to find if any enums support the class to match.
   for (SupportedClasses supportedClass : supportedClasses) {
     for (Class<?> alikeClass : supportedClass.getClasses()) {
       if (classToMatch.equals(alikeClass)) return true;
@@ -462,7 +462,7 @@ public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
 public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws NotSupportedException {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
 
-  // Loops over this class to find if any enums support the class to match
+  // Loops over this class to find if any enums support the class to match.
   for (SupportedClasses supportedClass : supportedClasses) {
     for (Class<?> alikeClass : supportedClass.getClasses()) {
       if (classToMatch.equals(alikeClass)) return supportedClass;

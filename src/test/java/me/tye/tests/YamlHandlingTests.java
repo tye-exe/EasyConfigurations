@@ -136,8 +136,8 @@ private static Stream<Arguments> instance_provider() {
     assertDoesNotThrow(() -> parseInternalYaml(configInstance, yamlPath), "The yaml file should be parsed successfully.");
   }
   else {
-    assertNotNull(expectedException, "If a parse is expect to thrown an exception the exact exception class should be supplied.");
-    assertThrowsExactly(expectedException, () -> parseInternalYaml(configInstance, yamlPath), "The yaml file should thrown an error when parsed.");
+    assertNotNull(expectedException, "If a parse is expected to throw an exception the exact exception class should be supplied.");
+    assertThrowsExactly(expectedException, () -> parseInternalYaml(configInstance, yamlPath), "The yaml file should have thrown an error when parsed.");
   }
 }
 

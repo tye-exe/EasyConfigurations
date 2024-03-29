@@ -13,7 +13,7 @@ public class Config {
  The languages that are supported for logging. */
 @InternalUse
 public enum InternalLanguages {
-  ENGLISH();
+  ENGLISH()
 }
 
 

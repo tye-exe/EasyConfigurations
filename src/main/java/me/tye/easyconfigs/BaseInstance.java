@@ -8,18 +8,17 @@ import java.util.HashMap;
 import static me.tye.easyconfigs.utils.Utils.notNull;
 
 /**Contains the vars & methods that {@link ConfigInstance} & {@link LangInstance} require.*/
+@SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 @InternalUse
 public interface BaseInstance {
 
-/**The class that the object stored in the Yaml should be parsed as.*/
+/**The class the object stored in the Yaml should be parsed as.*/
 @InternalUse
-@NotNull
-static HashMap<BaseInstance, Class<?>> markedClass = new HashMap<>();
+@NotNull HashMap<BaseInstance, Class<?>> markedClass = new HashMap<>();
 
 /**The path to parse the object from in the Yaml.*/
 @InternalUse
-@NotNull
-static HashMap<BaseInstance, String> yamlPath = new HashMap<>();
+@NotNull HashMap<BaseInstance, String> yamlPath = new HashMap<>();
 
 /**
  Creates a new instance of a config or lang enum.

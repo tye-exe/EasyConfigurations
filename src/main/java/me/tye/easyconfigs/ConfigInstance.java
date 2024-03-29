@@ -16,12 +16,14 @@ import static me.tye.easyconfigs.SupportedClasses.*;
 import static me.tye.easyconfigs.utils.Utils.classCheck;
 
 /**
- This interface is designed to be implemented by an enum to define it as a enum containing the different config options for the program implementing this dependency.<br>
+ This interface is designed to be implemented by an enum to define it as an enum containing the different config options for the program implementing this dependency.<br>
  Please reference the
  <a href="https://github.com/Mapty231/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README.md</a>
- file on github for "EasyConfigurations" for usage information.
+ file on GitHub for "EasyConfigurations" for usage information.
  */
-@SuppressWarnings ("unchecked") // Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCHeck() preceding the cast & at config initiation.
+@SuppressWarnings ({"unused", "unchecked"})
+// Unchecked – These methods are intended for use projects using Easy Configurations as a dependency.
+// Unused – Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCheck() preceding the cast & at config initiation.
 @ExternalUse
 public interface ConfigInstance extends BaseInstance {
 
@@ -69,7 +71,7 @@ default boolean getAsBoolean() throws NotOfClassException {
 
 /**
  * @return Gets a {@link Integer} config response.
- * @throws NotOfClassException If the selected config isn't a Integer value.
+ * @throws NotOfClassException If the selected config isn't an Integer value.
  */
 @Contract(pure = true)
 @ExternalUse
@@ -290,7 +292,7 @@ default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassE
 
 /**
  * @return Gets a {@link OffsetDateTime} list config response.
- * @throws NotOfClassException If the selected config isn't a offset date time list.
+ * @throws NotOfClassException If the selected config isn't an offset date time list.
  */
 @Contract(pure = true)
 @ExternalUse

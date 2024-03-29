@@ -208,7 +208,7 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
 /**
  Validates that the values in the given HashMap can be parsed as the value indicated by its corresponding enum.<br>
  If it can be parsed then the value in the given map is replaced with the parsed value.
- * @param mapToFormat The given map which contains the keys & values to check against the given enum.
+ * @param mapToFormat The given map, which contains the keys & values to check against the given enum.
  * @param internalInstance The given enum to check the given map against.
  * @param resourcePath The path to the internal Yaml file. This is purely used for logging purposes during exceptions.
  * @return The given HashMap with the values parsed into the classes specified by the given enum.
@@ -227,7 +227,7 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
       throw new DefaultConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
     }
 
-    // Checks if the value can be parsed as its intended class
+    // Checks if the value can be parsed as its intended class.
     Object rawValue = mapToFormat.get(keyPath);
     SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getMarkedClass());
 

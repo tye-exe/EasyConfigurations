@@ -27,7 +27,7 @@ EasyConfigurations is built on top of java enums, this eliminates the possibilit
 The language format allows for the replacement of key-values (customizable) with the string representation of any lang response.
 
 On start up the code performs validation checks on the language & config files to ensure that every enum registered is present in the
-default files & that it can parsed as the chosen object.
+default files & that it can be parsed as the chosen object.
 
 
 ___
@@ -59,14 +59,14 @@ classes. The created config constructor has three requirements:
 - The second argument must be a String. It can have any argument name.
 - The constructor must call `init(Class<?>, String)` at some point.
 
-The first argument of the constructor is the class that the object should be parsed as. This allows
+The first argument of the constructor is the class the object should be parsed as. This allows
 EasyConfigurations to ensure that the object can be parsed from the internal Yaml as its intended class. This is
 checked on program initialization by EasyConfigurations & if the value can't be parsed as the given object a runtime
 exception is thrown at runtime initialization. This is a benefit as it means that the config values can always be
 parsed.
 
 Several classes are supported by EasyConfigurations to be used as the marked class. The list can be seen
-[here](#supported-parsing-classes). You are able to mark a config as a class that isn't listed. However, this means
+[here](#supported-parsing-classes). You can mark a config as a class that isn't listed. However, this means
 that EasyConfigurations **will not** be able to validate the config value on initialization.
 
 ___
@@ -157,7 +157,7 @@ However, the default key markers can be changed to any string sequence
 ([example](#registering-the-created-configurations)).
 
 For example take this theoretical lang response. `Welcome {user}!`. Using a key we could change `{user}` to any
-string value, such as a persons username. This would modify the lang response to become `Welcome taffy!`. 
+string value, such as a persons' username. This would modify the lang response to become `Welcome taffy!`. 
 
 However, there are a few things to keep in mind when using keys:
 - You **should not** replace one key with another key. This is **not** supported.
@@ -167,7 +167,7 @@ However, there are a few things to keep in mind when using keys:
 
 ___
 ### Registering the created configurations:
-Before being able to use any lang or configs, you'd first need to register them. This is very simple:
+Before being able to use any lang or configs, you'd first need to register them. This is simple:
 
 ```java
 import me.tye.easyconfigs.EasyConfigurations;
@@ -201,7 +201,7 @@ to the location of the yaml files starting from the resource folder within the j
 parameter is needed.
 
 The method `setEasyConfigurationLanguage()` changes the internal language that EasyConfigurations logs in. It will
-default to English if it's not set. At the time of writing only English is available.
+default to English if it's not set. At the time of writing, only English is available.
 
 The method `setKeyCharacters()` changes what strings surround a key within the lang yaml file. Using the default
 value, ("{" to open a key, "}" to close a key) an example yaml entry would look like `welcome: "Welcome {user}!`.
@@ -216,16 +216,16 @@ ___
 Every method within EasyConfigurations is annotated with one of four annotations. If you hate reading the short of
 it is only use elements marked with "@ExternalUse". A more descriptive explanation will follow:
 
-- @InternalUse - These methods should only be used within the EasyConfigurations project & not outside of it. As
+- @InternalUse – These methods should only be used within the EasyConfigurations project & not outside of it. As
   doing so could have unforeseen effects.
 
-- @ExternalUse - These methods are safe to use as you see fit, any where & in anyway. This is because these methods
+- @ExternalUse – These methods are safe to use as you see fit, anywhere & in anyway. This is because these methods
   implement guards to prevent arbitrary values from being passed into places they shouldn't.
 
-- @Utilities - These methods are general utility methods that EasyConfigurations make use of. I would advise
+- @Utilities – These methods are general utility methods that EasyConfigurations uses. I would advise
   against using them as consistency between versions is **NOT** guaranteed or taken into consideration.
 
-- @NotImplemented - These methods **SHOULD NOT** be used any circumstances. Either internally or externally as they
+- @NotImplemented – These methods **SHOULD NOT** be used any circumstances. Either internally or externally as they
   are still being developed.
 
 ___
@@ -246,11 +246,11 @@ Several classes are supported by EasyConfigurations to mark/retrieve a configs e
 - LocalDateTime.class
 - OffsetDateTime.class
 - ZonedDateTime.class
-- All of the above as an array (e.g String[].class)
+- All the above as an array (e.g. String[].class)
 
-You can still mark a config as a class that isn't on this list. However, EasyConfigurations won't be able to perform
-any validation checks on the correlating value. This could lead to unforeseen issues later on during the program.  
-If you need to use a class that is not on this list then I'd currently recommended implementing a method to parse it
+You can still mark a config as a class that isn’t on this list. However, EasyConfigurations won't be able to perform
+any validation checks on the correlating value. This could lead to unforeseen issues later during the program.  
+If you need to use a class that is not on this list then I’d recommended implementing a method to parse it
 to & from a string.   
 <br>
 
@@ -258,16 +258,16 @@ to & from a string.
 
 - When there is an invalid Yaml file give the text on the invalid line & the line number of the invalid line.
 - Create option to copy config / lang files to an external location to allow for user customization. (Internal ones
-  will still be used for fallback).
+  will still be used for fallback purposes).
 - Adding support for parsing binary strings from config files to allow for data serialization.
 - Adding example code.
-- Adding tests to ensure i can actually code properly.
+- Adding tests to ensure I can actually code properly.
 - More? Open an issue if you have a suggestion!
 
 ___
 ### TLDR:
 
 - Only use methods/classes annotated with "@ExternalUse".
-- When creating an enum class for Configs, Keys, or Lang always implement it's respective interface. 
+- When creating an enum class for Configs, Keys or, Lang always implement its respective interface. 
   (`ConfigInstance`, `LangInstance`, `KeyInstance`).
 - The constructors in any of the enums must always call the "init" method provided by the interface.
