@@ -1,11 +1,11 @@
 package io.github.tye.easyconfigs.utils;
 
+import io.github.tye.easyconfigs.BaseInstance;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.utils.annotations.Utilities;
 import io.github.tye.easyconfigs.utils.exceptions.NeverThrownExceptions;
 import io.github.tye.easyconfigs.utils.exceptions.NotOfClassException;
-import io.github.tye.easyconfigs.BaseInstance;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -8,8 +8,9 @@ import io.github.tye.easyconfigs.utils.annotations.InternalUse;
 import io.github.tye.easyconfigs.utils.exceptions.MissingInterfaceException;
 import org.jetbrains.annotations.NotNull;
 
-import static io.github.tye.easyconfigs.utils.Consts.*;
-import static io.github.tye.easyconfigs.utils.Utils.*;
+import static io.github.tye.easyconfigs.utils.Consts.configMap;
+import static io.github.tye.easyconfigs.utils.Consts.langMap;
+import static io.github.tye.easyconfigs.utils.Utils.notNull;
 
 /**
  This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
