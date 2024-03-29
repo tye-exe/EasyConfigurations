@@ -16,6 +16,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class UtilsTest {
 
 
+@SuppressWarnings("DataFlowIssue") // The test is supposed to check for this issue.
 @Test
 void notNull() {
   assertThrowsExactly(NullPointerException.class, () -> Utils.notNull(null ,"null"), "Null should throw Null pointer exception");
