@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Contains a method to check if a given object is null & construct a NullPointerException if it is null. */
+ Contains a method to check if a given object is null &amp; constructs a NullPointerException if it is null. */
 public class NullCheck {
 
 /**
