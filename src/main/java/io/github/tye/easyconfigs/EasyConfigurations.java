@@ -2,6 +2,7 @@ package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.MissingInterfaceException;
 import io.github.tye.easyconfigs.instances.ConfigInstance;
 import io.github.tye.easyconfigs.instances.KeyInstance;
@@ -49,9 +50,10 @@ private static boolean configInitiated = false;
  @param configEnum   The class of your config enum.
  @param resourcePath The path to the yaml file within the resource folder that contains the config values.
  @throws MissingInterfaceException If the given class doesn't implement {@link ConfigInstance}.
- @throws FileNotFoundException     If the file at the given resourcePath doesn't exist. */
+ @throws FileNotFoundException     If the file at the given resourcePath doesn't exist.
+ @throws DefaultConfigurationException If the yaml file doesn't conform to config enum.*/
 @ExternalUse
-public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException {
+public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
   if (configInitiated) return;
 
   NullCheck.notNull(configEnum, "Config enum");
@@ -82,9 +84,10 @@ private static boolean langInitiated = false;
  @param langEnum     The class of your lang enum.
  @param resourcePath The path to the yaml file within the resource folder that contains the lang values.
  @throws MissingInterfaceException If the given class doesn't implement {@link LangInstance}.
- @throws FileNotFoundException     If the file at the given resourcePath doesn't exist. */
+ @throws FileNotFoundException     If the file at the given resourcePath doesn't exist.
+ @throws DefaultConfigurationException If the yaml file doesn't conform to config enum.*/
 @ExternalUse
-public static void registerLang(@NotNull Class<?> langEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException {
+public static void registerLang(@NotNull Class<?> langEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
   if (langInitiated) return;
 
   NullCheck.notNull(langEnum, "Lang enum");

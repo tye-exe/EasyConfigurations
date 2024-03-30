@@ -36,7 +36,7 @@ void Enums_represents_a_class(SupportedClasses clazz) {
 @Order(1)
 @ParameterizedTest
 @ValueSource(classes={Object.class, double.class, Integer.class, Float[].class, short[].class, Random.class, Inet4Address[].class, LocalDateTime.class})
-void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) {
+void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) throws DefaultConfigurationException {
   boolean exists = existsAsEnum(clazzToMatch);
 
   if (exists) {
@@ -73,7 +73,7 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
 @Order(2)
 @ParameterizedTest
 @MethodSource("Enums_parsing_respective_class_provider")
-<T> void Enums_can_parse_respective_class(T valueToParse, Class<?> classToParse) {
+<T> void Enums_can_parse_respective_class(T valueToParse, Class<?> classToParse) throws DefaultConfigurationException {
   SupportedClasses representingEnum = SupportedClasses.getAsEnum(classToParse);
 
   boolean isSupposedToBeParsed = ArrayContains.arrayContains(representingEnum.getClasses(), valueToParse.getClass());
@@ -90,7 +90,7 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
 @Order(3)
 @ParameterizedTest
 @MethodSource("Enums_parsing_respective_class_provider")
-void Enums_parse_respective_classes_correctly(Object valueToParse, Class<?> classToParse) {
+void Enums_parse_respective_classes_correctly(Object valueToParse, Class<?> classToParse) throws DefaultConfigurationException {
   SupportedClasses representingEnum = SupportedClasses.getAsEnum(classToParse);
   boolean canBeParsed = representingEnum.canParse(valueToParse);
 

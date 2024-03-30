@@ -51,7 +51,7 @@ private static Stream<Arguments> yaml_string_provider() {
 
 @ParameterizedTest
 @MethodSource("yaml_string_provider")
-void parseInternalYamlFormatting(String yamlPath, Class<?> configInstance, HashMap<String, Object> preFormattedValues) throws FileNotFoundException {
+void parseInternalYamlFormatting(String yamlPath, Class<?> configInstance, HashMap<String, Object> preFormattedValues) throws FileNotFoundException, DefaultConfigurationException {
   HashMap<String, Object> parsedYaml = parseInternalYaml(configInstance, yamlPath);
   assertEquals(parsedYaml, preFormattedValues, "Maps should match.");
 }

@@ -147,7 +147,10 @@ private static @NotNull HashMap<String, Object> parseYaml(@NotNull InputStream y
   HashMap<String, Object> yamlData = getKeysRecursive(new Yaml().load(resourceContent));
 
   // Checks that the Map doesn't contain any null values.
-  yamlData.forEach((key, value) -> {
+  for (Map.Entry<String, Object> entry : yamlData.entrySet()) {
+    String key = entry.getKey();
+    Object value = entry.getValue();
+
     if (key == null || value == null) throw new DefaultConfigurationException(Lang.badYaml());
 
     // Checks if an list contains a null value.
@@ -155,7 +158,7 @@ private static @NotNull HashMap<String, Object> parseYaml(@NotNull InputStream y
       boolean result = recursiveListNullCheck((List<?>) value);
       if (result) throw new DefaultConfigurationException(Lang.badYaml());
     }
-  });
+  }
 
   return yamlData;
 }
