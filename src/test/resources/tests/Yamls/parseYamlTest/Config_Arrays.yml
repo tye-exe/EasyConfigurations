@@ -5,6 +5,6 @@ arrayTime:
   - unquoted
 
 
-moreArrays: [3, 2, 1]
+moreArrays: [ 3, 2, 1 ]
 
-booleanArrays: [true, false, true]
+booleanArrays: [ true, false, true ]

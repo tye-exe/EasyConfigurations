@@ -5,20 +5,18 @@ import io.github.tye.easyconfigs.annotations.ExternalUse;
 import org.jetbrains.annotations.NotNull;
 
 /**
- This interface is designed to be implemented by an enum to define it as an enum containing the different lang options for the program implementing this dependency.<br>
+ This interface must be implemented by an enum to define it as an enum containing the different lang options.<br>
  Please reference the
- <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README.md</a>
- file on GitHub for "EasyConfigurations" for usage information.
- */
-@SuppressWarnings ("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
+ <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README</a>
+ file on GitHub for "EasyConfigurations" for usage information. */
+@SuppressWarnings("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
 public interface LangInstance extends BaseInstance {
 
 /**
  Gets the string response for the selected enum.
- * @param keys The keys to modify the response with.
- * @return The modified string.
- */
+ @param keys The keys to modify the response with.
+ @return The modified string. */
 @ExternalUse
 default @NotNull String get(KeyInstance... keys) {
 
@@ -31,7 +29,7 @@ default @NotNull String get(KeyInstance... keys) {
     // Replaces every instance of the found key within the response string.
     while (replacementIndex != -1) {
       String stringStart = response.substring(0, replacementIndex);
-      String stringEnd = response.substring(replacementIndex+registeredKey.getReplacementValue().length());
+      String stringEnd = response.substring(replacementIndex + registeredKey.getReplacementValue().length());
 
       response = stringStart + registeredKey.getReplacementValue() + stringEnd;
 
@@ -44,8 +42,7 @@ default @NotNull String get(KeyInstance... keys) {
 
 /**
  Creates a new instance of a Lang enum.
- * @param yamlPath The key path of the yaml value to parse as the lang.
- */
+ @param yamlPath The key path of the yaml value to parse as the lang. */
 @ExternalUse
 default void init(@NotNull String yamlPath) {
   BaseInstance.super.init(String.class, yamlPath);

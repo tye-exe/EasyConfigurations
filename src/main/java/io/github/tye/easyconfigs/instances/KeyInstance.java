@@ -1,10 +1,10 @@
 package io.github.tye.easyconfigs.instances;
 
+import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.exceptions.NeverThrownExceptions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,16 +36,17 @@ default void init(@NotNull String toReplace) {
  Sets the string value that this key will replace to the string from the given object.<br>
  If the given object isn't a string or doesn't have a string representation then the class name of the object will be used instead.
  @param object The object to get the string value of.
- @return The modified key object. */
+ @return The modified key object.
+ @throws NullPointerException If the given object was null */
 @ExternalUse
-default @NotNull KeyInstance replaceWith(@NotNull Object object) {
+default @NotNull KeyInstance replaceWith(@NotNull Object object) throws NullPointerException {
   NullCheck.notNull(object, "Replacement object");
 
   if (usesDefaultToString(object.getClass())) {
-    this.replaceWith[0] = object.toString();
+    this.replaceWith[0] = ClassName.getName(object.getClass());
   }
   else {
-    this.replaceWith[0] = object.getClass().getName();
+    this.replaceWith[0] = object.toString();
   }
 
   return this;
@@ -61,6 +62,7 @@ default @NotNull String getReplacementValue() {
   return EasyConfigurations.keyStart + this.replaceWith[0] + EasyConfigurations.keyEnd;
 }
 
+
 /**
  Checks if the given class has overridden the default {@link Object#toString() #toString()} method provided by Object.
  @param clazz The given class to check.
@@ -71,8 +73,9 @@ static boolean usesDefaultToString(@NotNull Class<?> clazz) {
   try {
     return clazz.getMethod("toString").getDeclaringClass() == Object.class;
   }
+  // This error should never be thrown, as all classes extend the Object class, which implements the "toString" method.
   catch (NoSuchMethodException e) {
-    throw new NeverThrownExceptions(e);
+    throw new RuntimeException(e);
   }
 }
 }

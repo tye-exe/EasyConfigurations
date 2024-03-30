@@ -1,8 +1,8 @@
 package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
-import io.github.tye.easyconfigs.exceptions.NotSupportedException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +16,7 @@ import java.util.List;
 
 /**
  This enum contains an entry for each class EasyConfigurations can parse.<br>
- If an unsupported class is given, it will still be parsed. However, EasyConfigurations won't be able to perform any validation on the supplied value.
- */
+ If an unsupported class is given, an error will be thrown. */
 @InternalUse
 public enum SupportedClasses {
 
@@ -48,33 +47,31 @@ public enum SupportedClasses {
   ZONED_DATE_TIME_LIST(ZonedDateTime[].class);
 
 /**
- Contains the class values for classes represented by this enum.
- */
+ Contains the class values for classes represented by this enum. */
 @InternalUse
 private final @NotNull Class<?>[] classes;
 
 /**
  Creates an enum that represents the given classes.
- * @param classes The given classes.
- */
+ @param classes The given classes. */
 @InternalUse
 SupportedClasses(@NotNull Class<?>... classes) {
   this.classes = classes;
 }
 
 /**
- * @return The classes that this enum represents.
- */
-@Contract(pure = true)
+ Gets the classes that this enum represents.
+ @return The classes that this enum represents. */
+@Contract(pure=true)
 @InternalUse
 public @NotNull Class<?>[] getClasses() {
   return classes;
 }
 
 /**
- * @return True is the enum represents a form of array. False otherwise.
- */
-@Contract(pure = true)
+ Checks if this enum represents an array.
+ @return True is the enum represents a form of array. False otherwise. */
+@Contract(pure=true)
 @InternalUse
 public boolean representsArray() {
   return getClasses()[0].isArray();
@@ -83,33 +80,31 @@ public boolean representsArray() {
 
 /**
  Checks if the class this enum represents can parse the given value as represented class.
- * @param rawValue The given value.
- * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
- */
-@Contract(pure = true)
+ @param rawValue The given value.
+ @return True if it can be parsed.<br>
+ False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+@Contract(pure=true)
 @InternalUse
 public boolean canParse(@NotNull Object rawValue) {
   // Parsing is handled differently for array & non-array values.
   if (this.representsArray()) {
     return canParseArray(rawValue);
-  } else {
+  }
+  else {
     return canParseNonArray(rawValue);
   }
 }
 
 
-
 /**
  If this method is used on an array enum then it will always return false.<br>
  Checks if the given value can be parsed as the class this enum represents.
- * @param rawValue The given value.
- * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
- */
-@Contract(pure = true)
+ @param rawValue The given value.
+ @return True if it can be parsed.<br>
+ False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+@Contract(pure=true)
 @InternalUse
-@SuppressWarnings ("ResultOfMethodCallIgnored")
+@SuppressWarnings("ResultOfMethodCallIgnored")
 private boolean canParseNonArray(@NotNull Object rawValue) {
   String value = rawValue.toString();
 
@@ -170,8 +165,9 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
     }
     }
 
-    // If there was an error parsing the value then it isn't a valid value.
-  } catch (Exception ignore) {}
+  }
+  // If there was an error parsing the value then it isn't a valid value.
+  catch (Exception ignore) {}
 
   return false;
 }
@@ -179,11 +175,10 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
 /**
  If this method is used on a non-array enum then it will always return false.<br>
  Checks if the given value can be parsed as the class this enum represents.
- * @param rawValue The given array or List value.
- * @return True if it can be parsed.<br>
- * False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for.
- */
-@Contract(pure = true)
+ @param rawValue The given array or List value.
+ @return True if it can be parsed.<br>
+ False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+@Contract(pure=true)
 @InternalUse
 private <T> boolean canParseArray(@NotNull T rawValue) {
   List<String> value;
@@ -192,7 +187,8 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
     value = toList(rawValue);
 
     // If there was an error attempting to parse the input then it wasn't an array or list.
-  } catch (Exception ignore) {
+  }
+  catch (Exception ignore) {
     return false;
   }
 
@@ -263,16 +259,16 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
  Parses the give value to the class specified by this enum.<br>
  <br>
  Note: {@link #canParse(Object)} should be performed first to check if the object can be parsed.
- * @param rawValue The given value.
- * @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
- * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
- */
+ @param rawValue The given value.
+ @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
+ @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
 @InternalUse
 public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassException {
   // Parsing is handled differently for array & non-array values.
   if (this.representsArray()) {
     return parseArray(rawValue);
-  } else {
+  }
+  else {
     return parseNonArray(rawValue);
   }
 }
@@ -280,10 +276,9 @@ public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassExceptio
 /**
  If this method is used on an array enum then it will always throw {@link NotOfClassException}.<br>
  Checks if the given value can be parsed as the class this enum represents.
- * @param rawValue The given value.
- * @return The value as its intended object.
- * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
- */
+ @param rawValue The given value.
+ @return The value as its intended object.
+ @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
 @InternalUse
 private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClassException {
   String value = rawValue.toString();
@@ -301,6 +296,7 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
     case BOOLEAN: {
       if (value.equalsIgnoreCase("true")) return true;
       if (value.equalsIgnoreCase("false")) return false;
+      throw new RuntimeException(); // The boolean value can't be parse so throw an error that will be caught & formatted.
     }
 
     case INTEGER: {
@@ -335,7 +331,8 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
     }
     }
 
-  } catch (RuntimeException e) {
+  }
+  catch (RuntimeException e) {
     throw new NotOfClassException(Lang.notOfClass(value, this.toString()));
   }
 
@@ -345,10 +342,9 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
 /**
  If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.<br>
  Checks if the given value can be parsed as the class this enum represents.
- * @param value The given array or List value.
- * @return The value as its intended object.
- * @throws NotOfClassException If the object passed in isn't of a class this enum represents.
- */
+ @param value The given array or List value.
+ @return The value as its intended object.
+ @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
 @InternalUse
 private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassException {
   try {
@@ -420,18 +416,13 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
     return outputList;
 
     // Catches any exceptions & then formats them.
-  } catch (Exception e) {
+  }
+  catch (Exception e) {
 
     // If it's a NotOfClassException thrown by one of the parse methods then just throw that.
-    if (e.getClass().equals(NotOfClassException.class)) throw new NotOfClassException(e);
+    if (e.getClass().equals(NotOfClassException.class)) throw (NotOfClassException) e;
 
-    // Tries to get the canonical name of the class, but a canonical name doesn't exist for every class.
-    // So the regular name is used as a fallback.
-    String className = value.getClass().getCanonicalName();
-    if (className == null) {
-      className = value.getClass().getName();
-    }
-
+    String className = ClassName.getName(value.getClass());
     throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
   }
 }
@@ -439,10 +430,9 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
 
 /**
  Checks if the given class is represented by any existing enum in {@link SupportedClasses}
- * @param classToMatch The given class.
- * @return True if the given class is represented. False otherwise.
- */
-@Contract(pure = true)
+ @param classToMatch The given class.
+ @return True if the given class is represented. False otherwise. */
+@Contract(pure=true)
 @InternalUse
 public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
@@ -459,12 +449,11 @@ public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
 
 /**
  Matches the given class to an enum inside {@link SupportedClasses}.
- * @param classToMatch The given class.
- * @return The enum that represents the given class.
- * @throws NotSupportedException If the given class doesn't match any supported classes.
- */
+ @param classToMatch The given class.
+ @return The enum that represents the given class.
+ @throws DefaultConfigurationException If the given class doesn't match any supported classes. */
 @InternalUse
-public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws NotSupportedException {
+public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws DefaultConfigurationException {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
 
   // Loops over this class to find if any enums support the class to match.
@@ -474,9 +463,9 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
     }
   }
 
-  throw new NotSupportedException(Lang.classNotSupported(classToMatch.getName()));
+  String className = ClassName.getName(classToMatch);
+  throw new DefaultConfigurationException(Lang.classNotSupported(className));
 }
-
 
 
 /**

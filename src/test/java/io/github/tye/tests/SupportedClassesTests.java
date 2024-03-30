@@ -1,8 +1,8 @@
 package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
-import io.github.tye.easyconfigs.exceptions.NotSupportedException;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,7 +26,7 @@ class SupportedClassesTests {
 
 @Order(0)
 @ParameterizedTest
-@EnumSource(value = SupportedClasses.class)
+@EnumSource(value=SupportedClasses.class)
 void Enums_represents_a_class(SupportedClasses clazz) {
   assertNotNull(clazz.getClasses());
   assertTrue(clazz.getClasses().length > 0, "Enums should represent at least one class.");
@@ -35,7 +35,7 @@ void Enums_represents_a_class(SupportedClasses clazz) {
 
 @Order(1)
 @ParameterizedTest
-@ValueSource(classes = {Object.class, double.class, Integer.class, Float[].class, short[].class, Random.class, Inet4Address[].class, LocalDateTime.class})
+@ValueSource(classes={Object.class, double.class, Integer.class, Float[].class, short[].class, Random.class, Inet4Address[].class, LocalDateTime.class})
 void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) {
   boolean exists = existsAsEnum(clazzToMatch);
 
@@ -47,13 +47,13 @@ void Correct_enum_is_returned_for_class(Class<?> clazzToMatch) {
     assertTrue(isRepresented, "The enum should represent the class.");
   }
   else {
-    assertThrowsExactly(NotSupportedException.class, () -> getAsEnum(clazzToMatch), "Classes that are not represented should throw an exception.");
+    assertThrowsExactly(DefaultConfigurationException.class, () -> getAsEnum(clazzToMatch), "Classes that are not represented should throw an exception.");
   }
 
 
 }
 
-@SuppressWarnings ("UnnecessaryBoxing") // Used to return non-primitive types.
+@SuppressWarnings("UnnecessaryBoxing") // Used to return non-primitive types.
 private static Stream<Arguments> Enums_parsing_respective_class_provider() {
   return Stream.of(
       arguments(20, int.class),
@@ -67,7 +67,7 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
       arguments("wrong data", int[].class),
       arguments(new HashMap<>(), String.class),
       arguments(2134234534L, long[].class)
-  );
+                  );
 }
 
 @Order(2)
@@ -80,8 +80,9 @@ private static Stream<Arguments> Enums_parsing_respective_class_provider() {
   boolean couldBeParsed = representingEnum.canParse(valueToParse);
 
   if (isSupposedToBeParsed) {
-    assertTrue(couldBeParsed,  classToParse.getName() + " class should be able to be parsed.");
-  } else {
+    assertTrue(couldBeParsed, classToParse.getName() + " class should be able to be parsed.");
+  }
+  else {
     assertFalse(couldBeParsed, classToParse.getName() + " class should not be able to be parsed.");
   }
 }
@@ -97,7 +98,7 @@ void Enums_parse_respective_classes_correctly(Object valueToParse, Class<?> clas
     assertDoesNotThrow(() -> representingEnum.parse(valueToParse), "The class should have been parsed.");
   }
   else {
-    assertThrowsExactly(NotOfClassException.class ,() -> representingEnum.parse(valueToParse), "The class should not have been parsed.");
+    assertThrowsExactly(NotOfClassException.class, () -> representingEnum.parse(valueToParse), "The class should not have been parsed.");
   }
 }
 }

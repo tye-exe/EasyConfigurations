@@ -6,8 +6,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ Contains a method to check if a given object is null & construct a NullPointerException if it is null. */
 public class NullCheck {
-
 
 /**
  If the given object is null throws a {@link NullPointerException} with the default lang message.

@@ -13,7 +13,7 @@ public class Config {
 /**
  The languages that are supported for logging. */
 @ExternalUse
-public enum InternalLanguages {
+public enum InternalLoggingLanguages {
   ENGLISH()
 }
 
@@ -21,23 +21,24 @@ public enum InternalLanguages {
 /**
  Stores the current language that is being used for logging. (Defaults to english). */
 @InternalUse
-private static @NotNull InternalLanguages lang = InternalLanguages.ENGLISH;
+private static @NotNull Config.InternalLoggingLanguages lang = InternalLoggingLanguages.ENGLISH;
 
 
 /**
+ Gets the current language being used for logging inside EasyConfigurations.
  @return The current language being used for logging. */
-@Contract (pure=true)
+@Contract(pure=true)
 @InternalUse
-public static @NotNull InternalLanguages getLanguage() {
+public static @NotNull Config.InternalLoggingLanguages getLanguage() {
   return lang;
 }
 
 /**
  Sets the current language being used for logging. English is the default.<br>
- See {@link InternalLanguages} for available languages.
+ See {@link InternalLoggingLanguages} for available languages.
  @param lang Which language to use for logging. */
 @InternalUse
-public static void setLanguage(@NotNull InternalLanguages lang) {
+public static void setLanguage(@NotNull Config.InternalLoggingLanguages lang) {
   Config.lang = lang;
 }
 

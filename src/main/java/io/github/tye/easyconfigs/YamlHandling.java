@@ -2,7 +2,6 @@ package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
-import io.github.tye.easyconfigs.exceptions.YamlParseException;
 import io.github.tye.easyconfigs.instances.BaseInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
@@ -10,10 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -22,16 +25,11 @@ import java.util.logging.Level;
 public class YamlHandling {
 
 /**
- This class is a utility class &amp; should not be instantiated. */
-private YamlHandling() {}
-
-
-/**
  Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the value.<br>
  E.G: key: "example.response" value: "test".
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
-@Contract (pure=true)
+@Contract(pure=true)
 @InternalUse
 private static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?, ?> baseMap) {
   // In more words, this method takes the nested sub-maps that snakeYaml returns
@@ -48,7 +46,8 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?
       Map<?, ?> subMap = (Map<?, ?>) value;
 
       map.putAll(getKeysRecursive(String.valueOf(key), subMap));
-    } else {
+    }
+    else {
       map.put(String.valueOf(key), value);
     }
 
@@ -59,10 +58,10 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?
 
 /**
  Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the value.
- @param keyPath The path to append to the starts of the key. (Should only be called internally).
+ @param keyPath The path to append to the starts of the key. (Should only be called recursively).
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
-@Contract (pure=true)
+@Contract(pure=true)
 @InternalUse
 private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String keyPath, @NotNull Map<?, ?> baseMap) {
   if (!keyPath.isEmpty()) keyPath += ".";
@@ -75,7 +74,8 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String
     if (value instanceof Map<?, ?>) {
       Map<?, ?> subMap = (Map<?, ?>) value;
       map.putAll(getKeysRecursive(keyPath + key, subMap));
-    } else {
+    }
+    else {
       map.put(keyPath + key, value);
     }
 
@@ -87,18 +87,20 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String
 
 /**
  Parses the data from an internal YAML file.
- @param resourcePath The path to the file from /src/main/resource/
+ @param resourcePath     The path to the file from the resource location.
  @param internalInstance The internal enum class to check the parsed yaml against.
- @return The parsed values in the format key: "test1.log" value: "works!" <br>
- Or an empty hashMap if the file couldn't be found or read.
- @throws YamlParseException If there was an error parsing the given Yaml file.
- @throws DefaultConfigurationException If the parsed map doesn't contain a key that is present in the enum. Or if the parsed map contains a value that cannot be parsed as it's intended class.*/
-@Contract (pure=true)
+ @return The parsed values in the format key: "test1.log" value: "works!".
+ @throws DefaultConfigurationException If there was an error parsing the given Yaml file.
+ @throws FileNotFoundException         If the given resource path doesn't lead to a file. */
+@Contract(pure=true)
 @InternalUse
-public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<?> internalInstance, @NotNull String resourcePath) throws YamlParseException, DefaultConfigurationException {
+public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException, FileNotFoundException {
   try (InputStream resourceInputStream = EasyConfigurations.class.getResourceAsStream(resourcePath)) {
 
-    Objects.requireNonNull(resourceInputStream);
+    // Checks if a file exists at the given path.
+    if (resourceInputStream == null) {
+      throw new FileNotFoundException(Lang.internalYamlFail(resourcePath));
+    }
 
     HashMap<String, Object> parsedYaml = parseYaml(resourceInputStream);
 
@@ -106,8 +108,13 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
 
     return processYamlData(parsedYaml, internalInstance, resourcePath);
 
-  } catch (IOException e) {
-    throw new YamlParseException(Lang.internalYamlFail(resourcePath));
+  }
+  catch (IOException e) {
+    if (e.getClass() == FileNotFoundException.class) {
+      throw (FileNotFoundException) e;
+    }
+
+    throw new DefaultConfigurationException(Lang.internalYamlFail(resourcePath));
   }
 }
 
@@ -115,15 +122,12 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
 /**
  Parses &amp; formats data from the given inputStream to a Yaml resource.
  @param yamlInputStream The given inputStream to a Yaml resource.
- @return The parsed values in the format key: "test1.log" value: "works!"<br>
- Or an empty hashMap if the given inputStream is null.
- @throws IOException If the data couldn't be read from the given inputStream.
- @throws YamlParseException If the parsed yaml contained a null value or key.
- */
-@Contract (pure=true)
+ @return The parsed values in the format key: "test1.log" value: "works!"
+ @throws IOException                   If the data couldn't be read from the given inputStream.
+ @throws DefaultConfigurationException If the parsed yaml contained a null value or key. */
+@Contract(pure=true)
 @InternalUse
-private static @NotNull HashMap<String, Object> parseYaml(@Nullable InputStream yamlInputStream) throws IOException, YamlParseException {
-  if (yamlInputStream == null) return new HashMap<>();
+private static @NotNull HashMap<String, Object> parseYaml(@NotNull InputStream yamlInputStream) throws IOException, DefaultConfigurationException {
 
   // Parses content from the resource stream.
   ArrayList<Byte> content = new ArrayList<>();
@@ -144,12 +148,12 @@ private static @NotNull HashMap<String, Object> parseYaml(@Nullable InputStream 
 
   // Checks that the Map doesn't contain any null values.
   yamlData.forEach((key, value) -> {
-    if (key == null || value == null) throw new YamlParseException(Lang.badYaml());
+    if (key == null || value == null) throw new DefaultConfigurationException(Lang.badYaml());
 
     // Checks if an list contains a null value.
     if (value instanceof List) {
       boolean result = recursiveListNullCheck((List<?>) value);
-      if (result) throw new YamlParseException(Lang.badYaml());
+      if (result) throw new DefaultConfigurationException(Lang.badYaml());
     }
   });
 
@@ -160,7 +164,7 @@ private static @NotNull HashMap<String, Object> parseYaml(@Nullable InputStream 
  Recursively checks a list for null values.
  @param list The list to check recursively.
  @return True if any object was null. */
-@Contract (pure=true)
+@Contract(pure=true)
 @InternalUse
 private static boolean recursiveListNullCheck(@NotNull List<?> list) {
   for (Object listObject : list) {
@@ -177,11 +181,10 @@ private static boolean recursiveListNullCheck(@NotNull List<?> list) {
 
 
 /**
- Outputs a warning logger messages if the given map contains keys that aren't used by the given internal instance.
- * @param mapToCheck The given map to check the key values of.
- * @param internalInstance The given internal instance to check.
- * @param resourcePath The path to the Yaml file. This is used purely for logging.
- */
+ Outputs a warning message to the logger if the given map contains keys that aren't used by the given internal instance.
+ @param mapToCheck       The given map to check the key values of.
+ @param internalInstance The given internal instance to check.
+ @param resourcePath     The path to the Yaml file. This is used purely for logging. */
 @InternalUse
 private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, @NotNull Class<?> internalInstance, @NotNull String resourcePath) {
   // Checks if any default values in the file are missing from the enum.
@@ -208,12 +211,11 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
 /**
  Validates that the values in the given HashMap can be parsed as the value indicated by its corresponding enum.<br>
  If it can be parsed then the value in the given map is replaced with the parsed value.
- * @param mapToFormat The given map, which contains the keys &amp; values to check against the given enum.
- * @param internalInstance The given enum to check the given map against.
- * @param resourcePath The path to the internal Yaml file. This is purely used for logging purposes during exceptions.
- * @return The given HashMap with the values parsed into the classes specified by the given enum.
- * @throws DefaultConfigurationException If the map doesn't contain a key that is present in the enum. Or if the map contains a value that cannot be parsed as it's intended class.
- */
+ @param mapToFormat      The given map, which contains the keys &amp; values to check against the given enum.
+ @param internalInstance The given enum to check the given map against.
+ @param resourcePath     The path to the internal Yaml file. This is purely used for logging purposes during exceptions.
+ @return The given HashMap with the values parsed into the classes specified by the given enum.
+ @throws DefaultConfigurationException If the map doesn't contain a key that is present in the enum. Or if the map contains a value that cannot be parsed as it's intended class. */
 @Contract()
 @InternalUse
 private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap<String, Object> mapToFormat, @NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException {
@@ -227,13 +229,19 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
       throw new DefaultConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
     }
 
+    // Checks if the class is one supported by EasyConfigurations.
+    if (!SupportedClasses.existsAsEnum(instanceEnum.getAssingedClass())) {
+      String className = ClassName.getName(instanceEnum.getAssingedClass());
+      throw new DefaultConfigurationException(Lang.classNotSupported(className));
+    }
+
+    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
+
     // Checks if the value can be parsed as its intended class.
     Object rawValue = mapToFormat.get(keyPath);
-    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getMarkedClass());
-
     boolean canParse = enumRepresentation.canParse(rawValue);
     if (!canParse) {
-      throw new DefaultConfigurationException(Lang.notMarkedClass(keyPath, resourcePath, rawValue.getClass(), instanceEnum.getMarkedClass().getName()));
+      throw new DefaultConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), instanceEnum.getAssingedClass().getName()));
     }
 
     // Parses the value as it's intended class & replaces it within that HashMap.
