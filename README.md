@@ -258,6 +258,7 @@ to & from a string.
   will still be used for fallback purposes).
 - Adding support for parsing binary strings from config files to allow for data serialization.
 - Adding example code.
+- Add way to redirect logger output.
 - More? Open an issue if you have a suggestion!
 
 ___
