@@ -33,7 +33,7 @@ private YamlHandling() {}
  @return The formatted Map. */
 @Contract (pure=true)
 @InternalUse
-public static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?, ?> baseMap) {
+private static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?, ?> baseMap) {
   // In more words, this method takes the nested sub-maps that snakeYaml returns
   // & converts it into a non-nested HashMap, with the key being the exact key from the Yaml file, but with the ":" removed.
 
