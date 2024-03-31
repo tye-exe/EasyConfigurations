@@ -20,7 +20,7 @@ import java.util.logging.Logger;
  <br>
  EasyConfigurations provides an easy &amp; simplistic way to implement a highly customizable config &amp; lang system into your java 8+ projects.<br>
  Read the
- <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README</a>
+ <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file">README</a>
  file on GitHub for more information! */
 @ExternalUse
 public class EasyConfigurations {
