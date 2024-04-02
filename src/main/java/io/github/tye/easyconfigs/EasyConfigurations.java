@@ -46,7 +46,7 @@ private static boolean configInitiated = false;
  Only one class can be registered as the config enum. If you try to register a second class, the second class will be discarded.<br>
  <br>
  Configs are used to store data persistently between a program, closing &amp; re-opening.
- It specializes in storing values that are often uses as settings within programs.
+ It specializes in storing values that are often used as settings within programs.
  @param configEnum   The class of your config enum.
  @param resourcePath The path to the yaml file within the resource folder that contains the config values.
  @throws MissingInterfaceException If the given class doesn't implement {@link ConfigInstance}.
