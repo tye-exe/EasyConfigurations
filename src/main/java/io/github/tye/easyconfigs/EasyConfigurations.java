@@ -9,6 +9,7 @@ import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.yamls.YamlHandling;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -81,7 +82,6 @@ public static void registerLang(@NotNull Class<?> langEnum, @NotNull String reso
   NullCheck.notNull(langEnum, "Lang enum");
   NullCheck.notNull(resourcePath, "Resource path");
 
-  if (!doesImplement(langEnum, LangInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
   if (!doesImplement(langEnum, LangInstance.class)) {
     throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
   }
@@ -133,6 +133,19 @@ private static boolean doesImplement(@NotNull Class<?> givenClazz, @NotNull Clas
   }
 
   return false;
+}
+
+
+public static void registerExternalConfig(@NotNull File externalConfigFile) throws FileNotFoundException {
+  // Checks that the file exists & that it is a file.
+  if (externalConfigFile.exists()) {
+    throw new FileNotFoundException(Lang.externalConfigNotFound(externalConfigFile.getPath()));
+  }
+  if (!externalConfigFile.isFile()) {
+    throw new FileNotFoundException(Lang.externalConfigNotFile(externalConfigFile.getPath()));
+  }
+
+  //parseExternalYaml
 }
 
 

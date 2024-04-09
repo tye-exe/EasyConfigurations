@@ -19,10 +19,17 @@ public class Lang {
 /**
  @see Lang */
 @Contract(pure=true)
-@NotImplemented
 @InternalUse
-public static @NotNull String noFile() {
-  return "WIP";
+public static @NotNull String externalConfigNotFound(@NotNull String path) {
+  return "Unable to locate external configuration file at \"" + path + "\".";
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String externalConfigNotFile(@NotNull String path) {
+  return "Item at \"" + path + "\" must be a file.";
 }
 
 /**
@@ -77,7 +84,8 @@ public static @NotNull String notInstantiated(@Nullable String objectName) {
 public static @NotNull String missingInterface(@NotNull String clazzName, @NotNull String interfaceName) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "The class \"" + clazzName + "\" doesn't implement \"" + interfaceName + "\".";
+  case
+      ENGLISH: return "The class \"" + clazzName + "\" doesn't implement \"" + interfaceName + "\".";
   default: return "";
 
   }
@@ -103,7 +111,8 @@ public static @NotNull String invalidKey(@NotNull String key) {
 public static @NotNull String badYaml() {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "Null value parsed from YAML. EasyConfigurations doesn't allow for null objects in lang or configs. (The world \"null\" is valid).";
+  case
+      ENGLISH: return "Null value parsed from YAML. EasyConfigurations doesn't allow for null objects in lang or configs. (The world \"null\" is valid).";
   default: return "";
 
   }
@@ -116,7 +125,8 @@ public static @NotNull String badYaml() {
 public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull String filePath) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "The yaml path \"" + yamlPath + "\" in \"" + filePath + "\" is a path that isn't being used by EasyConfigurations.";
+  case
+      ENGLISH: return "The yaml path \"" + yamlPath + "\" in \"" + filePath + "\" is a path that isn't being used by EasyConfigurations.";
   default: return "";
 
   }
@@ -129,7 +139,8 @@ public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull 
 public static @NotNull String unverifiedClass(@NotNull BaseInstance instance, @NotNull Object value) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "No validation could be performed on \"" + instance.getYamlPath() + ": " + value + "\" as the class \"" + instance.getAssingedClass().getName() + "\" is not part of validation test.";
+  case
+      ENGLISH: return "No validation could be performed on \"" + instance.getYamlPath() + ": " + value + "\" as the class \"" + instance.getAssingedClass().getName() + "\" is not part of validation test.";
   default: return "";
 
   }
@@ -155,7 +166,8 @@ public static @NotNull String notOfClass(@NotNull String value, @NotNull String 
 public static @NotNull String notInDefaultYaml(@NotNull String path, @NotNull String resourcePath) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "\"" + path + "\" isn't in default file \"" + resourcePath + "\"." + " Either add it to the default file or remove it from the internal enum.";
+  case
+      ENGLISH: return "\"" + path + "\" isn't in default file \"" + resourcePath + "\"." + " Either add it to the default file or remove it from the internal enum.";
   default: return "";
 
   }
@@ -168,7 +180,8 @@ public static @NotNull String notInDefaultYaml(@NotNull String path, @NotNull St
 public static @NotNull String notAssignedClass(@NotNull String path, @NotNull String resourcePath, @NotNull Class<?> rawValueClass, @NotNull String clazzName) {
   switch (Config.getLanguage()) {
 
-  case ENGLISH: return "\"" + path + "\" in \"" + resourcePath + "\" is of class \"" + rawValueClass + "\". Therefore, cannot be parsed as given class, \"" + clazzName + "\".";
+  case
+      ENGLISH: return "\"" + path + "\" in \"" + resourcePath + "\" is of class \"" + rawValueClass + "\". Therefore, cannot be parsed as given class, \"" + clazzName + "\".";
   default: return "";
 
   }
@@ -195,6 +208,33 @@ public static @NotNull String classNotSupported(String clazzName) {
   switch (Config.getLanguage()) {
 
   case ENGLISH: return "\"" + clazzName + "\" is not supported.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String noneScalarNode(String key) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "Encountered non-ScalarNode while attempting to retrieve the \"key\". Please report this to the devs.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String errorWhileParsingYaml() {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "An error was thrown when parsing the yaml.";
   default: return "";
 
   }

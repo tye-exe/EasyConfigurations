@@ -1,31 +1,36 @@
-package io.github.tye.easyconfigs;
+package io.github.tye.easyconfigs.yamls;
 
+import io.github.tye.easyconfigs.ClassName;
+import io.github.tye.easyconfigs.Instance;
+import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
+import io.github.tye.easyconfigs.exceptions.BadYamlError;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.instances.BaseInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+
+import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
 /**
- This class is a utility class for EasyConfigurations that handles parsing &amp; formatting internal Yaml files. */
+ This class is a utility class for EasyConfigurations that handles parsing &amp; formatting internal
+ Yaml files. */
 @InternalUse
 public class YamlHandling {
 
 /**
- Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the value.<br>
+ Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the
+ value.<br>
  E.G: key: "example.response" value: "test".
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
@@ -57,7 +62,8 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@Nullable Map<?
 }
 
 /**
- Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the value.
+ Formats the Map returned from Yaml.load() into a hashmap where the exact key corresponds to the
+ value.
  @param keyPath The path to append to the starts of the key. (Should only be called recursively).
  @param baseMap The Map from Yaml.load().
  @return The formatted Map. */
@@ -95,7 +101,7 @@ private static @NotNull HashMap<String, Object> getKeysRecursive(@NotNull String
 @Contract(pure=true)
 @InternalUse
 public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException, FileNotFoundException {
-  try (InputStream resourceInputStream = EasyConfigurations.class.getResourceAsStream(resourcePath)) {
+  try (InputStream resourceInputStream = internalInstance.getResourceAsStream(resourcePath)) {
 
     // Checks if a file exists at the given path.
     if (resourceInputStream == null) {
@@ -103,6 +109,7 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
     }
 
     HashMap<String, Object> parsedYaml = parseYaml(resourceInputStream);
+    resourceInputStream.close();
 
     warnUnusedKeys(parsedYaml, internalInstance, resourcePath);
 
@@ -121,6 +128,8 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
 
 /**
  Parses &amp; formats data from the given inputStream to a Yaml resource.
+ <br>
+ This method does not close the given resource steam.
  @param yamlInputStream The given inputStream to a Yaml resource.
  @return The parsed values in the format key: "test1.log" value: "works!"
  @throws IOException                   If the data couldn't be read from the given inputStream.
@@ -128,23 +137,8 @@ public static @NotNull HashMap<String, Object> parseInternalYaml(@NotNull Class<
 @Contract(pure=true)
 @InternalUse
 private static @NotNull HashMap<String, Object> parseYaml(@NotNull InputStream yamlInputStream) throws IOException, DefaultConfigurationException {
-
-  // Parses content from the resource stream.
-  ArrayList<Byte> content = new ArrayList<>();
-  int currentByte;
-  while ((currentByte = yamlInputStream.read()) != -1) {
-    content.add((byte) currentByte);
-  }
-
-  // Converts it to a primitive byte array.
-  byte[] bytes = new byte[content.size()];
-  for (int i = 0; i < content.size(); i++) {
-    bytes[i] = content.get(i);
-  }
-
   // Loads the Yaml file into a HashMap
-  String resourceContent = new String(bytes, Charset.defaultCharset());
-  HashMap<String, Object> yamlData = getKeysRecursive(new Yaml().load(resourceContent));
+  HashMap<String, Object> yamlData = getKeysRecursive(new Yaml().load(yamlInputStream));
 
   // Checks that the Map doesn't contain any null values.
   for (Map.Entry<String, Object> entry : yamlData.entrySet()) {
@@ -184,7 +178,8 @@ private static boolean recursiveListNullCheck(@NotNull List<?> list) {
 
 
 /**
- Outputs a warning message to the logger if the given map contains keys that aren't used by the given internal instance.
+ Outputs a warning message to the logger if the given map contains keys that aren't used by the given
+ internal instance.
  @param mapToCheck       The given map to check the key values of.
  @param internalInstance The given internal instance to check.
  @param resourcePath     The path to the Yaml file. This is used purely for logging. */
@@ -206,19 +201,24 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
     // Logs a warning if there's an unused path.
     if (contains) continue;
 
-    EasyConfigurations.logger.log(Level.WARNING, Lang.unusedYamlPath(yamlPath, resourcePath));
+    logger.log(LogType.INTERNAL_UNUSED_PATH, Lang.unusedYamlPath(yamlPath, resourcePath));
   }
 }
 
 
 /**
- Validates that the values in the given HashMap can be parsed as the value indicated by its corresponding enum.<br>
+ Validates that the values in the given HashMap can be parsed as the value indicated by its
+ corresponding enum.<br>
  If it can be parsed then the value in the given map is replaced with the parsed value.
- @param mapToFormat      The given map, which contains the keys &amp; values to check against the given enum.
+ @param mapToFormat      The given map, which contains the keys &amp; values to check against the
+ given enum.
  @param internalInstance The given enum to check the given map against.
- @param resourcePath     The path to the internal Yaml file. This is purely used for logging purposes during exceptions.
+ @param resourcePath     The path to the internal Yaml file. This is purely used for logging purposes
+ during exceptions.
  @return The given HashMap with the values parsed into the classes specified by the given enum.
- @throws DefaultConfigurationException If the map doesn't contain a key that is present in the enum. Or if the map contains a value that cannot be parsed as it's intended class. */
+ @throws DefaultConfigurationException If the map doesn't contain a key that is present in the enum.
+ Or if the map contains a value that cannot be parsed as it's
+ intended class. */
 @Contract()
 @InternalUse
 private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap<String, Object> mapToFormat, @NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException {
@@ -254,4 +254,29 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
 
   return mapToFormat;
 }
+
+
+public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull Instance initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlError {
+  if (!initiatedInstance.isInitiated()) throw new NotInitiatedException();
+
+  InputStream internalInputStream = initiatedInstance.getClazz().getResourceAsStream(initiatedInstance.getPath());
+  InputStream externalInputStream = new FileInputStream(externalYamlFile);
+
+  // Checks if a file exists at the given path.
+  if (internalInputStream == null) {
+    throw new FileNotFoundException(Lang.internalYamlFail(initiatedInstance.getPath()));
+  }
+
+
+  YamlParsing internalYaml = new YamlParsing(internalInputStream);
+  YamlParsing externalYaml = new YamlParsing(externalInputStream);
+
+  if (internalYaml.equals(externalYaml)) return initiatedInstance.getMap();
+
+
+  externalYaml.addMissingKeys(internalYaml);
+  return initiatedInstance.getMap();
+}
+
+
 }

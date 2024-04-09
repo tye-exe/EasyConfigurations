@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import static io.github.tye.easyconfigs.YamlHandling.parseInternalYaml;
+import static io.github.tye.easyconfigs.yamls.YamlHandling.parseInternalYaml;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
