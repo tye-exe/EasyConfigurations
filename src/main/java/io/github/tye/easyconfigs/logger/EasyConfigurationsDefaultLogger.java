@@ -18,11 +18,6 @@ public class EasyConfigurationsDefaultLogger implements EasyConfigurationsLogger
 @InternalUse
 public static @NotNull EasyConfigurationsLogger logger = new EasyConfigurationsDefaultLogger();
 
-@ExternalUse
-public static void overrideEasyConfigurationsLogger(EasyConfigurationsLogger customLogger) {
-  logger = customLogger;
-}
-
 
 /**
  Contains the default java logger for EasyConfigurations. */

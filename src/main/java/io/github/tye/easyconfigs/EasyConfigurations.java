@@ -9,6 +9,8 @@ import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger;
+import io.github.tye.easyconfigs.logger.EasyConfigurationsLogger;
 import io.github.tye.easyconfigs.yamls.YamlHandling;
 import org.jetbrains.annotations.NotNull;
 
@@ -183,5 +185,15 @@ public static void setEasyConfigurationLanguage(@NotNull Config.InternalLoggingL
   NullCheck.notNull(language, "EasyConfigurations language");
 
   Config.setLanguage(language);
+}
+
+
+/**
+ Replaces the current EasyConfigurations logger with the given logger.
+ * @param customLogger The given logger to replace the current logger with.
+ */
+@ExternalUse
+public static void overrideEasyConfigurationsLogger(@NotNull EasyConfigurationsLogger customLogger) {
+  EasyConfigurationsDefaultLogger.logger = customLogger;
 }
 }
