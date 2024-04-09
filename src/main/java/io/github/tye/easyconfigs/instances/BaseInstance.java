@@ -14,12 +14,14 @@ public interface BaseInstance {
 /**
  The class the object stored in the Yaml should be parsed as. */
 @InternalUse
-@NotNull HashMap<BaseInstance, Class<?>> assingedClass = new HashMap<>();
+@NotNull
+HashMap<BaseInstance, Class<?>> assignedClass = new HashMap<>();
 
 /**
  The path to parse the object from in the Yaml. */
 @InternalUse
-@NotNull HashMap<BaseInstance, String> yamlPath = new HashMap<>();
+@NotNull
+HashMap<BaseInstance, String> yamlPath = new HashMap<>();
 
 /**
  Creates a new instance of a config or lang enum.
@@ -30,7 +32,7 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
   NullCheck.notNull(markedClass, "Instance of class");
   NullCheck.notNull(yamlPath, "Yaml path");
 
-  this.assingedClass.put(this, markedClass);
+  this.assignedClass.put(this, markedClass);
   this.yamlPath.put(this, yamlPath);
 }
 
@@ -40,7 +42,7 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
  @return The class this instance should be parsed as. */
 @InternalUse
 default Class<?> getAssingedClass() {
-  return BaseInstance.assingedClass.get(this);
+  return BaseInstance.assignedClass.get(this);
 }
 
 /**
