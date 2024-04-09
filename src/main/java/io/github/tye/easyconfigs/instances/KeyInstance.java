@@ -8,7 +8,8 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
+// These methods are intended for use projects using Easy Configurations as a dependency.
+@SuppressWarnings("unused")
 @ExternalUse
 public interface KeyInstance {
 
@@ -25,7 +26,9 @@ String[] replaceWith = new String[1];
 
 /**
  Initiates a KeyInstance.
- @param toReplace The value that should be replaced. The {@link EasyConfigurations#setKeyCharacters(String, String) values set} that define a key <b>must not</b> be included here. */
+ @param toReplace The value that should be replaced. The
+ {@link EasyConfigurations#setKeyCharacters(String, String) values set} that define
+ a key <b>must not</b> be included here. */
 @ExternalUse
 default void init(@NotNull String toReplace) {
   this.toReplace[0] = toReplace;
@@ -34,7 +37,8 @@ default void init(@NotNull String toReplace) {
 
 /**
  Sets the string value that this key will replace to the string from the given object.<br>
- If the given object isn't a string or doesn't have a string representation then the class name of the object will be used instead.
+ If the given object isn't a string or doesn't have a string representation then the class name of
+ the object will be used instead.
  @param object The object to get the string value of.
  @return The modified key object.
  @throws NullPointerException If the given object was null */
@@ -64,7 +68,8 @@ default @NotNull String getReplacementValue() {
 
 
 /**
- Checks if the given class has overridden the default {@link Object#toString() #toString()} method provided by Object.
+ Checks if the given class has overridden the default {@link Object#toString() #toString()} method
+ provided by Object.
  @param clazz The given class to check.
  @return True if the given class uses the default {@link Object#toString()} method. */
 @Contract(pure=true)

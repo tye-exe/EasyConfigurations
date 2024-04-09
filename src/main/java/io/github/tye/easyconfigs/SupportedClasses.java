@@ -82,7 +82,8 @@ public boolean representsArray() {
  Checks if the class this enum represents can parse the given value as represented class.
  @param rawValue The given value.
  @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+ False only if the value cannot be parsed as its intended class or if the value is one
+ EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 public boolean canParse(@NotNull Object rawValue) {
@@ -101,7 +102,8 @@ public boolean canParse(@NotNull Object rawValue) {
  Checks if the given value can be parsed as the class this enum represents.
  @param rawValue The given value.
  @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+ False only if the value cannot be parsed as its intended class or if the value is one
+ EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -177,7 +179,8 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
  Checks if the given value can be parsed as the class this enum represents.
  @param rawValue The given array or List value.
  @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one EasyConfigurations hasn't accounted for. */
+ False only if the value cannot be parsed as its intended class or if the value is one
+ EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 private <T> boolean canParseArray(@NotNull T rawValue) {
@@ -260,7 +263,8 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
  <br>
  Note: {@link #canParse(Object)} should be performed first to check if the object can be parsed.
  @param rawValue The given value.
- @return The value as its intended object. Or just the object if someone (me) forgot to add an enum to this method.
+ @return The value as its intended object. Or just the object if someone (me) forgot to add an enum
+ to this method.
  @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
 @InternalUse
 public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassException {
@@ -340,7 +344,8 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
 }
 
 /**
- If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.<br>
+ If this method is used on a non-array enum then it will always throw
+ {@link NotOfClassException}.<br>
  Checks if the given value can be parsed as the class this enum represents.
  @param value The given array or List value.
  @return The value as its intended object.

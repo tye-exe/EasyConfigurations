@@ -15,9 +15,11 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
- This interface must be implemented by an enum to define it as an enum containing the different config options.<br>
+ This interface must be implemented by an enum to define it as an enum containing the different
+ config options.<br>
  Please reference the
- <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README</a>
+ <a
+ href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README</a>
  file on GitHub for "EasyConfigurations" for usage information. */
 @SuppressWarnings({"unused", "unchecked"})
 // Unchecked – These methods are intended for use projects using Easy Configurations as a dependency.

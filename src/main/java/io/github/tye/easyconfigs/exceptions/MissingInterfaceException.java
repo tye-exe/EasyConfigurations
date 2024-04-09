@@ -7,7 +7,8 @@ import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 
 /**
- This error is thrown when a class doesn't implement its intended interface (see bellow) is registered as a config/lang/key enum.<br>
+ This error is thrown when a class doesn't implement its intended interface (see bellow) is
+ registered as a config/lang/key enum.<br>
  Configs - {@link ConfigInstance}<br>
  Lang - {@link LangInstance}<br>
  keys - {@link KeyInstance} */

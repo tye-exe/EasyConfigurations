@@ -5,11 +5,14 @@ import io.github.tye.easyconfigs.annotations.ExternalUse;
 import org.jetbrains.annotations.NotNull;
 
 /**
- This interface must be implemented by an enum to define it as an enum containing the different lang options.<br>
+ This interface must be implemented by an enum to define it as an enum containing the different lang
+ options.<br>
  Please reference the
- <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README</a>
+ <a
+ href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README</a>
  file on GitHub for "EasyConfigurations" for usage information. */
-@SuppressWarnings("unused") // These methods are intended for use projects using Easy Configurations as a dependency.
+// These methods are intended for use projects using Easy Configurations as a dependency.
+@SuppressWarnings("unused")
 @ExternalUse
 public interface LangInstance extends BaseInstance {
 

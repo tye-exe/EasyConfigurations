@@ -16,9 +16,11 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 /**
- This is the main class for EasyConfigurations. It contains the basic methods that control core elements within EasyConfigurations.<br>
+ This is the main class for EasyConfigurations. It contains the basic methods that control core
+ elements within EasyConfigurations.<br>
  <br>
- EasyConfigurations provides an easy &amp; simplistic way to implement a highly customizable config &amp; lang system into your java 8+ projects.<br>
+ EasyConfigurations provides an easy &amp; simplistic way to implement a highly customizable config
+ &amp; lang system into your java 8+ projects.<br>
  Read the
  <a href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file">README</a>
  file on GitHub for more information! */
@@ -43,15 +45,17 @@ private static boolean configInitiated = false;
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
- Only one class can be registered as the config enum. If you try to register a second class, the second class will be discarded.<br>
+ Only one class can be registered as the config enum. If you try to register a second class, the
+ second class will be discarded.<br>
  <br>
  Configs are used to store data persistently between a program, closing &amp; re-opening.
  It specializes in storing values that are often used as settings within programs.
  @param configEnum   The class of your config enum.
- @param resourcePath The path to the yaml file within the resource folder that contains the config values.
- @throws MissingInterfaceException If the given class doesn't implement {@link ConfigInstance}.
- @throws FileNotFoundException     If the file at the given resourcePath doesn't exist.
- @throws DefaultConfigurationException If the yaml file doesn't conform to config enum.*/
+ @param resourcePath The path to the yaml file within the resource folder that contains the config
+ values.
+ @throws MissingInterfaceException     If the given class doesn't implement {@link ConfigInstance}.
+ @throws FileNotFoundException         If the file at the given resourcePath doesn't exist.
+ @throws DefaultConfigurationException If the yaml file doesn't conform to config enum. */
 @ExternalUse
 public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
   if (configInitiated) return;
@@ -78,14 +82,16 @@ private static boolean langInitiated = false;
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
- Only one class can be registered as the lang enum. If you try to register a second class, the second class will be discarded.<br>
+ Only one class can be registered as the lang enum. If you try to register a second class, the second
+ class will be discarded.<br>
  <br>
  Lang is used to provide the user with a centralized response based upon the variables at runtime.
  @param langEnum     The class of your lang enum.
- @param resourcePath The path to the yaml file within the resource folder that contains the lang values.
- @throws MissingInterfaceException If the given class doesn't implement {@link LangInstance}.
- @throws FileNotFoundException     If the file at the given resourcePath doesn't exist.
- @throws DefaultConfigurationException If the yaml file doesn't conform to config enum.*/
+ @param resourcePath The path to the yaml file within the resource folder that contains the lang
+ values.
+ @throws MissingInterfaceException     If the given class doesn't implement {@link LangInstance}.
+ @throws FileNotFoundException         If the file at the given resourcePath doesn't exist.
+ @throws DefaultConfigurationException If the yaml file doesn't conform to config enum. */
 @ExternalUse
 public static void registerLang(@NotNull Class<?> langEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
   if (langInitiated) return;
@@ -107,7 +113,8 @@ private static boolean keyInitiated = false;
 
 /**
  Registers the given enum as the key enum. Without using this method keys won't work.<br>
- Only one class can be registered as the key enum. If you try to register a second class, the second class will be discarded.<br>
+ Only one class can be registered as the key enum. If you try to register a second class, the second
+ class will be discarded.<br>
  <br>
  Keys are used to replace key sections of a lang response with a variable at runtime.
  This allows for lang responses to contain information that isn't pre-determined.
@@ -150,7 +157,8 @@ public static @NotNull String keyStart = "{";
 public static @NotNull String keyEnd = "}";
 
 /**
- Sets the strings of text that appear at the start &amp; at the end of a key within a lang response.<br>
+ Sets the strings of text that appear at the start &amp; at the end of a key within a lang
+ response.<br>
  By default, the keyStart is "{" &amp; the keyEnd is "}".
  @param keyStart The string sequence that indicated the start of a key.
  @param keyEnd   The string sequence that indicated the end of a key. */
