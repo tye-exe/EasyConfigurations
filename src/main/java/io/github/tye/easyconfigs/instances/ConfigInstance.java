@@ -1,6 +1,5 @@
 package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import io.github.tye.easyconfigs.annotations.InternalUse;
@@ -13,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import static io.github.tye.easyconfigs.EasyConfigurations.configInstance;
 
 /**
  This interface must be implemented by an enum to define it as an enum containing the different
@@ -43,7 +44,7 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
 @Contract(pure=true)
 @InternalUse
 default @NotNull Object getValue() {
-  return EasyConfigurations.configMap.get(getYamlPath());
+  return configInstance.getMap().get(getYamlPath());
 }
 
 /**

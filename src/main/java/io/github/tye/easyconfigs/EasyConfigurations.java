@@ -11,9 +11,8 @@ import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.logging.Logger;
 
 /**
  This is the main class for EasyConfigurations. It contains the basic methods that control core
@@ -27,21 +26,8 @@ import java.util.logging.Logger;
 @ExternalUse
 public class EasyConfigurations {
 
-/**
- Contains the default logger for EasyConfigurations. */
-@InternalUse
-public static final @NotNull Logger logger = Logger.getLogger("io.github.tye.easyconfigs.EasyConfigurations");
 
-
-/**
- Stores the parsed config responses. */
-@InternalUse
-public static @NotNull HashMap<String, Object> configMap = new HashMap<>();
-
-/**
- Stores if the config enum has already been initiated. */
-@InternalUse
-private static boolean configInitiated = false;
+public static Instance configInstance = new Instance();
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
@@ -58,27 +44,23 @@ private static boolean configInitiated = false;
  @throws DefaultConfigurationException If the yaml file doesn't conform to config enum. */
 @ExternalUse
 public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
-  if (configInitiated) return;
+  if (!configInstance.isInitiated()) return;
 
   NullCheck.notNull(configEnum, "Config enum");
   NullCheck.notNull(resourcePath, "Resource path");
 
-  if (!doesImplement(configEnum, ConfigInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(configEnum.getName(), ConfigInstance.class.getName()));
+  if (!doesImplement(configEnum, ConfigInstance.class)) {
+    throw new MissingInterfaceException(Lang.missingInterface(configEnum.getName(), ConfigInstance.class.getName()));
+  }
 
-  configMap = YamlHandling.parseInternalYaml(configEnum, resourcePath);
-  configInitiated = true;
+  configInstance
+      .setMap(YamlHandling.parseInternalYaml(configEnum, resourcePath))
+      .setPath(resourcePath)
+      .setInitiated(true);
 }
 
 
-/**
- Stores the parsed language options. */
-@InternalUse
-public static @NotNull HashMap<String, Object> langMap = new HashMap<>();
-
-/**
- Stores if the lang enum has already been initiated. */
-@InternalUse
-private static boolean langInitiated = false;
+public static Instance langInstance = new Instance();
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
@@ -94,15 +76,20 @@ private static boolean langInitiated = false;
  @throws DefaultConfigurationException If the yaml file doesn't conform to config enum. */
 @ExternalUse
 public static void registerLang(@NotNull Class<?> langEnum, @NotNull String resourcePath) throws MissingInterfaceException, FileNotFoundException, DefaultConfigurationException {
-  if (langInitiated) return;
+  if (!langInstance.isInitiated()) return;
 
   NullCheck.notNull(langEnum, "Lang enum");
   NullCheck.notNull(resourcePath, "Resource path");
 
   if (!doesImplement(langEnum, LangInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
+  if (!doesImplement(langEnum, LangInstance.class)) {
+    throw new MissingInterfaceException(Lang.missingInterface(langEnum.getName(), LangInstance.class.getName()));
+  }
 
-  langMap = YamlHandling.parseInternalYaml(langEnum, resourcePath);
-  langInitiated = true;
+  langInstance
+      .setMap(YamlHandling.parseInternalYaml(langEnum, resourcePath))
+      .setPath(resourcePath)
+      .setInitiated(true);
 }
 
 
@@ -125,7 +112,9 @@ public static void registerKey(@NotNull Class<?> keyEnum) throws MissingInterfac
   if (keyInitiated) return;
   NullCheck.notNull(keyEnum, "Key enum");
 
-  if (!doesImplement(keyEnum, KeyInstance.class)) throw new MissingInterfaceException(Lang.missingInterface(keyEnum.getName(), KeyInstance.class.getName()));
+  if (!doesImplement(keyEnum, KeyInstance.class)) {
+    throw new MissingInterfaceException(Lang.missingInterface(keyEnum.getName(), KeyInstance.class.getName()));
+  }
 
   keyInitiated = true;
 }
