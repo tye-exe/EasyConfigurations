@@ -2,9 +2,9 @@ package io.github.tye.easyconfigs.exceptions;
 
 /**
  This error is thrown when there was an error thrown while parsing a yaml file. */
-public class BadYamlError extends Exception {
+public class BadYamlException extends Exception {
 
-public BadYamlError(String message, Throwable cause) {
+public BadYamlException(String message, Throwable cause) {
   super(message, cause);
 }
 

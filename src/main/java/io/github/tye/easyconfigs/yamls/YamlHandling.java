@@ -4,7 +4,7 @@ import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.Instance;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.exceptions.BadYamlError;
+import io.github.tye.easyconfigs.exceptions.BadYamlException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.instances.BaseInstance;
@@ -256,7 +256,7 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
 }
 
 
-public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull Instance initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlError {
+public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull Instance initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlException {
   if (!initiatedInstance.isInitiated()) throw new NotInitiatedException();
 
   InputStream internalInputStream = initiatedInstance.getClazz().getResourceAsStream(initiatedInstance.getPath());

@@ -1,6 +1,6 @@
 package io.github.tye.easyconfigs.yamls;
 
-import io.github.tye.easyconfigs.exceptions.BadYamlError;
+import io.github.tye.easyconfigs.exceptions.BadYamlException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +53,7 @@ static {
  Takes the given input steam & parses it into a yaml format.
  @param yamlInputStream The input stream containing the data of the yaml.
  @throws IOException If there was an error reading the input stream. */
-public YamlParsing(@NotNull InputStream yamlInputStream) throws IOException, BadYamlError {
+public YamlParsing(@NotNull InputStream yamlInputStream) throws IOException, BadYamlException {
   if (yamlInputStream == null) throw new IOException(Lang.notNull("yamlInputStream"));
 
   // Reads the data from the given input stream & saves it.
@@ -81,7 +81,7 @@ public YamlParsing(@NotNull InputStream yamlInputStream) throws IOException, Bad
     // If there was an error / runtime error parsing the yaml data then format it into an exception.
   }
   catch (Exception e) {
-    throw new BadYamlError(Lang.errorWhileParsingYaml(), e.getCause());
+    throw new BadYamlException(Lang.errorWhileParsingYaml(), e.getCause());
   }
 
   // Gets the keys from the yaml
