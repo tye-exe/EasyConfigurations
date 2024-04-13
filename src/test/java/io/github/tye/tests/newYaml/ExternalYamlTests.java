@@ -1,8 +1,8 @@
 package io.github.tye.tests.newYaml;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
-import io.github.tye.easyconfigs.exceptions.BadYamlError;
-import io.github.tye.easyconfigs.yamls.YamlParsing;
+import io.github.tye.easyconfigs.exceptions.BadYamlException;
+import io.github.tye.easyconfigs.yamls.WriteYaml;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExternalYamlTests {
 
@@ -33,12 +33,32 @@ public void clearInputStream() throws IOException {
 
 
 @Test
-public void addMissingKeys_nodeTest() throws IOException, BadYamlError {
-  YamlParsing fullYaml = new YamlParsing(inputData);
-  YamlParsing missingYaml = new YamlParsing(getResource("/tests/Yamls/externalYamls/missingTests/MissingNode.yml"));
+public void addMissingKeys_nodeTest() throws IOException, BadYamlException {
+  WriteYaml fullYaml = new WriteYaml(inputData);
+  WriteYaml missingYaml = new WriteYaml(getResource("/tests/Yamls/externalYamls/missingTests/MissingNode.yml"));
+
+  // Shouldn't be equal or identical as the yaml is missing a key.
+  assertNotEquals(fullYaml, missingYaml);
+  assertFalse(fullYaml.identical(missingYaml));
 
   missingYaml.addMissingKeys(fullYaml);
 
+  assertEquals(fullYaml, missingYaml);
+  assertTrue(fullYaml.identical(missingYaml));
+}
+
+@Test
+public void addMissingKeys_commentTest() throws IOException, BadYamlException {
+  WriteYaml fullYaml = new WriteYaml(inputData);
+  WriteYaml missingYaml = new WriteYaml(getResource("/tests/Yamls/externalYamls/missingTests/MissingComment.yml"));
+
+  // Will be equal & identical since only a comment is missing
+  assertEquals(fullYaml, missingYaml);
+  assertTrue(fullYaml.identical(missingYaml));
+
+  missingYaml.addMissingKeys(fullYaml);
+
+  assertEquals(fullYaml, missingYaml);
   assertTrue(fullYaml.identical(missingYaml));
 }
 

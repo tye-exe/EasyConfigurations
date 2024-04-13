@@ -268,8 +268,8 @@ public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File e
   }
 
 
-  YamlParsing internalYaml = new YamlParsing(internalInputStream);
-  YamlParsing externalYaml = new YamlParsing(externalInputStream);
+  WriteYaml internalYaml = new WriteYaml(internalInputStream);
+  WriteYaml externalYaml = new WriteYaml(externalInputStream);
 
   if (internalYaml.equals(externalYaml)) return initiatedInstance.getMap();
 
