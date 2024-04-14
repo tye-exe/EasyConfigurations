@@ -15,7 +15,7 @@ import static io.github.tye.easyconfigs.EasyConfigurations.langInstance;
 // These methods are intended for use projects using Easy Configurations as a dependency.
 @SuppressWarnings("unused")
 @ExternalUse
-public interface LangInstance extends BaseInstance {
+public interface LangInstance extends Instance {
 
 /**
  Gets the string response for the selected enum.
@@ -49,6 +49,6 @@ default @NotNull String get(KeyInstance... keys) {
  @param yamlPath The key path of the yaml value to parse as the lang. */
 @ExternalUse
 default void init(@NotNull String yamlPath) {
-  BaseInstance.super.init(String.class, yamlPath);
+  Instance.super.init(String.class, yamlPath);
 }
 }

@@ -26,7 +26,7 @@ import static io.github.tye.easyconfigs.EasyConfigurations.configInstance;
 // Unchecked – These methods are intended for use projects using Easy Configurations as a dependency.
 // Unused – Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCheck() preceding the cast & at config initiation.
 @ExternalUse
-public interface ConfigInstance extends BaseInstance {
+public interface ConfigInstance extends Instance {
 
 /**
  Creates a new instance of a config enum.
@@ -36,7 +36,7 @@ public interface ConfigInstance extends BaseInstance {
 @Override
 @ExternalUse
 default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
-  BaseInstance.super.init(markedClass, yamlPath);
+  Instance.super.init(markedClass, yamlPath);
 }
 
 /**
@@ -295,7 +295,7 @@ default @NotNull List<ZonedDateTime> getAsZonedDateTimeList() throws NotOfClassE
  @param intendedType The {@link SupportedClasses} that the map value should be.
  @throws NotOfClassException If the intended type doesn't match the actual type in the map. */
 @InternalUse
-static void classCheck(@NotNull SupportedClasses intendedType, @NotNull BaseInstance instance) throws NotOfClassException {
+static void classCheck(@NotNull SupportedClasses intendedType, @NotNull Instance instance) throws NotOfClassException {
   StringBuilder classNames = new StringBuilder();
 
   for (Class<?> clazz : intendedType.getClasses()) {

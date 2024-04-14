@@ -1,93 +1,42 @@
 package io.github.tye.easyconfigs.instances;
 
+import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-
-public class Instance {
+/**
+ Contains the variables &amp; methods that {@link ConfigInstance} &amp; {@link LangInstance} require. */
+@InternalUse
+public interface Instance {
 
 /**
- The class the object stored in the Yaml should be parsed as. */
+ Creates a new instance of a config or lang enum.
+ @param markedClass The class to parse the yaml value as.
+ @param yamlPath    The key path of the yaml value to parse. */
 @InternalUse
-@NotNull
-public static final HashMap<BaseInstance, Class<?>> assignedClass = new HashMap<>();
-/**
- The path to parse the object from in the Yaml. */
-@InternalUse
-@NotNull
-public static final HashMap<BaseInstance, String> yamlPath = new HashMap<>();
+default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
+  NullCheck.notNull(markedClass, "Instance of class");
+  NullCheck.notNull(yamlPath, "Yaml path");
 
+  InstanceHandler.assignedClass.put(this, markedClass);
+  InstanceHandler.yamlPath.put(this, yamlPath);
+}
 
-/**
- The parsed instance responses. */
-@InternalUse
-private @NotNull HashMap<String, Object> map;
 
 /**
- If the instance enum has already been initiated. */
+ Gets the class the enum was assigned to.
+ @return The class this instance should be parsed as. */
 @InternalUse
-private boolean initiated;
+default Class<?> getAssingedClass() {
+  return InstanceHandler.assignedClass.get(this);
+}
 
 /**
- The string to the location of the internal configuration file. */
+ Gets the path to the enum within the Yaml file.
+ @return The path to this class in the Yaml file. */
 @InternalUse
-private @NotNull String path;
-
-/**
- The clazz of the instance. */
-@InternalUse
-private @NotNull Class<?> clazz;
-
-
-public Instance() {
-  this.map = null;
-  this.initiated = false;
-  this.path = null;
-  this.clazz = null;
+default String getYamlPath() {
+  return InstanceHandler.yamlPath.get(this);
 }
 
-
-public @NotNull HashMap<String, Object> getMap() throws NotInitiatedException {
-  if (map == null) throw new NotInitiatedException();
-
-  return map;
-}
-
-public Instance setMap(HashMap<String, Object> map) {
-  this.map = map;
-  return this;
-}
-
-public boolean isInitiated() {
-  return initiated;
-}
-
-public Instance setInitiated(boolean initiated) {
-  this.initiated = initiated;
-  return this;
-}
-
-public @NotNull String getPath() throws NotInitiatedException {
-  if (path == null) throw new NotInitiatedException();
-
-  return path;
-}
-
-public Instance setPath(String path) {
-  this.path = path;
-  return this;
-}
-
-public @NotNull Class<?> getClazz() throws NotInitiatedException {
-  if (path == null) throw new NotInitiatedException();
-
-  return clazz;
-}
-
-public Instance setClazz(Class<?> clazz) {
-  this.clazz = clazz;
-  return this;
-}
 }

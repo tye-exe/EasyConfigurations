@@ -2,7 +2,7 @@ package io.github.tye.easyconfigs.internalConfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.annotations.NotImplemented;
-import io.github.tye.easyconfigs.instances.BaseInstance;
+import io.github.tye.easyconfigs.instances.Instance;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -136,7 +136,7 @@ public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull 
  @see Lang */
 @Contract(pure=true)
 @InternalUse
-public static @NotNull String unverifiedClass(@NotNull BaseInstance instance, @NotNull Object value) {
+public static @NotNull String unverifiedClass(@NotNull Instance instance, @NotNull Object value) {
   switch (Config.getLanguage()) {
 
   case

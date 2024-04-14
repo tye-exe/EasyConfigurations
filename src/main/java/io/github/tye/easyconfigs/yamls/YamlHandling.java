@@ -1,13 +1,13 @@
 package io.github.tye.easyconfigs.yamls;
 
 import io.github.tye.easyconfigs.ClassName;
-import io.github.tye.easyconfigs.Instance;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.BadYamlException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
-import io.github.tye.easyconfigs.instances.BaseInstance;
+import io.github.tye.easyconfigs.instances.Instance;
+import io.github.tye.easyconfigs.instances.InstanceHandler;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.Contract;
@@ -191,7 +191,7 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
     // Checks if the enum contains the key outlined in the file.
     boolean contains = false;
 
-    for (BaseInstance instanceEnum : (BaseInstance[]) internalInstance.getEnumConstants()) {
+    for (Instance instanceEnum : (Instance[]) internalInstance.getEnumConstants()) {
       if (!yamlPath.equals(instanceEnum.getYamlPath())) continue;
 
       contains = true;
@@ -222,9 +222,9 @@ private static void warnUnusedKeys(@NotNull HashMap<String, Object> mapToCheck, 
 @Contract()
 @InternalUse
 private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap<String, Object> mapToFormat, @NotNull Class<?> internalInstance, @NotNull String resourcePath) throws DefaultConfigurationException {
-  BaseInstance[] enums = (BaseInstance[]) internalInstance.getEnumConstants();
+  Instance[] enums = (Instance[]) internalInstance.getEnumConstants();
 
-  for (BaseInstance instanceEnum : enums) {
+  for (Instance instanceEnum : enums) {
 
     // Checks if the value exists in the default file.
     String keyPath = instanceEnum.getYamlPath();
@@ -256,7 +256,7 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
 }
 
 
-public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull Instance initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlException {
+public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull InstanceHandler initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlException {
   if (!initiatedInstance.isInitiated()) throw new NotInitiatedException();
 
   InputStream internalInputStream = initiatedInstance.getClazz().getResourceAsStream(initiatedInstance.getPath());

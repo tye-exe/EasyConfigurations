@@ -5,7 +5,7 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.MissingInterfaceException;
 import io.github.tye.easyconfigs.instances.ConfigInstance;
-import io.github.tye.easyconfigs.instances.Instance;
+import io.github.tye.easyconfigs.instances.InstanceHandler;
 import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
@@ -31,7 +31,7 @@ import java.io.FileNotFoundException;
 public class EasyConfigurations {
 
 
-public static Instance configInstance = new Instance();
+public static InstanceHandler configInstance = new InstanceHandler();
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
@@ -64,7 +64,7 @@ public static void registerConfig(@NotNull Class<?> configEnum, @NotNull String 
 }
 
 
-public static Instance langInstance = new Instance();
+public static InstanceHandler langInstance = new InstanceHandler();
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
