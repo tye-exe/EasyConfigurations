@@ -1,6 +1,5 @@
 package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.Instance;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.NotNull;

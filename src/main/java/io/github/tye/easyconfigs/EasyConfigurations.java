@@ -5,6 +5,7 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.MissingInterfaceException;
 import io.github.tye.easyconfigs.instances.ConfigInstance;
+import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;

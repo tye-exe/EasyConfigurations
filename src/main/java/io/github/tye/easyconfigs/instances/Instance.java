@@ -1,8 +1,7 @@
-package io.github.tye.easyconfigs;
+package io.github.tye.easyconfigs.instances;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
-import io.github.tye.easyconfigs.instances.BaseInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
