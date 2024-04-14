@@ -310,7 +310,7 @@ public boolean equals(Object otherYaml) {
   if (otherYaml == null || getClass() != otherYaml.getClass()) return false;
 
   WriteYaml equalYaml = (WriteYaml) otherYaml;
-  return this.keys.equals(equalYaml.keys);
+  return this.keys.keySet().equals(equalYaml.keys.keySet());
 }
 
 /**
