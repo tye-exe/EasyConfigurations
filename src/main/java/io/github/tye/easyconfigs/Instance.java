@@ -2,11 +2,24 @@ package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
+import io.github.tye.easyconfigs.instances.BaseInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
 public class Instance {
+
+/**
+ The class the object stored in the Yaml should be parsed as. */
+@InternalUse
+@NotNull
+public static final HashMap<BaseInstance, Class<?>> assignedClass = new HashMap<>();
+/**
+ The path to parse the object from in the Yaml. */
+@InternalUse
+@NotNull
+public static final HashMap<BaseInstance, String> yamlPath = new HashMap<>();
+
 
 /**
  The parsed instance responses. */
