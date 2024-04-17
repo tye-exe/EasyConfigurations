@@ -1,10 +1,10 @@
 package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
-import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_Empty;
-import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_General;
-import io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest.Config_HasNull;
-import io.github.tye.tests.instancesTests.parseYamlTest.*;
+import io.github.tye.tests.instanceClasses.parseInternalYamlFormattingTest.Config_Empty;
+import io.github.tye.tests.instanceClasses.parseInternalYamlFormattingTest.Config_General;
+import io.github.tye.tests.instanceClasses.parseInternalYamlFormattingTest.Config_HasNull;
+import io.github.tye.tests.instanceClasses.parseYamlTest.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -66,15 +66,15 @@ void parseInternalYamlFormattingWithNull() {
 
 private static Stream<Arguments> instance_provider() {
   return Stream.of(
-      arguments(io.github.tye.tests.instancesTests.parseYamlTest.Config_Empty.class, "/tests/Yamls/parseYamlTest/Config_Empty.yml", true, null),
-      arguments(io.github.tye.tests.instancesTests.parseYamlTest.Config_General.class, "/tests/Yamls/parseYamlTest/Config_General.yml", true, null),
+      arguments(io.github.tye.tests.instanceClasses.parseYamlTest.Config_Empty.class, "/tests/Yamls/parseYamlTest/Config_Empty.yml", true, null),
+      arguments(io.github.tye.tests.instanceClasses.parseYamlTest.Config_General.class, "/tests/Yamls/parseYamlTest/Config_General.yml", true, null),
       arguments(Config_Arrays.class, "/tests/Yamls/parseYamlTest/Config_Arrays.yml", true, null),
       arguments(Config_DefaultConfiguration.class, "/tests/Yamls/parseYamlTest/Config_DefaultConfiguration.yml", false, DefaultConfigurationException.class),
       arguments(Lang_ArrayFail.class, "/tests/Yamls/parseYamlTest/Lang_ArrayFail.yml", false, DefaultConfigurationException.class),
       arguments(Lang_General.class, "/tests/Yamls/parseYamlTest/Lang_General.yml", true, null),
       arguments(Lang_Extra_Yaml.class, "/tests/Yamls/parseYamlTest/Lang_Extra_Yaml.yml", true, null),
       arguments(Config_NotSupported.class, "/tests/Yamls/parseYamlTest/Config_NotSupported.yml", false, DefaultConfigurationException.class),
-      arguments(io.github.tye.tests.instancesTests.parseYamlTest.Config_HasNull.class, "/tests/Yamls/parseYamlTest/Config_HasNull.yml", false, DefaultConfigurationException.class)
+      arguments(io.github.tye.tests.instanceClasses.parseYamlTest.Config_HasNull.class, "/tests/Yamls/parseYamlTest/Config_HasNull.yml", false, DefaultConfigurationException.class)
                   );
 }
 

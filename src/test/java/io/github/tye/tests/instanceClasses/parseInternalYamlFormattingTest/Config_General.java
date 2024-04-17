@@ -1,4 +1,4 @@
-package io.github.tye.tests.instancesTests.parseInternalYamlFormattingTest;
+package io.github.tye.tests.instanceClasses.parseInternalYamlFormattingTest;
 
 import io.github.tye.easyconfigs.instances.ConfigInstance;
 
