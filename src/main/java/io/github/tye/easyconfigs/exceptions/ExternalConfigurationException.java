@@ -1,6 +1,6 @@
 package io.github.tye.easyconfigs.exceptions;
 
-public class ExternalConfigurationException extends Exception {
+public class ExternalConfigurationException extends ConfigurationException {
 
 /**
  Constructs a new exception with {@code null} as its detail message.

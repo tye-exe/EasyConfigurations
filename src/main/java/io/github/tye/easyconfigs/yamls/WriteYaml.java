@@ -1,15 +1,24 @@
 package io.github.tye.easyconfigs.yamls;
 
 import io.github.tye.easyconfigs.NullCheck;
-import io.github.tye.easyconfigs.exceptions.BadYamlException;
+import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.exceptions.ConfigurationException;
+import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.instances.Instance;
+import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.error.Mark;
-import org.yaml.snakeyaml.nodes.*;
+import org.yaml.snakeyaml.nodes.MappingNode;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
 
-import java.io.*;
-import java.lang.reflect.Field;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
 public class WriteYaml extends ReadYaml {
 
@@ -17,7 +26,7 @@ public class WriteYaml extends ReadYaml {
  Takes the given input steam & parses it into a yaml format.
  @param yamlInputStream The input stream containing the data of the yaml.
  @throws IOException If there was an error reading the input stream. */
-public WriteYaml(@NotNull InputStream yamlInputStream) throws IOException, BadYamlException {
+public WriteYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
   super(yamlInputStream);
 }
 
@@ -32,28 +41,42 @@ public void addMissingKeys(@NotNull WriteYaml fullYaml) {
   ArrayList<String> missingKeys = getMissingKeys(fullYaml);
 
   // Adds the missing nodes comment nodes to this yaml.
-  ArrayList<NodeTuple> commentNodes = new ArrayList<>(parsedCommentYaml.getValue());
+  ArrayList<NodeTuple> commentNodes = new ArrayList<>(parsedYaml.getValue());
 
   for (String missingKey : missingKeys) {
     NodeTuple missingNode = fullYaml.getNodeTuple(missingKey);
     commentNodes.add(missingNode);
   }
 
-  parsedCommentYaml.setValue(commentNodes);
-
-
-  // Adds the missing nodes to this yaml.
-  ArrayList<NodeTuple> nodes = new ArrayList<>(parsedYaml.getValue());
-
-  for (String missingKey : missingKeys) {
-    NodeTuple missingNode = fullYaml.getNodeTuple(missingKey);
-    nodes.add(missingNode);
-  }
-
-  parsedYaml.setValue(nodes);
+  parsedYaml.setValue(commentNodes);
 
   // Recalculates the new keys.
-  keys = getKeys(parsedYaml);
+  createMap();
+}
+
+/**
+ Gets the {@link NodeTuple} based upon its key path relative to the root node of this yaml.
+ @param key The key of the NodeTuple relative to the root node.
+ @return The NodeTuple at the given key path. If there is no node at the given path then null will be
+ returned. */
+protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
+  // If the node doesn't exist return null.
+  if (!yamlMap.containsKey(key)) return null;
+
+  List<Integer> path = yamlMap.get(key).yamlIndexPath;
+  // The path shouldn't be empty
+  if (path.isEmpty()) return null;
+
+  // Follows the pre-computed path to the nodeTuple
+  NodeTuple nodeTuple = parsedYaml.getValue().get(path.get(0));
+  for (int i = 1; i < path.size(); i++) {
+    Integer index = path.get(i);
+
+    MappingNode mapNode = (MappingNode) nodeTuple.getValueNode();
+    nodeTuple = mapNode.getValue().get(index);
+  }
+
+  return nodeTuple;
 }
 
 /**
@@ -65,8 +88,8 @@ private @NotNull ArrayList<String> getMissingKeys(@NotNull WriteYaml fullYaml) {
 
 
   yamlLoop:
-  for (String key : fullYaml.keys.keySet()) {
-    if (keys.containsKey(key)) continue;
+  for (String key : fullYaml.yamlMap.keySet()) {
+    if (yamlMap.containsKey(key)) continue;
 
     for (int i = 0; i < missingKeys.size(); i++) {
       String missingKey = missingKeys.get(i);
@@ -98,7 +121,6 @@ public void setValue(@NotNull String key, @NotNull String value) throws NullPoin
   NullCheck.notNull(value, "value");
 
   parsedYaml = setValueRecursive(key, parsedYaml, value);
-  parsedCommentYaml = setValueRecursive(key, parsedCommentYaml, value);
 }
 
 /**
@@ -134,6 +156,7 @@ private @NotNull MappingNode setValueRecursive(@NotNull String remainingKey, @No
       ScalarNode newValue = new ScalarNode(
           oldValue.getTag(),
           value,
+          // Even tho the marks contains line info in them, it's only used for debugging.
           oldValue.getStartMark(),
           oldValue.getEndMark(),
           oldValue.getScalarStyle()
@@ -155,5 +178,56 @@ private @NotNull MappingNode setValueRecursive(@NotNull String remainingKey, @No
 
   rootNode.setValue(modifiedNodes);
   return rootNode;
+}
+
+/**
+ Parses the values within the yaml to the classes specified by the given yamlEnum.
+ <p>
+ <p></p>
+ If any of the following scenarios occur, then a warning is logged and values parsed from the default
+ yaml are used as a fallback.
+ <p>
+ - There is a value in the parsed yaml that isn't in the yaml
+ enum.
+ <p>
+ - A value can't be parsed as the class it is marked as in the
+ yaml enum.
+ @param yamlEnum     The enum that corresponds to the parsed yaml.
+ @param resourcePath The path to the parsed file. (only used for logging purposes) */
+@Override
+public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) {
+  Instance[] enums = yamlEnum.getEnumConstants();
+
+  for (Instance instanceEnum : enums) {
+
+    // Checks if the value exists in the file.
+    String keyPath = instanceEnum.getYamlPath();
+    if (!yamlMap.containsKey(keyPath)) {
+      logger.log(LogType.EXTERNAL_UNUSED_PATH, Lang.notInDefaultYaml(keyPath, resourcePath));
+      continue;
+    }
+
+    // Doesn't check if the class will be supported since it'll have been checked before.
+    SupportedClasses enumRepresentation;
+    try {
+      enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
+    }
+    catch (DefaultConfigurationException ignore) {continue;}
+
+    // Checks if the value can be parsed as its intended class.
+    Object rawValue = yamlMap.get(keyPath).parsedValue;
+    boolean canParse = enumRepresentation.canParse(rawValue);
+    if (!canParse) {
+      logger.log(
+          LogType.USING_FALLBACK_VALUE,
+          Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), instanceEnum.getAssingedClass().getName()));
+      continue;
+    }
+
+    // Parses the value as it's intended class & replaces it within that HashMap.
+    Object parsedValue = enumRepresentation.parse(rawValue);
+    List<Integer> yamlIndexPath = yamlMap.get(keyPath).yamlIndexPath;
+    yamlMap.put(keyPath, new Value<>(yamlIndexPath, parsedValue));
+  }
 }
 }

@@ -1,7 +1,6 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.annotations.NotImplemented;
 import io.github.tye.easyconfigs.instances.Instance;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +19,24 @@ public class Lang {
  @see Lang */
 @Contract(pure=true)
 @InternalUse
+public static @NotNull String configNotReadable(@NotNull String path) {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "Unable to read configuration file at \"" + path + "\".";
+  default: return "";
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
 public static @NotNull String externalConfigNotFound(@NotNull String path) {
-  return "Unable to locate external configuration file at \"" + path + "\".";
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "Unable to locate external configuration file at \"" + path + "\".";
+  default: return "";
+  }
 }
 
 /**
@@ -29,25 +44,11 @@ public static @NotNull String externalConfigNotFound(@NotNull String path) {
 @Contract(pure=true)
 @InternalUse
 public static @NotNull String externalConfigNotFile(@NotNull String path) {
-  return "Item at \"" + path + "\" must be a file.";
-}
+  switch (Config.getLanguage()) {
 
-/**
- @see Lang */
-@Contract(pure=true)
-@NotImplemented
-@InternalUse
-public static @NotNull String parseYaml() {
-  return "WIP";
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@NotImplemented
-@InternalUse
-public static @NotNull String fileRestore() {
-  return "WIP";
+  case ENGLISH: return "Item at \"" + path + "\" must be a file.";
+  default: return "";
+  }
 }
 
 
@@ -86,6 +87,20 @@ public static @NotNull String missingInterface(@NotNull String clazzName, @NotNu
 
   case
       ENGLISH: return "The class \"" + clazzName + "\" doesn't implement \"" + interfaceName + "\".";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String missingInterfaces(@NotNull String clazzName) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "The class \"" + clazzName + "\" doesn't implement LangInstance or ConfigInstance.";
   default: return "";
 
   }

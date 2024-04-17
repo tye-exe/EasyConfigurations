@@ -14,9 +14,15 @@ public enum LogType {
   INTERNAL_UNUSED_PATH(Level.WARNING),
 
   /**
-   This log is output if a none {@link org.yaml.snakeyaml.nodes.ScalarNode ScalarNode} key was
-   encountered whilst attempting to parse a yaml file. */
-  NOT_SCALAR_KEY_NODE(Level.WARNING);
+   This log is output when there are unused paths in the external config files for the implementing
+   program. */
+  EXTERNAL_UNUSED_PATH(Level.WARNING),
+
+  /**
+   This log is output when a value from an external config file cannot be parsed, so the default
+   internal value is used as a fallback. */
+  USING_FALLBACK_VALUE(Level.SEVERE),
+  ;
 
 /**
  The severity of the log message. */

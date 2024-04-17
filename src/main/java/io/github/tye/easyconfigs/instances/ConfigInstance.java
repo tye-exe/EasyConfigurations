@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static io.github.tye.easyconfigs.EasyConfigurations.configInstance;
 
@@ -44,7 +45,8 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
 @Contract(pure=true)
 @InternalUse
 default @NotNull Object getValue() {
-  return configInstance.getMap().get(getYamlPath());
+  // Value will never be null as it is ensured by checks when initializing.
+  return Objects.requireNonNull(configInstance.getValue(getYamlPath()));
 }
 
 /**

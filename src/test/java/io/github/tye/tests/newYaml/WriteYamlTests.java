@@ -1,7 +1,7 @@
 package io.github.tye.tests.newYaml;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
-import io.github.tye.easyconfigs.exceptions.BadYamlException;
+import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.yamls.WriteYaml;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExternalYamlTests {
+public class WriteYamlTests {
 
 
 private InputStream getResource(String path) {
@@ -33,7 +33,7 @@ public void clearInputStream() throws IOException {
 
 
 @Test
-public void addMissingKeys_nodeTest() throws IOException, BadYamlException {
+public void addMissingKeys_nodeTest() throws IOException, ConfigurationException {
   WriteYaml fullYaml = new WriteYaml(inputData);
   WriteYaml missingYaml = new WriteYaml(getResource("/tests/Yamls/externalYamls/missingTests/MissingNode.yml"));
 
@@ -48,11 +48,11 @@ public void addMissingKeys_nodeTest() throws IOException, BadYamlException {
 }
 
 @Test
-public void addMissingKeys_commentTest() throws IOException, BadYamlException {
+public void addMissingKeys_commentTest() throws IOException, ConfigurationException {
   WriteYaml fullYaml = new WriteYaml(inputData);
   WriteYaml missingYaml = new WriteYaml(getResource("/tests/Yamls/externalYamls/missingTests/MissingComment.yml"));
 
-  // Will be equal & identical since only a comment is missing
+  // Will be equal & identical since only a comment is missing.
   assertEquals(fullYaml, missingYaml);
   assertTrue(fullYaml.identical(missingYaml));
 

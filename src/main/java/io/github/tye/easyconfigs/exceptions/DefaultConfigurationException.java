@@ -12,7 +12,7 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
  — If a Yaml value can't be parsed as it's intended class.<br>
  — If a config is assigned as an unsupported enum. */
 @ExternalUse
-public class DefaultConfigurationException extends Exception {
+public class DefaultConfigurationException extends ConfigurationException {
 
 /**
  @param message The error message to display to the user.
@@ -22,4 +22,12 @@ public DefaultConfigurationException(String message) {
   super(message);
 }
 
+/**
+ @param message The error message to display to the user.
+ @param cause   The cause of the error.
+ @see DefaultConfigurationException */
+@InternalUse
+public DefaultConfigurationException(String message, Throwable cause) {
+  super(message, cause);
+}
 }

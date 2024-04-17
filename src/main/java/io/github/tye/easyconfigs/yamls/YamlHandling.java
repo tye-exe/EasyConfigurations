@@ -3,11 +3,8 @@ package io.github.tye.easyconfigs.yamls;
 import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.exceptions.BadYamlException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
-import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.instances.Instance;
-import io.github.tye.easyconfigs.instances.InstanceHandler;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.Contract;
@@ -15,7 +12,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,29 +252,6 @@ private static @NotNull HashMap<String, Object> processYamlData(@NotNull HashMap
   }
 
   return mapToFormat;
-}
-
-
-public static @NotNull HashMap<String, Object> parseExternalYaml(@NotNull File externalYamlFile, @NotNull InstanceHandler initiatedInstance) throws DefaultConfigurationException, IOException, NotInitiatedException, BadYamlException {
-  if (!initiatedInstance.isInitiated()) throw new NotInitiatedException();
-
-  InputStream internalInputStream = initiatedInstance.getClazz().getResourceAsStream(initiatedInstance.getPath());
-  InputStream externalInputStream = new FileInputStream(externalYamlFile);
-
-  // Checks if a file exists at the given path.
-  if (internalInputStream == null) {
-    throw new FileNotFoundException(Lang.internalYamlFail(initiatedInstance.getPath()));
-  }
-
-
-  WriteYaml internalYaml = new WriteYaml(internalInputStream);
-  WriteYaml externalYaml = new WriteYaml(externalInputStream);
-
-  if (internalYaml.equals(externalYaml)) return initiatedInstance.getMap();
-
-
-  externalYaml.addMissingKeys(internalYaml);
-  return initiatedInstance.getMap();
 }
 
 
