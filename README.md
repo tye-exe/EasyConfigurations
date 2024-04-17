@@ -221,9 +221,6 @@ it is only use elements marked with "@ExternalUse". A more descriptive explanati
 - @ExternalUse – These methods are safe to use as you see fit, anywhere & in anyway. This is because these methods
   implement guards to prevent arbitrary values from being passed into places they shouldn’t.
 
-- @NotImplemented – These methods **SHOULD NOT** be used any circumstances. Either internally or externally as they
-  are still being developed.
-
 ___
 ### Additional information:
 
