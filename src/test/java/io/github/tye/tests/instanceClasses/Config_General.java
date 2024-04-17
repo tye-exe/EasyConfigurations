@@ -1,4 +1,4 @@
-package io.github.tye.tests.instanceClasses.parseYamlTest;
+package io.github.tye.tests.instanceClasses;
 
 import io.github.tye.easyconfigs.instances.ConfigInstance;
 
@@ -11,7 +11,10 @@ public enum Config_General implements ConfigInstance {
   quotes(String.class, "quotes"),
   nuhuh(Boolean.class, "nuhuh"),
   mhm(boolean.class, "mhm"),
-  time(LocalDateTime.class, "timeIsSlipping");
+  time(LocalDateTime.class, "timeIsSlipping"),
+  nestedArrays(String[].class, "nested.arrays"),
+  floats(float.class, "floatingAround"),
+  note(String[].class, "note");
 
 Config_General(Class<?> markedClazz, String yamlPath) {
   init(markedClazz, yamlPath);

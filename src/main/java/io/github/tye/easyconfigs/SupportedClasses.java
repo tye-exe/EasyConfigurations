@@ -106,7 +106,6 @@ public boolean canParse(@NotNull Object rawValue) {
  EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
-@SuppressWarnings("ResultOfMethodCallIgnored")
 private boolean canParseNonArray(@NotNull Object rawValue) {
   String value = rawValue.toString();
 
@@ -195,10 +194,11 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
     return false;
   }
 
-  boolean couldParseValue = false;
 
   // Checks that all the objects within the list can be parsed as their intended class.
   for (String stringValue : value) {
+    boolean couldParseValue = false;
+
     switch (this) {
 
     case STRING_LIST: {
@@ -255,7 +255,8 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
   }
 
   // True is returned since to make it to here parsing must be successful every time.
-  return couldParseValue;
+  // Or the list was empty.
+  return true;
 }
 
 /**
@@ -358,8 +359,8 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
 
     List<Object> outputList = new ArrayList<>(stringsToParse.size());
 
+    // Parses all the objects within the list.
     for (String str : stringsToParse) {
-
       switch (this) {
 
       case STRING_LIST: {
@@ -410,23 +411,24 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
         outputList.add(ZONED_DATE_TIME.parse(str));
         break;
       }
+
+      // If the switch statement can't match any of the above conditions then the object is invalid.
+      default: {
+        String className = ClassName.getName(value.getClass());
+        throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
+      }
       }
     }
 
-    // If the outputList is empty, then the given array or list isn't one supported by EasyConfigurations.
-    if (outputList.isEmpty()) {
-      throw new Exception();
-    }
-
     return outputList;
-
-    // Catches any exceptions & then formats them.
   }
-  catch (Exception e) {
+  // Catches any exceptions & then formats them.
+  catch (NotOfClassException | IllegalArgumentException e) {
 
     // If it's a NotOfClassException thrown by one of the parse methods then just throw that.
-    if (e.getClass().equals(NotOfClassException.class)) throw (NotOfClassException) e;
+    if (e.getClass().equals(NotOfClassException.class)) throw e;
 
+    // Else create a new NotOfClassException exception.
     String className = ClassName.getName(value.getClass());
     throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
   }
@@ -482,7 +484,7 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
 private static @NotNull List<String> toList(@NotNull Object value) throws IllegalArgumentException {
   ArrayList<String> stringList;
 
-  // Converts the List or array into an Object list.
+  // Converts the List or array into a String list.
   if (value instanceof List) {
     List<?> valueList = (List<?>) value;
     stringList = new ArrayList<>(valueList.size());

@@ -94,7 +94,16 @@ public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, Config
     throw new ConfigurationException(Lang.errorWhileParsingYaml(), e.getCause());
   }
 
+  // If the returned value is null then that should also be counted as an error.
+  if (parsedYaml == null) {
+    throw new ConfigurationException(Lang.errorWhileParsingYaml());
+  }
+
+  // Computes a HashMap representation of the yaml.
   createMap();
+
+  // If the yaml contains any null values throw an exception.
+  nullCheck();
 }
 
 
@@ -288,14 +297,54 @@ public @NotNull String toString() {
   }
 }
 
+
+public void nullCheck() throws ConfigurationException {
+  for (String key : getKeys()) {
+    // Gets the node
+    NodeTuple nodeTuple = getNodeTuple(key);
+    if (nodeTuple == null) continue;
+
+    // Checks if the node is a null type
+    Node valueNode = nodeTuple.getValueNode();
+    if (!valueNode.getTag().getClassName().equals("null")) continue;
+
+    throw new ConfigurationException(Lang.nullInYaml(key));
+  }
+}
+
+/**
+ Gets the {@link NodeTuple} based upon its key path relative to the root node of this yaml.
+ @param key The key of the NodeTuple relative to the root node.
+ @return The NodeTuple at the given key path. If there is no node at the given path then null will be
+ returned. */
+protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
+  // If the node doesn't exist return null.
+  if (!yamlMap.containsKey(key)) return null;
+
+  List<Integer> path = yamlMap.get(key).yamlIndexPath;
+  // The path shouldn't be empty
+  if (path.isEmpty()) return null;
+
+  // Follows the pre-computed path to the nodeTuple
+  NodeTuple nodeTuple = parsedYaml.getValue().get(path.get(0));
+  for (int i = 1; i < path.size(); i++) {
+    Integer index = path.get(i);
+
+    MappingNode mapNode = (MappingNode) nodeTuple.getValueNode();
+    nodeTuple = mapNode.getValue().get(index);
+  }
+
+  return nodeTuple;
+}
+
+
 /**
  Parses the values within the yaml to the classes specified by the given yamlEnum.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param resourcePath The path to the parsed file. (only used for logging purposes)
  @throws DefaultConfigurationException If:
  <p>
- - There is a value in the parsed yaml that isn't in the yaml
- enum.
+ - There is a value in the yaml enum that isn't in the parsed yaml.
  <p>
  - The yaml enum has marked a value as a class
  EasyConfigurations doesn't support.

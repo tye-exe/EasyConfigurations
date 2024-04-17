@@ -1,0 +1,20 @@
+example: 4
+
+another:
+  one: "one!"
+  two: "two!"
+
+quotes: "\"quoted\" <- it's quoted."
+
+nuhuh: false
+mhm: true
+
+timeIsSlipping: "2024-02-06T17:15:53.315"
+
+nested.arrays: [ "no one", "expected the", "spanish", "inquisition!" ]
+
+floatingAround: "83.93"
+
+note:
+  - "running out"
+  - "of ideas"

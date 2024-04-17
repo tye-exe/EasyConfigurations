@@ -1,4 +1,0 @@
-lang0: "3"
-lang1: "2"
-lang2: "1"
-lang3: "0" # Should be warn for extra lang3 in lang.

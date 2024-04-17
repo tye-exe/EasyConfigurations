@@ -5,7 +5,6 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.ConfigInstance;
 import io.github.tye.easyconfigs.instances.InstanceHandler;
-import io.github.tye.easyconfigs.instances.KeyInstance;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
@@ -44,8 +43,7 @@ public static InstanceHandler configInstance = new InstanceHandler();
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
- - There is a value in the parsed yaml that isn't in the yaml
- enum.
+ - There is a value in the yaml enum that isn't in the parsed yaml.
  <p>
  - The yaml enum has marked a value as a class
  EasyConfigurations doesn't support.
@@ -76,14 +74,7 @@ public static InstanceHandler langInstance = new InstanceHandler();
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
- - There is a value in the parsed yaml that isn't in the yaml
- enum.
- <p>
- - The yaml enum has marked a value as a class
- EasyConfigurations doesn't support.
- <p>
- - A value can't be parsed as the class it is marked as in the
- yaml enum.
+ - There is a value in the yaml enum that isn't in the parsed yaml.
  @throws IOException If there was an error reading the input stream, or if the given path doesn't lead to any files
  @throws NullPointerException If any of the arguments are null. */
 @ExternalUse
@@ -94,27 +85,6 @@ public static void registerLang(@NotNull Class<? extends LangInstance> langEnum,
   langInstance = InstanceHandler.defaultYaml(resourcePath, langEnum);
 }
 
-
-/**
- Stores if the key enum has already been initiated. */
-@InternalUse
-private static boolean keyInitiated = false;
-
-/**
- Registers the given enum as the key enum. Without using this method keys won't work.<br>
- Only one class can be registered as the key enum. If you try to register a second class, the second
- class will be discarded.<br>
- <br>
- Keys are used to replace key sections of a lang response with a variable at runtime.
- This allows for lang responses to contain information that isn't pre-determined.
- @param keyEnum The class of your key enum. */
-@ExternalUse
-public static void registerKey(@NotNull Class<? extends KeyInstance> keyEnum) {
-  if (keyInitiated) return;
-  NullCheck.notNull(keyEnum, "Key enum");
-
-  keyInitiated = true;
-}
 
 
 public static void registerExternalConfig(@NotNull File externalConfigFile) throws FileNotFoundException {

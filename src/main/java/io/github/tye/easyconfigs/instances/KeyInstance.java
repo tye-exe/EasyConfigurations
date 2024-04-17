@@ -62,8 +62,17 @@ default @NotNull KeyInstance replaceWith(@NotNull Object object) throws NullPoin
  @return The key value (with starting &amp; ending markers included) that will be replaced. */
 @Contract(pure=true)
 @InternalUse
-default @NotNull String getReplacementValue() {
-  return EasyConfigurations.keyStart + this.replaceWith[0] + EasyConfigurations.keyEnd;
+default @NotNull String getToReplace() {
+  return EasyConfigurations.keyStart + this.toReplace[0] + EasyConfigurations.keyEnd;
+}
+
+/**
+ Gets the value that the key will be replaced with.
+ @return The value that the key will be replaced with. */
+@Contract(pure=true)
+@InternalUse
+default @NotNull String getReplaceWith() {
+  return this.replaceWith[0];
 }
 
 
@@ -80,7 +89,7 @@ static boolean usesDefaultToString(@NotNull Class<?> clazz) {
   }
   // This error should never be thrown, as all classes extend the Object class, which implements the "toString" method.
   catch (NoSuchMethodException e) {
-    throw new RuntimeException(e);
+   return true;
   }
 }
 }

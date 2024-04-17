@@ -1,4 +1,4 @@
-package io.github.tye.tests.instanceClasses.parseYamlTest;
+package io.github.tye.tests.instanceClasses;
 
 import io.github.tye.easyconfigs.instances.LangInstance;
 

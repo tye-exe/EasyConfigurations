@@ -1,7 +1,10 @@
 package io.github.tye.easyconfigs.instances;
 
+import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 import static io.github.tye.easyconfigs.EasyConfigurations.langInstance;
 
@@ -22,22 +25,24 @@ public interface LangInstance extends Instance {
  @param keys The keys to modify the response with.
  @return The modified string. */
 @ExternalUse
-default @NotNull String get(KeyInstance... keys) {
+default @NotNull String get(@NotNull KeyInstance... keys) {
+  NullCheck.notNull(keys, "keys");
 
-  String response = langInstance.getMap().get(getYamlPath()).toString();
+  // Won't be null as the lang will be initialized.
+  String response = Objects.requireNonNull(langInstance.getValue(getYamlPath())).toString();
 
   // Replaces the keys within the response with their set replace value.
   for (KeyInstance registeredKey : keys) {
-    int replacementIndex = response.indexOf(registeredKey.getReplacementValue());
+    int replacementIndex = response.indexOf(registeredKey.getToReplace());
 
     // Replaces every instance of the found key within the response string.
     while (replacementIndex != -1) {
       String stringStart = response.substring(0, replacementIndex);
-      String stringEnd = response.substring(replacementIndex + registeredKey.getReplacementValue().length());
+      String stringEnd = response.substring(replacementIndex + registeredKey.getToReplace().length());
 
-      response = stringStart + registeredKey.getReplacementValue() + stringEnd;
+      response = stringStart + registeredKey.getReplaceWith() + stringEnd;
 
-      replacementIndex = response.indexOf(registeredKey.getReplacementValue());
+      replacementIndex = response.indexOf(registeredKey.getToReplace());
     }
   }
 

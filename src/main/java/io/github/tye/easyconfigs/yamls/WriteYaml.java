@@ -8,7 +8,6 @@ import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
@@ -52,31 +51,6 @@ public void addMissingKeys(@NotNull WriteYaml fullYaml) {
 
   // Recalculates the new keys.
   createMap();
-}
-
-/**
- Gets the {@link NodeTuple} based upon its key path relative to the root node of this yaml.
- @param key The key of the NodeTuple relative to the root node.
- @return The NodeTuple at the given key path. If there is no node at the given path then null will be
- returned. */
-protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
-  // If the node doesn't exist return null.
-  if (!yamlMap.containsKey(key)) return null;
-
-  List<Integer> path = yamlMap.get(key).yamlIndexPath;
-  // The path shouldn't be empty
-  if (path.isEmpty()) return null;
-
-  // Follows the pre-computed path to the nodeTuple
-  NodeTuple nodeTuple = parsedYaml.getValue().get(path.get(0));
-  for (int i = 1; i < path.size(); i++) {
-    Integer index = path.get(i);
-
-    MappingNode mapNode = (MappingNode) nodeTuple.getValueNode();
-    nodeTuple = mapNode.getValue().get(index);
-  }
-
-  return nodeTuple;
 }
 
 /**
@@ -187,8 +161,7 @@ private @NotNull MappingNode setValueRecursive(@NotNull String remainingKey, @No
  If any of the following scenarios occur, then a warning is logged and values parsed from the default
  yaml are used as a fallback.
  <p>
- - There is a value in the parsed yaml that isn't in the yaml
- enum.
+ - There is a value in the yaml enum that isn't in the parsed yaml.
  <p>
  - A value can't be parsed as the class it is marked as in the
  yaml enum.

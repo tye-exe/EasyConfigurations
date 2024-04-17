@@ -32,16 +32,6 @@ public static final HashMap<Instance, String> yamlPath = new HashMap<>();
 
 
 /**
- The parsed instance responses. */
-@InternalUse
-private @NotNull HashMap<String, Object> map;
-
-/**
- If the instance enum has already been initiated. */
-@InternalUse
-private boolean initiated;
-
-/**
  The string to the location of the internal configuration file. */
 @InternalUse
 private @NotNull String path;
@@ -55,8 +45,6 @@ private ReadYaml yaml;
 
 
 public InstanceHandler() {
-  this.map = null;
-  this.initiated = false;
   this.path = null;
   this.clazz = null;
 }
@@ -81,8 +69,7 @@ private InstanceHandler(@NotNull String path, @NotNull Class<? extends Instance>
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
- - There is a value in the parsed yaml that isn't in the yaml
- enum.
+ - There is a value in the yaml enum that isn't in the parsed yaml.
  <p>
  - The yaml enum has marked a value as a class
  EasyConfigurations doesn't support.
@@ -153,16 +140,8 @@ private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> claz
 
 
 public @Nullable Object getValue(String key) throws NotInitiatedException {
-  if (!initiated) throw new NotInitiatedException();
-
   return yaml.getValue(key);
 }
 
-
-public @NotNull HashMap<String, Object> getMap() throws NotInitiatedException {
-  if (map == null) throw new NotInitiatedException();
-
-  return map;
-}
 
 }

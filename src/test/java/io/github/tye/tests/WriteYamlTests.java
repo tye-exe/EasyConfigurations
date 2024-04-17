@@ -1,4 +1,4 @@
-package io.github.tye.tests.newYaml;
+package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;

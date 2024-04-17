@@ -1,7 +1,6 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.instances.Instance;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,6 +68,20 @@ public static @NotNull String notNull(@Nullable String objectName) {
  @see Lang */
 @Contract(pure=true)
 @InternalUse
+public static @NotNull String containsNull(@Nullable String objectName) {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "\"" + objectName + "\" contains null object.";
+  default: return "";
+
+  }
+}
+
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
 public static @NotNull String notInstantiated(@Nullable String objectName) {
   switch (Config.getLanguage()) {
 
@@ -82,52 +95,10 @@ public static @NotNull String notInstantiated(@Nullable String objectName) {
  @see Lang */
 @Contract(pure=true)
 @InternalUse
-public static @NotNull String missingInterface(@NotNull String clazzName, @NotNull String interfaceName) {
+public static @NotNull String nullInYaml(@NotNull String yamlPath) {
   switch (Config.getLanguage()) {
 
-  case
-      ENGLISH: return "The class \"" + clazzName + "\" doesn't implement \"" + interfaceName + "\".";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String missingInterfaces(@NotNull String clazzName) {
-  switch (Config.getLanguage()) {
-
-  case
-      ENGLISH: return "The class \"" + clazzName + "\" doesn't implement LangInstance or ConfigInstance.";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String invalidKey(@NotNull String key) {
-  switch (Config.getLanguage()) {
-
-  case ENGLISH: return "The key \"" + key + "\" contains invalid characters.";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String badYaml() {
-  switch (Config.getLanguage()) {
-
-  case
-      ENGLISH: return "Null value parsed from YAML. EasyConfigurations doesn't allow for null objects in lang or configs. (The world \"null\" is valid).";
+  case ENGLISH: return "Null value found at \"" + yamlPath + "\". Null values are not allowed.";
   default: return "";
 
   }
@@ -142,20 +113,6 @@ public static @NotNull String unusedYamlPath(@NotNull String yamlPath, @NotNull 
 
   case
       ENGLISH: return "The yaml path \"" + yamlPath + "\" in \"" + filePath + "\" is a path that isn't being used by EasyConfigurations.";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String unverifiedClass(@NotNull Instance instance, @NotNull Object value) {
-  switch (Config.getLanguage()) {
-
-  case
-      ENGLISH: return "No validation could be performed on \"" + instance.getYamlPath() + ": " + value + "\" as the class \"" + instance.getAssingedClass().getName() + "\" is not part of validation test.";
   default: return "";
 
   }
@@ -223,20 +180,6 @@ public static @NotNull String classNotSupported(String clazzName) {
   switch (Config.getLanguage()) {
 
   case ENGLISH: return "\"" + clazzName + "\" is not supported.";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String noneScalarNode(String key) {
-  switch (Config.getLanguage()) {
-
-  case
-      ENGLISH: return "Encountered non-ScalarNode while attempting to retrieve the \"key\". Please report this to the devs.";
   default: return "";
 
   }
