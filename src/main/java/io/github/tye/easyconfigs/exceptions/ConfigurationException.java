@@ -1,56 +1,41 @@
 package io.github.tye.easyconfigs.exceptions;
 
-import java.security.PrivilegedActionException;
-
+/**
+ This error is thrown when there was a mistake within any Yaml file parsed by
+ EasyConfigurations.<br>
+ <br>
+ Common cases in with this exception is thrown are:
+ <p>
+ — If an enum in a config or lang file doesn't have a matching value in the Yaml file.
+ <p>
+ — If the Yaml file contains a null value.
+ <p>
+ — If a Yaml value can't be parsed as it's intended class.
+ <p>
+ — If a config is assigned as an unsupported class. */
 public class ConfigurationException extends Exception {
 
 /**
- Constructs a new exception with {@code null} as its detail message.
- The cause is not initialized, and may subsequently be initialized by a
- call to {@link #initCause}. */
+ @see ConfigurationException
+ */
 public ConfigurationException() {
   super();
 }
 
 /**
- Constructs a new exception with the specified detail message.  The
- cause is not initialized, and may subsequently be initialized by
- a call to {@link #initCause}.
- @param message the detail message. The detail message is saved for
- later retrieval by the {@link #getMessage()} method. */
+ * @param message The message to display to the user.
+ * @see ConfigurationException
+ */
 public ConfigurationException(String message) {
   super(message);
 }
 
 /**
- Constructs a new exception with the specified detail message and
- cause.  <p>Note that the detail message associated with
- {@code cause} is <i>not</i> automatically incorporated in
- this exception's detail message.
- @param message the detail message (which is saved for later retrieval
- by the {@link #getMessage()} method).
- @param cause   the cause (which is saved for later retrieval by the
- {@link #getCause()} method).  (A <tt>null</tt> value is
- permitted, and indicates that the cause is nonexistent or
- unknown.)
- @since 1.4 */
+ * @param message The message to display to the user.
+ * @param cause The cause of the exception.
+ * @see ConfigurationException
+ */
 public ConfigurationException(String message, Throwable cause) {
   super(message, cause);
-}
-
-/**
- Constructs a new exception with the specified cause and a detail
- message of <tt>(cause==null ? null : cause.toString())</tt> (which
- typically contains the class and detail message of <tt>cause</tt>).
- This constructor is useful for exceptions that are little more than
- wrappers for other throwables (for example, {@link
-PrivilegedActionException}).
- @param cause the cause (which is saved for later retrieval by the
- {@link #getCause()} method).  (A <tt>null</tt> value is
- permitted, and indicates that the cause is nonexistent or
- unknown.)
- @since 1.4 */
-public ConfigurationException(Throwable cause) {
-  super(cause);
 }
 }

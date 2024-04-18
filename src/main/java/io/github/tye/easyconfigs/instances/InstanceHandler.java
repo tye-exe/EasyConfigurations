@@ -9,7 +9,6 @@ import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.easyconfigs.yamls.WriteYaml;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,9 @@ import java.util.HashMap;
 
 import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
+/**
+ Contains information about a parsed yaml file. */
+@InternalUse
 public class InstanceHandler {
 
 /**
@@ -41,13 +43,10 @@ private @NotNull String path;
 @InternalUse
 private @NotNull Class<? extends Instance> clazz;
 
-private ReadYaml yaml;
-
-
-public InstanceHandler() {
-  this.path = null;
-  this.clazz = null;
-}
+/**
+ The yaml parsed from a default file. */
+@InternalUse
+private final @NotNull ReadYaml yaml;
 
 private InstanceHandler(@NotNull String path, @NotNull Class<? extends Instance> clazz, ReadYaml yaml) {
   this.path = path;
@@ -63,13 +62,13 @@ private InstanceHandler(@NotNull String path, @NotNull Class<? extends Instance>
  @param clazz The class of the enum that represents the default yaml file.
  @return An {@link InstanceHandler} that contains necessary data about the initialized instance.
  @throws IOException                   If there was an error reading the input stream, or if the
- given path
- doesn't lead to any files.
+ given path doesn't lead to any files.
  @throws DefaultConfigurationException If:
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
- - There is a value in the yaml enum that isn't in the parsed yaml.
+ - There is a value in the yaml enum that isn't in the parsed
+ yaml.
  <p>
  - The yaml enum has marked a value as a class
  EasyConfigurations doesn't support.
@@ -139,8 +138,17 @@ private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> claz
 }
 
 
-public @Nullable Object getValue(String key) throws NotInitiatedException {
-  return yaml.getValue(key);
+/**
+ Gets the value at the given key from the parsed yaml.
+ * @param key The key to get the value at.
+ * @return The value at the given key.
+ * @throws NotInitiatedException If the value hasn't been initiated.
+ */
+public @NotNull Object getValue(String key) throws NotInitiatedException {
+  Object value = yaml.getValue(key);
+  if (value == null) throw new NotInitiatedException(key);
+
+  return value;
 }
 
 

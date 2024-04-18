@@ -29,7 +29,7 @@ import java.io.IOException;
 public class EasyConfigurations {
 
 
-public static InstanceHandler configInstance = new InstanceHandler();
+public static InstanceHandler configInstance = null;
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
@@ -61,7 +61,7 @@ public static void registerConfig(@NotNull Class<? extends ConfigInstance> confi
 }
 
 
-public static InstanceHandler langInstance = new InstanceHandler();
+public static InstanceHandler langInstance = null;
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
