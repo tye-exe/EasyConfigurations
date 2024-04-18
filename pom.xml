@@ -6,7 +6,7 @@
 
     <groupId>io.github.tye-exe.easy_configurations</groupId>
     <artifactId>EasyConfigurations</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
 
@@ -133,7 +133,7 @@
 
     <!-- Necessary information for uploading to OSSRH. -->
     <name>Easy Configurations</name>
-    <description>Provides a simple, easy, &amp; powerful implementation of lang &amp; configs for java </description>
+    <description>Provides a simple, easy, &amp; powerful implementation of lang &amp; configs for java.</description>
     <url>https://github.com/tye-exe/EasyConfigurations</url>
 
     <licenses>
