@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.instances;
+package io.github.tye.easyconfigs.keys;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.NullCheck;
@@ -7,21 +7,12 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import static io.github.tye.easyconfigs.keys.KeyHandler.*;
+
 // These methods are intended for use projects using Easy Configurations as a dependency.
 @SuppressWarnings("unused")
 @ExternalUse
-public interface KeyInstance {
-
-/**
- Stores the string that will get replaced with {@link #replaceWith}. */
-@InternalUse
-String[] toReplace = new String[1];
-
-/**
- Stores the string that will be replaced by {@link #toReplace}. */
-@InternalUse
-String[] replaceWith = new String[]{""};
-
+public interface Keys {
 
 /**
  Initiates a KeyInstance.
@@ -30,22 +21,21 @@ String[] replaceWith = new String[]{""};
  a key <b>must not</b> be included here. */
 @ExternalUse
 default void init(@NotNull String toReplace) {
-  this.toReplace[0] = toReplace;
+  KeyHandler.toReplace.put(this, toReplace);
 }
 
 
 /**
  Sets the string value that this key will replace to the given string.
  <p>
- The set value will persist until it is explicitly replaced. If no value is set then it will default
- to an empty string.
- @param string The string to replace the key with.
+ If no value is set then it will default to an empty string.
+ @param replaceWith The string to replace the key with.
  @return The modified key string.
  @throws NullPointerException If the given string was null */
 @ExternalUse
-default @NotNull KeyInstance replaceWith(@NotNull String string) throws NullPointerException {
-  NullCheck.notNull(string, "Replacement string");
-  this.replaceWith[0] = string;
+default @NotNull Keys replaceWith(@NotNull String replaceWith) throws NullPointerException {
+  NullCheck.notNull(replaceWith, "Replacement string");
+  KeyHandler.replaceWith.put(this, replaceWith);
   return this;
 }
 
@@ -56,7 +46,8 @@ default @NotNull KeyInstance replaceWith(@NotNull String string) throws NullPoin
 @Contract(pure=true)
 @InternalUse
 default @NotNull String getToReplace() {
-  return EasyConfigurations.keyStart + this.toReplace[0] + EasyConfigurations.keyEnd;
+  // The string will never be null since the enum has been loaded before this method is reached.
+  return keyStart + toReplace.get(this) + keyEnd;
 }
 
 /**
@@ -65,6 +56,9 @@ default @NotNull String getToReplace() {
 @Contract(pure=true)
 @InternalUse
 default @NotNull String getReplaceWith() {
-  return this.replaceWith[0];
+  String replaceString = replaceWith.getOrDefault(this, "");
+  // Resets the key value.
+  replaceWith.put(this, "");
+  return replaceString;
 }
 }

@@ -132,9 +132,9 @@ ___
 ### Setting up keys:
 
 ```java
-import io.github.tye.easyconfigs.instances.KeyInstance;
 
-public enum Keys implements KeyInstance {
+
+public enum Keys implements Keys {
 
   USER("user");
 

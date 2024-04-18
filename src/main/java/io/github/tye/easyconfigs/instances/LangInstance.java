@@ -3,6 +3,7 @@ package io.github.tye.easyconfigs.instances;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
+import io.github.tye.easyconfigs.keys.Keys;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -28,14 +29,14 @@ public interface LangInstance extends Instance {
  io.github.tye.easyconfigs.EasyConfigurations#registerLang(Class,
      String) EasyConfigurations#registerLang(Class, String)} */
 @ExternalUse
-default @NotNull String get(@NotNull KeyInstance... keys) throws NotInitiatedException {
+default @NotNull String get(@NotNull Keys... keys) throws NotInitiatedException {
   NullCheck.notNull(keys, "keys");
 
   // Won't be null as the lang will be initialized.
   String response = Objects.requireNonNull(langInstance.getValue(getYamlPath())).toString();
 
   // Replaces the keys within the response with their set replace value.
-  for (KeyInstance registeredKey : keys) {
+  for (Keys registeredKey : keys) {
     int replacementIndex = response.indexOf(registeredKey.getToReplace());
 
     // Replaces every instance of the found key within the response string.

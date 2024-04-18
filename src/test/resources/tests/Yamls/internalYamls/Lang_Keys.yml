@@ -1,1 +1,3 @@
-keys: "I know a good joke! {joke}"
+joke: "I know a good joke! {joke}"
+
+unJoke: "I know a bad joke! {unJoke}"

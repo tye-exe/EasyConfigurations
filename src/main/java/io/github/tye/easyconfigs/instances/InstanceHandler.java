@@ -9,6 +9,7 @@ import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.easyconfigs.yamls.WriteYaml;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +27,7 @@ public class InstanceHandler {
 @InternalUse
 @NotNull
 public static final HashMap<Instance, Class<?>> assignedClass = new HashMap<>();
+
 /**
  The path to parse the object from in the Yaml. */
 @InternalUse
@@ -33,25 +35,24 @@ public static final HashMap<Instance, Class<?>> assignedClass = new HashMap<>();
 public static final HashMap<Instance, String> yamlPath = new HashMap<>();
 
 
+
 /**
  The string to the location of the internal configuration file. */
 @InternalUse
-private @NotNull String path;
-
-/**
- The config/lang clazz of the instance. */
-@InternalUse
-private @NotNull Class<? extends Instance> clazz;
+private @NotNull String path = "";
 
 /**
  The yaml parsed from a default file. */
 @InternalUse
-private final @NotNull ReadYaml yaml;
+private final @Nullable ReadYaml yaml;
 
-private InstanceHandler(@NotNull String path, @NotNull Class<? extends Instance> clazz, ReadYaml yaml) {
-  this.path = path;
-  this.clazz = clazz;
+public InstanceHandler() {
+  this.yaml = null;
+}
+
+private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
   this.yaml = yaml;
+  this.path = path;
 }
 
 
@@ -84,7 +85,7 @@ public static @NotNull InstanceHandler defaultYaml(@NotNull String path, @NotNul
     warnUnusedKeys(yaml, clazz, path);
     yaml.parseValues(clazz, path);
 
-    return new InstanceHandler(path, clazz, yaml);
+    return new InstanceHandler(yaml, path);
   }
   catch (ConfigurationException exception) {
     if (exception instanceof DefaultConfigurationException) {
@@ -145,7 +146,10 @@ private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> claz
  * @throws NotInitiatedException If the value hasn't been initiated.
  */
 public @NotNull Object getValue(String key) throws NotInitiatedException {
+  if (yaml == null) throw new NotInitiatedException(path);
+
   Object value = yaml.getValue(key);
+  // Shouldn't get thrown as this method is only called from instances.
   if (value == null) throw new NotInitiatedException(key);
 
   return value;

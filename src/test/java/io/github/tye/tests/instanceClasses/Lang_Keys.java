@@ -4,7 +4,8 @@ import io.github.tye.easyconfigs.instances.LangInstance;
 
 public enum Lang_Keys implements LangInstance {
 
-  keys("keys");
+  joke("joke"),
+  unJoke("unJoke");
 
 Lang_Keys(String yamlPath) {
   init(yamlPath);

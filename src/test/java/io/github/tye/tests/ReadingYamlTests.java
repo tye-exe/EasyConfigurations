@@ -151,30 +151,39 @@ public void lang_keys() throws IOException, DefaultConfigurationException {
 
   assertEquals(
       "I know a good joke! {joke}",
-      Lang_Keys.keys.get()
+      Lang_Keys.joke.get()
               );
 
   assertEquals(
       "I know a good joke! ",
-      Lang_Keys.keys.get(Keys.joke)
+      Lang_Keys.joke.get(Keys.joke)
               );
 
   assertEquals(
       "I know a good joke! My life!",
-      Lang_Keys.keys.get(Keys.joke.replaceWith("My life!"))
+      Lang_Keys.joke.get(Keys.joke.replaceWith("My life!"))
               );
 
   assertEquals(
       "I know a good joke! Big oxygen!",
-      Lang_Keys.keys.get(Keys.joke.replaceWith("Big oxygen!"))
+      Lang_Keys.joke.get(Keys.joke.replaceWith("Big oxygen!"))
               );
 
-  // Keys persists until reset.
+  // Keys don't persist.
   assertEquals(
-      "I know a good joke! Big oxygen!",
-      Lang_Keys.keys.get(Keys.joke)
+      "I know a good joke! ",
+      Lang_Keys.joke.get(Keys.joke)
               );
 
+  assertEquals(
+      "I know a bad joke! Potato",
+      Lang_Keys.unJoke.get(Keys.unJoke.replaceWith("Potato"))
+              );
+
+  assertEquals(
+      "I know a bad joke! ",
+      Lang_Keys.unJoke.get(Keys.unJoke)
+              );
 
 }
 }

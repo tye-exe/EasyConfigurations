@@ -1,10 +1,10 @@
 package io.github.tye.tests.instanceClasses;
 
-import io.github.tye.easyconfigs.instances.KeyInstance;
+public enum Keys implements io.github.tye.easyconfigs.keys.Keys {
 
-public enum Keys implements KeyInstance {
+  joke("joke"),
 
-  joke("joke");
+  unJoke("unJoke");
 
 Keys(String toReplace) {
   init(toReplace);

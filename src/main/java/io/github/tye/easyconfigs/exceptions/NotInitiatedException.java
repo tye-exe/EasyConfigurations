@@ -9,12 +9,6 @@ package io.github.tye.easyconfigs.exceptions;
 public class NotInitiatedException extends RuntimeException {
 
 /**
- @see NotInitiatedException */
-public NotInitiatedException() {
-  super();
-}
-
-/**
  @param message The message to display.
  @see NotInitiatedException */
 public NotInitiatedException(String message) {

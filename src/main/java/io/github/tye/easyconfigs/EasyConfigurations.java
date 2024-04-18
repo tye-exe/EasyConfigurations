@@ -1,13 +1,13 @@
 package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.ExternalUse;
-import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.ConfigInstance;
 import io.github.tye.easyconfigs.instances.InstanceHandler;
 import io.github.tye.easyconfigs.instances.LangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.keys.KeyHandler;
 import io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger;
 import io.github.tye.easyconfigs.logger.EasyConfigurationsLogger;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class EasyConfigurations {
 
 
-public static InstanceHandler configInstance = null;
+public static @NotNull InstanceHandler configInstance = new InstanceHandler();
 
 /**
  Registers the given enum as the config enum. Without using this method configs won't work.<br>
@@ -61,7 +61,7 @@ public static void registerConfig(@NotNull Class<? extends ConfigInstance> confi
 }
 
 
-public static InstanceHandler langInstance = null;
+public static @NotNull InstanceHandler langInstance = new InstanceHandler();
 
 /**
  Registers the given enum as the lang enum. Without using this method lang won't work.<br>
@@ -101,15 +101,6 @@ public static void registerExternalConfig(@NotNull File externalConfigFile) thro
 
 
 /**
- Stores the string that proceeds a key */
-@InternalUse
-public static @NotNull String keyStart = "{";
-/**
- Stores the string that terminates a key */
-@InternalUse
-public static @NotNull String keyEnd = "}";
-
-/**
  Sets the strings of text that appear at the start &amp; at the end of a key within a lang
  response.<br>
  By default, the keyStart is "{" &amp; the keyEnd is "}".
@@ -120,8 +111,8 @@ public static void setKeyCharacters(@NotNull String keyStart, @NotNull String ke
   NullCheck.notNull(keyStart, "Starting key string");
   NullCheck.notNull(keyEnd, "Ending key string");
 
-  EasyConfigurations.keyStart = keyStart;
-  EasyConfigurations.keyEnd = keyEnd;
+  KeyHandler.keyStart = keyStart;
+  KeyHandler.keyEnd = keyEnd;
 }
 
 

@@ -82,6 +82,8 @@ protected static class Value<T> {
  @param yamlInputStream The input stream containing the data of the yaml.
  @throws IOException            If there was an error reading the input stream.
  @throws ConfigurationException If there was an error parsing the given inputStream as a yaml. */
+// Safeguards against if a null value was somehow given.
+@SuppressWarnings("ConstantValue")
 public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
   if (yamlInputStream == null) throw new IOException(Lang.notNull("yamlInputStream"));
 
