@@ -1,6 +1,5 @@
 package io.github.tye.easyconfigs.instances;
 
-import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
@@ -36,23 +35,17 @@ default void init(@NotNull String toReplace) {
 
 
 /**
- Sets the string value that this key will replace to the string from the given object.<br>
- If the given object isn't a string or doesn't have a string representation then the class name of
- the object will be used instead.
- @param object The object to get the string value of.
- @return The modified key object.
- @throws NullPointerException If the given object was null */
+ Sets the string value that this key will replace to the given string.
+ <p>
+ The set value will persist until it is explicitly replaced. If no value is set then it will default
+ to an empty string.
+ @param string The string to replace the key with.
+ @return The modified key string.
+ @throws NullPointerException If the given string was null */
 @ExternalUse
-default @NotNull KeyInstance replaceWith(@NotNull Object object) throws NullPointerException {
-  NullCheck.notNull(object, "Replacement object");
-
-  if (usesDefaultToString(object.getClass())) {
-    this.replaceWith[0] = ClassName.getName(object.getClass());
-  }
-  else {
-    this.replaceWith[0] = object.toString();
-  }
-
+default @NotNull KeyInstance replaceWith(@NotNull String string) throws NullPointerException {
+  NullCheck.notNull(string, "Replacement string");
+  this.replaceWith[0] = string;
   return this;
 }
 
@@ -73,23 +66,5 @@ default @NotNull String getToReplace() {
 @InternalUse
 default @NotNull String getReplaceWith() {
   return this.replaceWith[0];
-}
-
-
-/**
- Checks if the given class has overridden the default {@link Object#toString() #toString()} method
- provided by Object.
- @param clazz The given class to check.
- @return True if the given class uses the default {@link Object#toString()} method. */
-@Contract(pure=true)
-@InternalUse
-static boolean usesDefaultToString(@NotNull Class<?> clazz) {
-  try {
-    return clazz.getMethod("toString").getDeclaringClass() == Object.class;
-  }
-  // This error should never be thrown, as all classes extend the Object class, which implements the "toString" method.
-  catch (NoSuchMethodException e) {
-   return true;
-  }
 }
 }
