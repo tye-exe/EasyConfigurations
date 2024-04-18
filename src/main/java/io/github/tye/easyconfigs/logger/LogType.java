@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 
 /**
- This enum contains the possible situations in which EasyConfigurations might output a log message &
+ This enum contains the possible situations in which EasyConfigurations might output a log message &amp;
  the severity of the output message. */
 @InternalUse
 public enum LogType {

@@ -278,7 +278,7 @@ public int hashCode() {
 }
 
 /**
- Gets the string representation of the stored comment yaml, this representation is formatted &
+ Gets the string representation of the stored comment yaml, this representation is formatted &amp;
  includes comments.
  @return The formatted string that represents the current yaml.
  @throws IOException If there was an error converting the yaml into a string. */
