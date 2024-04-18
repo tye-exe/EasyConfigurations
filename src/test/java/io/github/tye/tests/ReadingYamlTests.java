@@ -155,6 +155,11 @@ public void lang_keys() throws IOException, DefaultConfigurationException {
               );
 
   assertEquals(
+      "I know a good joke! ",
+      Lang_Keys.keys.get(Keys.joke)
+              );
+
+  assertEquals(
       "I know a good joke! My life!",
       Lang_Keys.keys.get(Keys.joke.replaceWith("My life!"))
               );

@@ -21,7 +21,7 @@ String[] toReplace = new String[1];
 /**
  Stores the string that will be replaced by {@link #toReplace}. */
 @InternalUse
-String[] replaceWith = new String[1];
+String[] replaceWith = new String[]{""};
 
 
 /**
