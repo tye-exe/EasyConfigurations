@@ -1,5 +1,10 @@
 package io.github.tye.easyconfigs.exceptions;
 
+import io.github.tye.easyconfigs.annotations.NotImplemented;
+
+/**
+ TODO */
+@NotImplemented
 public class ExternalConfigurationException extends ConfigurationException {
 
 public ExternalConfigurationException() {

@@ -5,7 +5,7 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Contains the variables &amp; methods that {@link ConfigInstance} &amp; {@link LangInstance} require. */
+ Contains the methods that {@link ConfigInstance} &amp; {@link LangInstance} require. */
 @InternalUse
 public interface Instance {
 

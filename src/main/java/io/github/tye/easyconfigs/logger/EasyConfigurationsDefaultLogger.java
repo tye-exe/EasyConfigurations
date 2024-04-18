@@ -10,7 +10,11 @@ import java.util.logging.Logger;
  This class is the default logging class for EasyConfigurations. It performs logging based upon the
  default java {@link Logger logger}.
  <p>
- If you want to implement a custom logger (this is usually to redirect the text output)... TODO
+ If you want to implement a custom logger (this is usually to redirect the log output), then
+ implement {@link EasyConfigurationsLogger} &amp; pass an instance into
+ {@link
+ io.github.tye.easyconfigs.EasyConfigurations#overrideEasyConfigurationsLogger(EasyConfigurationsLogger)
+ EasyConfigurations#overrideEasyConfigurationsLogger(EasyConfigurationsLogger)}.
  <p>
  The default logger is a default java logger created by {@link Logger#getLogger(String)} with a name
  of {@code io.github.tye.easyconfigs.EasyConfigurations} */

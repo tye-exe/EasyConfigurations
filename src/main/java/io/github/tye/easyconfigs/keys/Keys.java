@@ -9,8 +9,11 @@ import org.jetbrains.annotations.NotNull;
 
 import static io.github.tye.easyconfigs.keys.KeyHandler.*;
 
-// These methods are intended for use projects using Easy Configurations as a dependency.
+/**
+ This interface must be implemented by an enum to define it as an enum containing the different key
+ options. */
 @SuppressWarnings("unused")
+// These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
 public interface Keys {
 

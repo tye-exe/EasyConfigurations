@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 /**
  A class to store values of keys. */
+@InternalUse
 public final class KeyHandler {
 
 

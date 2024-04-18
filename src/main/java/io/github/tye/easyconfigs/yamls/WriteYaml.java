@@ -22,7 +22,7 @@ import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.l
 public class WriteYaml extends ReadYaml {
 
 /**
- Takes the given input steam & parses it into a yaml format.
+ Takes the given input steam &amp;parses it into a yaml format.
  @param yamlInputStream The input stream containing the data of the yaml.
  @throws IOException If there was an error reading the input stream. */
 public WriteYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
@@ -161,10 +161,9 @@ private @NotNull MappingNode setValueRecursive(@NotNull String remainingKey, @No
  If any of the following scenarios occur, then a warning is logged and values parsed from the default
  yaml are used as a fallback.
  <p>
- - There is a value in the yaml enum that isn't in the parsed yaml.
+ - There is a key in the yaml enum that isn't in the parsed yaml.
  <p>
- - A value can't be parsed as the class it is marked as in the
- yaml enum.
+ - A value can't be parsed as the class it is marked as in the yaml enum.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param resourcePath The path to the parsed file. (only used for logging purposes) */
 @Override

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- This enum contains an entry for each class EasyConfigurations can parse.<br>
- If an unsupported class is given, an error will be thrown. */
+ This enum contains an entry for each class EasyConfigurations can parse.<br> If an unsupported class
+ is given, an error will be thrown. */
 @InternalUse
 public enum SupportedClasses {
 
@@ -81,9 +81,8 @@ public boolean representsArray() {
 /**
  Checks if the class this enum represents can parse the given value as represented class.
  @param rawValue The given value.
- @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one
- EasyConfigurations hasn't accounted for. */
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 public boolean canParse(@NotNull Object rawValue) {
@@ -98,12 +97,11 @@ public boolean canParse(@NotNull Object rawValue) {
 
 
 /**
- If this method is used on an array enum then it will always return false.<br>
- Checks if the given value can be parsed as the class this enum represents.
+ If this method is used on an array enum then it will always return false.<br> Checks if the given
+ value can be parsed as the class this enum represents.
  @param rawValue The given value.
- @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one
- EasyConfigurations hasn't accounted for. */
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 private boolean canParseNonArray(@NotNull Object rawValue) {
@@ -174,12 +172,11 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
 }
 
 /**
- If this method is used on a non-array enum then it will always return false.<br>
- Checks if the given value can be parsed as the class this enum represents.
+ If this method is used on a non-array enum then it will always return false.<br> Checks if the given
+ value can be parsed as the class this enum represents.
  @param rawValue The given array or List value.
- @return True if it can be parsed.<br>
- False only if the value cannot be parsed as its intended class or if the value is one
- EasyConfigurations hasn't accounted for. */
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
 private <T> boolean canParseArray(@NotNull T rawValue) {
@@ -346,8 +343,8 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
 
 /**
  If this method is used on a non-array enum then it will always throw
- {@link NotOfClassException}.<br>
- Checks if the given value can be parsed as the class this enum represents.
+ {@link NotOfClassException}.<br> Checks if the given value can be parsed as the class this enum
+ represents.
  @param value The given array or List value.
  @return The value as its intended object.
  @throws NotOfClassException If the object passed in isn't of a class this enum represents. */

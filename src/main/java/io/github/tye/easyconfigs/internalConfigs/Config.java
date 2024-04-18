@@ -34,8 +34,8 @@ public static @NotNull Config.InternalLoggingLanguages getLanguage() {
 }
 
 /**
- Sets the current language being used for logging. English is the default.<br>
- See {@link InternalLoggingLanguages} for available languages.
+ Sets the current language being used for logging. English is the default.<br> See
+ {@link InternalLoggingLanguages} for available languages.
  @param lang Which language to use for logging. */
 @InternalUse
 public static void setLanguage(@NotNull Config.InternalLoggingLanguages lang) {

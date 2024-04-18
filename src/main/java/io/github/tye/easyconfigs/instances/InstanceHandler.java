@@ -20,20 +20,19 @@ import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.l
 /**
  Contains information about a parsed yaml file. */
 @InternalUse
-public class InstanceHandler {
+public final class InstanceHandler {
 
 /**
- The class the object stored in the Yaml should be parsed as. */
+ The class the object stored in a Yaml should be parsed as. */
 @InternalUse
 @NotNull
 public static final HashMap<Instance, Class<?>> assignedClass = new HashMap<>();
 
 /**
- The path to parse the object from in the Yaml. */
+ The path to parse the object from in a Yaml. */
 @InternalUse
 @NotNull
 public static final HashMap<Instance, String> yamlPath = new HashMap<>();
-
 
 
 /**
@@ -46,10 +45,13 @@ private @NotNull String path = "";
 @InternalUse
 private final @Nullable ReadYaml yaml;
 
+
+@InternalUse
 public InstanceHandler() {
   this.yaml = null;
 }
 
+@InternalUse
 private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
   this.yaml = yaml;
   this.path = path;
@@ -58,7 +60,7 @@ private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
 
 /**
  Creates a new instance of the given yaml. This method also performs checks for unused keys, missing
- keys, & other incorrect configurations.
+ keys, &amp; other incorrect configurations.
  @param path  The path to the default yaml file.
  @param clazz The class of the enum that represents the default yaml file.
  @return An {@link InstanceHandler} that contains necessary data about the initialized instance.
@@ -68,7 +70,7 @@ private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
- - There is a value in the yaml enum that isn't in the parsed
+ - There is a key in the yaml enum that isn't in the parsed
  yaml.
  <p>
  - The yaml enum has marked a value as a class
@@ -76,6 +78,7 @@ private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
  <p>
  - A value can't be parsed as the class it is marked as in the
  yaml enum. */
+@InternalUse
 public static @NotNull InstanceHandler defaultYaml(@NotNull String path, @NotNull Class<? extends Instance> clazz) throws IOException, DefaultConfigurationException {
   try (InputStream inputStream = clazz.getResourceAsStream(path)) {
     if (inputStream == null) throw new IOException(Lang.configNotReadable(path));
@@ -141,10 +144,10 @@ private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> claz
 
 /**
  Gets the value at the given key from the parsed yaml.
- * @param key The key to get the value at.
- * @return The value at the given key.
- * @throws NotInitiatedException If the value hasn't been initiated.
- */
+ @param key The key to get the value at.
+ @return The value at the given key.
+ @throws NotInitiatedException If the value hasn't been initiated. */
+@InternalUse
 public @NotNull Object getValue(String key) throws NotInitiatedException {
   if (yaml == null) throw new NotInitiatedException(path);
 

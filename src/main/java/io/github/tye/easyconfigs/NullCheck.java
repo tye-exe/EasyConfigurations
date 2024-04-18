@@ -11,6 +11,7 @@ import java.lang.reflect.Array;
 /**
  Contains a method to check if a given object is null &amp; constructs a NullPointerException if it
  is null. */
+@InternalUse
 public class NullCheck {
 
 /**

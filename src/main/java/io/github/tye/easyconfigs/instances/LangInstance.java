@@ -12,16 +12,18 @@ import static io.github.tye.easyconfigs.EasyConfigurations.langInstance;
 
 /**
  This interface must be implemented by an enum to define it as an enum containing the different lang
- options.<br> Please reference the <a
+ options.
+ <p>
+ Please reference the <a
  href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-lang">README</a>
- file on GitHub for "EasyConfigurations" for usage information. */
-// These methods are intended for use projects using Easy Configurations as a dependency.
+ file on GitHub for more usage information. */
 @SuppressWarnings("unused")
+// These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
 public interface LangInstance extends Instance {
 
 /**
- Gets the string response for the selected enum.
+ Gets the string response for the selected enum, with any matching keys replaced.
  @param keys The keys to modify the response with.
  @return The modified string.
  @throws NotInitiatedException If a lang is retrieved before it is registered with
@@ -61,3 +63,4 @@ default void init(@NotNull String yamlPath) {
   Instance.super.init(String.class, yamlPath);
 }
 }
+

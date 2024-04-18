@@ -61,7 +61,7 @@ classes. The created config constructor has three requirements:
 
 The first argument of the constructor is the class the object should be parsed as. This allows
 EasyConfigurations to ensure that the object can be parsed from the internal Yaml as its intended class. This is
-checked on program initialization by EasyConfigurations & if the value can’t be parsed as the given object an 
+checked on program initialization by EasyConfigurations & if the value can’t be parsed as the given object an
 exception is thrown at configuration registration. This ensures the config values can always be parsed.
 
 Several classes are supported by EasyConfigurations to be used as the assigned class. The list can be seen
@@ -199,7 +199,7 @@ to the location of the yaml files starting from the resource folder within the j
 parameter is needed.
 
 The method `setEasyConfigurationLanguage()` changes the internal language that EasyConfigurations logs in. It will
-default to English if it is not set. See [supported languages](#supported-languages) for a list of the languages 
+default to English if it is not set. See [supported languages](#supported-languages) for a list of the languages
 EasyConfigurations can output logs in.
 
 The method `setKeyCharacters()` changes what strings surround a key within the lang yaml file. Using the default
@@ -220,6 +220,9 @@ it is only use elements marked with "@ExternalUse". A more descriptive explanati
 
 - @ExternalUse – These methods are safe to use as you see fit, anywhere & in anyway. This is because these methods
   implement guards to prevent arbitrary values from being passed into places they shouldn’t.
+
+- @NotImplemented – These methods **SHOULD NOT
+  ** be used any circumstances. Either internally or externally as they are still being developed.
 
 ___
 ### Additional information:
@@ -250,10 +253,10 @@ If there is a class you think should be supported, please open an issue on GitHu
 
 #### Supported languages:
 
-Only one language is supported by EasyConfigurations for logging, English.  
-  
-To clarify, EasyConfigurations can be used to parse text in any language. The supported language only effects the 
-language of the logs that EasyConfigurations outputs. 
+Only one language is supported by EasyConfigurations for logging, English.
+
+To clarify, EasyConfigurations can be used to parse text in any language. The supported language only effects the
+language of the logs that EasyConfigurations outputs.
 
 ##### Future plans:
 

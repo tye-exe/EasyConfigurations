@@ -1,5 +1,8 @@
 package io.github.tye.easyconfigs.exceptions;
 
+import io.github.tye.easyconfigs.annotations.ExternalUse;
+import io.github.tye.easyconfigs.annotations.InternalUse;
+
 /**
  This error is thrown when there was a mistake within any Yaml file parsed by
  EasyConfigurations.<br>
@@ -13,28 +16,29 @@ package io.github.tye.easyconfigs.exceptions;
  — If a Yaml value can't be parsed as it's intended class.
  <p>
  — If a config is assigned as an unsupported class. */
+@ExternalUse
 public class ConfigurationException extends Exception {
 
 /**
- @see ConfigurationException
- */
+ @see ConfigurationException */
+@InternalUse
 public ConfigurationException() {
   super();
 }
 
 /**
- * @param message The message to display to the user.
- * @see ConfigurationException
- */
+ @param message The message to display to the user.
+ @see ConfigurationException */
+@InternalUse
 public ConfigurationException(String message) {
   super(message);
 }
 
 /**
- * @param message The message to display to the user.
- * @param cause The cause of the exception.
- * @see ConfigurationException
- */
+ @param message The message to display to the user.
+ @param cause   The cause of the exception.
+ @see ConfigurationException */
+@InternalUse
 public ConfigurationException(String message, Throwable cause) {
   super(message, cause);
 }

@@ -3,6 +3,7 @@ package io.github.tye.easyconfigs.yamls;
 import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.Instance;
@@ -27,12 +28,14 @@ import java.util.*;
 /**
  This class is for reading values from <a href="https://yaml.org/">yaml</a> data.
  <p>
- If you want to read & write yaml data use {@link WriteYaml}. */
+ If you want to read &amp; write yaml data use {@link WriteYaml}. */
+@InternalUse
 public class ReadYaml {
 
 
 /**
  Contains the parser for the comment yaml. */
+@InternalUse
 protected static final @NotNull Yaml commentYaml;
 
 // Initializes the comment yaml parser.
@@ -48,6 +51,7 @@ static {
 
 /**
  Contains the parsed yaml with comments. */
+@InternalUse
 protected @NotNull MappingNode parsedYaml;
 
 /**
@@ -57,15 +61,17 @@ protected @NotNull MappingNode parsedYaml;
  The keys in the HashMap are the raw keys that lead to their corresponding value within the yaml.
  <p>
  The values in the HashMap are instances of {@link Value}. See those javadocs for more info. */
-// It is initialized within a method in the constructor.
 @SuppressWarnings("NotNullFieldNotInitialized")
+// It is initialized within a method in the constructor.
+@InternalUse
 protected @NotNull HashMap<String, Value<?>> yamlMap;
 
 
 /**
- Small wrapper class to hold the index route to the value in the {@link #parsedYaml} &amp;
- once computed, the value instantiated as the correct class.
+ Small wrapper class to hold the index route to the value in the {@link #parsedYaml} &amp; once
+ computed, the value instantiated as the correct class.
  @param <T> The class of the parsed value. */
+@InternalUse
 protected static class Value<T> {
   public @NotNull List<Integer> yamlIndexPath;
   public @NotNull T parsedValue;
@@ -82,8 +88,9 @@ protected static class Value<T> {
  @param yamlInputStream The input stream containing the data of the yaml.
  @throws IOException            If there was an error reading the input stream.
  @throws ConfigurationException If there was an error parsing the given inputStream as a yaml. */
-// Safeguards against if a null value was somehow given.
 @SuppressWarnings("ConstantValue")
+// Safeguards against if a null value was somehow given.
+@InternalUse
 public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
   if (yamlInputStream == null) throw new IOException(Lang.notNull("yamlInputStream"));
 
@@ -104,7 +111,7 @@ public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, Config
   // Computes a HashMap representation of the yaml.
   createMap();
 
-  // If the yaml contains any null values throw an exception.
+  // If the yaml contains any null values throw a ConfigurationException.
   nullCheck();
 }
 
@@ -112,6 +119,7 @@ public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, Config
 /**
  Computes a HashMap representation of the {@link #parsedYaml}.
  @see #yamlMap */
+@InternalUse
 protected void createMap() {
   yamlMap = getMapRecursive(parsedYaml, "", new ArrayList<>());
 }
@@ -124,9 +132,10 @@ protected void createMap() {
  @param currentKey The current string key path that leads to the given mapping node.
  @param indexPath  Contains a list the stores the path of indexes to take to get to the value of the
  key.
- @return A {@link HashMap} containing the yaml keys in the keys & the values containing a list with
+ @return A {@link HashMap} containing the yaml keys in the keys &amp; the values containing a list with
  the indexes to take to get to the keys in the yaml node.
  @see #yamlMap */
+@InternalUse
 private @NotNull HashMap<String, Value<?>> getMapRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull ArrayList<Integer> indexPath) {
   HashMap<String, Value<?>> map = new HashMap<>();
 
@@ -136,7 +145,7 @@ private @NotNull HashMap<String, Value<?>> getMapRecursive(@NotNull MappingNode 
     String nodeKey = currentKey + getNodeKey(value.get(index));
     Node valueNode = value.get(index).getValueNode();
 
-    // Can be suppressed since the copy will return the same class & generic.
+    // Can be suppressed since the copy will return the same class.
     @SuppressWarnings("unchecked") ArrayList<Integer> indexPathClone = (ArrayList<Integer>) indexPath.clone();
     indexPathClone.add(index);
 
@@ -160,6 +169,7 @@ private @NotNull HashMap<String, Value<?>> getMapRecursive(@NotNull MappingNode 
  @param node The node to get the key from.
  @return The key from the node.
  @throws NullPointerException If the given node was null. */
+@InternalUse
 protected @NotNull String getNodeKey(@NotNull NodeTuple node) throws NullPointerException {
   NullCheck.notNull(node, "node");
   Node keyNode = node.getKeyNode();
@@ -172,6 +182,7 @@ protected @NotNull String getNodeKey(@NotNull NodeTuple node) throws NullPointer
  The given node must be either a {@link SequenceNode} or {@link ScalarNode}.
  @param valueNode The node to get the value of.
  @return A string or List of strings that is the value of the given node. */
+@InternalUse
 private static @NotNull Object getNodeValue(@NotNull Node valueNode) {
   Object unparsedValue;
 
@@ -209,6 +220,7 @@ private static @NotNull Object getNodeValue(@NotNull Node valueNode) {
  @param key The given key to get the value at.
  @return The value at the given key as it's specified class. If the key isn't in the parsed yaml,
  then null is returned. */
+@InternalUse
 public @Nullable Object getValue(@NotNull String key) {
   if (!yamlMap.containsKey(key)) return null;
   return yamlMap.get(key).parsedValue;
@@ -217,23 +229,24 @@ public @Nullable Object getValue(@NotNull String key) {
 /**
  Returns a Set view of the keys contained in this yaml. The set is backed by the yaml, so changes to
  the map are reflected in the set, and vice-versa. If the yaml is modified while an iteration over
- the
- set is in progress (except through the iterator's own remove operation), the results of the
- iteration are undefined. The set supports element removal, which removes the corresponding keys
- from the yaml, via the Iterator.remove, Set.remove, removeAll, retainAll, and clear operations. It
- does not support the add or addAll operations. */
+ the set is in progress (except through the iterator's own remove operation), the results of the
+ iteration are undefined. The set supports element removal, which removes the corresponding keys from
+ the yaml, via the Iterator.remove, Set.remove, removeAll, retainAll, and clear operations. It does
+ not support the add or addAll operations. */
+@InternalUse
 public Set<String> getKeys() {
   return yamlMap.keySet();
 }
 
 
 /**
- Tests if another yaml has the same keys & values as this yaml.
+ Tests if another yaml has the same keys &amp; values as this yaml.
  <p>
  To test if only the keys are the same use {@link #equals(Object)}.
  @param otherYaml The other yaml to check the keys against.
- @return True if both yamls have the same keys & values. Otherwise, false is returned. */
-public boolean identical(Object otherYaml) {
+ @return True if both yamls have the same keys &amp; values. Otherwise, false is returned. */
+@InternalUse
+public boolean identical(@Nullable Object otherYaml) {
   if (this == otherYaml) return true;
   if (otherYaml == null || getClass() != otherYaml.getClass()) return false;
 
@@ -244,11 +257,12 @@ public boolean identical(Object otherYaml) {
 /**
  Tests if another yaml has the same keys as this yaml.
  <p>
- To test if both the keys & values are the same use {@link #identical(Object)}.
+ To test if both the keys &amp; values are the same use {@link #identical(Object)}.
  @param otherYaml The other yaml to check the keys against.
  @return True if both yamls have the same keys. Otherwise, false is returned. */
+@InternalUse
 @Override
-public boolean equals(Object otherYaml) {
+public boolean equals(@Nullable Object otherYaml) {
   if (this == otherYaml) return true;
   if (otherYaml == null || getClass() != otherYaml.getClass()) return false;
 
@@ -268,6 +282,7 @@ public int hashCode() {
  includes comments.
  @return The formatted string that represents the current yaml.
  @throws IOException If there was an error converting the yaml into a string. */
+@InternalUse
 public @NotNull String getYaml() throws IOException {
   // Sets the emitter to parse comments.
   DumperOptions dumperOptions = new DumperOptions();
@@ -286,9 +301,11 @@ public @NotNull String getYaml() throws IOException {
 /**
  Gets the string representation of the comment yaml.
  <p>
- This method is only useful for debuggers. To handle the string yaml properly use {@link #getYaml()}.
+ This method is only useful for debuggers. To handle the string yaml properly use
+ {@link #getYaml()}.
  @return The comment yaml as a formatted string. If there was an error converting the yaml to a
  string, an empty string will be returned. */
+@InternalUse
 @Override
 public @NotNull String toString() {
   try {
@@ -299,7 +316,10 @@ public @NotNull String toString() {
   }
 }
 
-
+/**
+ Checks if this yaml contains any null values.
+ @throws ConfigurationException If the yaml contains any null values. */
+@InternalUse
 public void nullCheck() throws ConfigurationException {
   for (String key : getKeys()) {
     // Gets the node
@@ -319,6 +339,7 @@ public void nullCheck() throws ConfigurationException {
  @param key The key of the NodeTuple relative to the root node.
  @return The NodeTuple at the given key path. If there is no node at the given path then null will be
  returned. */
+@InternalUse
 protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
   // If the node doesn't exist return null.
   if (!yamlMap.containsKey(key)) return null;
@@ -346,13 +367,15 @@ protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
  @param resourcePath The path to the parsed file. (only used for logging purposes)
  @throws DefaultConfigurationException If:
  <p>
- - There is a value in the yaml enum that isn't in the parsed yaml.
+ - There is a key in the yaml enum that isn't in the parsed
+ yaml.
  <p>
  - The yaml enum has marked a value as a class
  EasyConfigurations doesn't support.
  <p>
  - A value can't be parsed as the class it is marked as in the
  yaml enum. */
+@InternalUse
 public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) throws DefaultConfigurationException {
   Instance[] enums = yamlEnum.getEnumConstants();
 

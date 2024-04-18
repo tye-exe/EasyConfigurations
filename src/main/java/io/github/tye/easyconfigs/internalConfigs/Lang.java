@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Contains the internal lang responses for EasyConfigurations.<br>
- Each method contains a text response that is returned in the configured language.<br>
- Methods that take arguments replace certain parts of the response with the given arguments. */
+ Contains the internal lang responses for EasyConfigurations.<br> Each method contains a text
+ response that is returned in the configured language.<br> Methods that take arguments replace
+ certain parts of the response with the given arguments. */
 // More languages might be added in the future.
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 @InternalUse

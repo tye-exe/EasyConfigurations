@@ -20,12 +20,14 @@ import static io.github.tye.easyconfigs.EasyConfigurations.configInstance;
 
 /**
  This interface must be implemented by an enum to define it as an enum containing the different
- config options.<br> Please reference the <a
+ config options.
+ <p>
+ Please reference the <a
  href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README</a>
- file on GitHub for "EasyConfigurations" for usage information. */
+ file on GitHub for more usage information. */
 @SuppressWarnings({"unused", "unchecked"})
-// Unchecked – These methods are intended for use projects using Easy Configurations as a dependency.
-// Unused – Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCheck() preceding the cast & at config initiation.
+// Unused – These methods are intended for use projects using Easy Configurations as a dependency.
+// Unchecked – Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCheck() preceding the cast & at config initiation.
 @ExternalUse
 public interface ConfigInstance extends Instance {
 
@@ -56,7 +58,7 @@ default @NotNull Object getValue() throws NotInitiatedException {
 
 /**
  @return Gets a {@link String} config response.
- @throws NotOfClassException If the selected config isn't a String value.
+ @throws NotOfClassException   If the selected config isn't a String value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -68,7 +70,7 @@ default @NotNull String getAsString() throws NotOfClassException, NotInitiatedEx
 
 /**
  @return Gets a {@link Boolean} config response.
- @throws NotOfClassException If the selected config isn't a Boolean value.
+ @throws NotOfClassException   If the selected config isn't a Boolean value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -80,7 +82,7 @@ default boolean getAsBoolean() throws NotOfClassException, NotInitiatedException
 
 /**
  @return Gets a {@link Integer} config response.
- @throws NotOfClassException If the selected config isn't an Integer value.
+ @throws NotOfClassException   If the selected config isn't an Integer value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -92,7 +94,7 @@ default int getAsInteger() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Double} config response.
- @throws NotOfClassException If the selected config isn't a Double value.
+ @throws NotOfClassException   If the selected config isn't a Double value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -104,7 +106,7 @@ default double getAsDouble() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Float} config response.
- @throws NotOfClassException If the selected config isn't a Float value.
+ @throws NotOfClassException   If the selected config isn't a Float value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -116,7 +118,7 @@ default float getAsFloat() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Short} config response.
- @throws NotOfClassException If the selected config isn't a Short value.
+ @throws NotOfClassException   If the selected config isn't a Short value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -128,7 +130,7 @@ default short getAsShort() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Long} config response.
- @throws NotOfClassException If the selected config isn't a Long value.
+ @throws NotOfClassException   If the selected config isn't a Long value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -140,7 +142,7 @@ default long getAsLong() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Byte} config response.
- @throws NotOfClassException If the selected config isn't a Byte value.
+ @throws NotOfClassException   If the selected config isn't a Byte value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -152,7 +154,7 @@ default byte getAsByte() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link Character} config response.
- @throws NotOfClassException If the selected config isn't a Char value.
+ @throws NotOfClassException   If the selected config isn't a Char value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -164,7 +166,7 @@ default char getAsChar() throws NotOfClassException, NotInitiatedException {
 
 /**
  @return Gets a {@link LocalDateTime} config response.
- @throws NotOfClassException If the selected config isn't a LocalDateTime value.
+ @throws NotOfClassException   If the selected config isn't a LocalDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -176,7 +178,7 @@ default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException, 
 
 /**
  @return Gets a {@link OffsetDateTime} config response.
- @throws NotOfClassException If the selected config isn't an OffsetDateTime value.
+ @throws NotOfClassException   If the selected config isn't an OffsetDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -188,7 +190,7 @@ default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException
 
 /**
  @return Gets a {@link ZonedDateTime} config response.
- @throws NotOfClassException If the selected config isn't a ZonedDateTime value.
+ @throws NotOfClassException   If the selected config isn't a ZonedDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -201,7 +203,7 @@ default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException, 
 
 /**
  @return Gets a {@link String} list config response.
- @throws NotOfClassException If the selected config isn't a string list.
+ @throws NotOfClassException   If the selected config isn't a string list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -213,7 +215,7 @@ default @NotNull List<String> getAsStringList() {
 
 /**
  @return Gets an {@link Boolean} list config response.
- @throws NotOfClassException If the selected config isn't a boolean list.
+ @throws NotOfClassException   If the selected config isn't a boolean list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -225,7 +227,7 @@ default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException, No
 
 /**
  @return Gets an {@link Integer} list config response.
- @throws NotOfClassException If the selected config isn't an integer list.
+ @throws NotOfClassException   If the selected config isn't an integer list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -237,7 +239,7 @@ default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException, No
 
 /**
  @return Gets a {@link Double} list config response.
- @throws NotOfClassException If the selected config isn't a double list.
+ @throws NotOfClassException   If the selected config isn't a double list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -249,7 +251,7 @@ default @NotNull List<Double> getAsDoubleList() throws NotOfClassException, NotI
 
 /**
  @return Gets a {@link Float} list config response.
- @throws NotOfClassException If the selected config isn't a float list.
+ @throws NotOfClassException   If the selected config isn't a float list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -261,7 +263,7 @@ default @NotNull List<Float> getAsFloatList() throws NotOfClassException, NotIni
 
 /**
  @return Gets a {@link Short} list config response.
- @throws NotOfClassException If the selected config isn't a short list.
+ @throws NotOfClassException   If the selected config isn't a short list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -273,7 +275,7 @@ default @NotNull List<Short> getAsShortList() throws NotOfClassException, NotIni
 
 /**
  @return Gets a {@link Long} list config response.
- @throws NotOfClassException If the selected config isn't a long list.
+ @throws NotOfClassException   If the selected config isn't a long list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -285,7 +287,7 @@ default @NotNull List<Long> getAsLongList() throws NotOfClassException, NotIniti
 
 /**
  @return Gets a {@link Byte} list config response.
- @throws NotOfClassException If the selected config isn't a byte list.
+ @throws NotOfClassException   If the selected config isn't a byte list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -297,7 +299,7 @@ default @NotNull List<Byte> getAsByteList() throws NotOfClassException, NotIniti
 
 /**
  @return Gets a {@link Character} list config response.
- @throws NotOfClassException If the selected config isn't a char list.
+ @throws NotOfClassException   If the selected config isn't a char list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -309,7 +311,7 @@ default @NotNull List<Character> getAsCharList() throws NotOfClassException, Not
 
 /**
  @return Gets a {@link LocalDateTime} list config response.
- @throws NotOfClassException If the selected config isn't a local date time list.
+ @throws NotOfClassException   If the selected config isn't a local date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -321,7 +323,7 @@ default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassE
 
 /**
  @return Gets a {@link OffsetDateTime} list config response.
- @throws NotOfClassException If the selected config isn't an offset date time list.
+ @throws NotOfClassException   If the selected config isn't an offset date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
@@ -333,7 +335,7 @@ default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClas
 
 /**
  @return Gets a {@link ZonedDateTime} list config response.
- @throws NotOfClassException If the selected config isn't a zoned date time list.
+ @throws NotOfClassException   If the selected config isn't a zoned date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
  {@link EasyConfigurations#registerConfig(Class, String)}. */
 @Contract(pure=true)
