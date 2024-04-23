@@ -1,13 +1,11 @@
-package io.github.tye.easyconfigs.instances;
+package io.github.tye.easyconfigs.instances.reading;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
-import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
-import io.github.tye.easyconfigs.yamls.WriteYaml;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,24 +13,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
-import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
-
 /**
  Contains information about a parsed yaml file. */
 @InternalUse
-public final class InstanceHandler {
+public class ReadingInstanceHandler {
 
 /**
- The class the object stored in a Yaml should be parsed as. */
+ Contains the class an instance stored in a yaml should be parsed as. */
 @InternalUse
 @NotNull
-public static final HashMap<Instance, Class<?>> assignedClass = new HashMap<>();
+public static final HashMap<ReadingInstance, Class<?>> assignedClass = new HashMap<>();
 
 /**
- The path to parse the object from in a Yaml. */
+ Contains the path to parse an instance from in a yaml. */
 @InternalUse
 @NotNull
-public static final HashMap<Instance, String> yamlPath = new HashMap<>();
+public static final HashMap<ReadingInstance, String> yamlPath = new HashMap<>();
 
 
 /**
@@ -46,15 +42,12 @@ private @NotNull String path = "";
 private final @Nullable ReadYaml yaml;
 
 
+/**
+ Creates a placeholder instance. This should be overridden with
+ {@link ReadingInstanceHandler#ReadingInstanceHandler(String, Class)} before being used. */
 @InternalUse
-public InstanceHandler() {
+public ReadingInstanceHandler() {
   this.yaml = null;
-}
-
-@InternalUse
-private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
-  this.yaml = yaml;
-  this.path = path;
 }
 
 
@@ -63,7 +56,6 @@ private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
  keys, &amp; other incorrect configurations.
  @param path  The path to the default yaml file.
  @param clazz The class of the enum that represents the default yaml file.
- @return An {@link InstanceHandler} that contains necessary data about the initialized instance.
  @throws IOException                   If there was an error reading the input stream, or if the
  given path doesn't lead to any files.
  @throws DefaultConfigurationException If:
@@ -79,16 +71,17 @@ private InstanceHandler(@NotNull ReadYaml yaml, @NotNull String path) {
  - A value can't be parsed as the class it is marked as in the
  yaml enum. */
 @InternalUse
-public static @NotNull InstanceHandler defaultYaml(@NotNull String path, @NotNull Class<? extends Instance> clazz) throws IOException, DefaultConfigurationException {
+public ReadingInstanceHandler(@NotNull String path, @NotNull Class<? extends ReadingInstance> clazz) throws IOException, DefaultConfigurationException {
   try (InputStream inputStream = clazz.getResourceAsStream(path)) {
     if (inputStream == null) throw new IOException(Lang.configNotReadable(path));
 
     // Initializes the yaml
     ReadYaml yaml = new ReadYaml(inputStream);
-    warnUnusedKeys(yaml, clazz, path);
+    yaml.warnUnusedKeys(clazz, path);
     yaml.parseValues(clazz, path);
 
-    return new InstanceHandler(yaml, path);
+    this.path = path;
+    this.yaml = yaml;
   }
   catch (ConfigurationException exception) {
     if (exception instanceof DefaultConfigurationException) {
@@ -99,48 +92,6 @@ public static @NotNull InstanceHandler defaultYaml(@NotNull String path, @NotNul
   }
 }
 
-public static InstanceHandler externalYaml(@NotNull String externalPath, @NotNull String path, @NotNull Class<? extends Instance> clazz) throws IOException, ConfigurationException {
-  InstanceHandler instanceHandler = defaultYaml(path, clazz);
-
-  WriteYaml yaml;
-  try (InputStream inputStream = clazz.getResourceAsStream(path)) {
-    if (inputStream == null) throw new IOException(Lang.configNotReadable(path));
-
-    // Initializes the yaml
-    yaml = new WriteYaml(inputStream);
-    warnUnusedKeys(yaml, clazz, path);
-  }
-
-  //TODO: placeholder
-  return instanceHandler;
-}
-
-
-/**
- Outputs a warning message to the logger if the given map contains keys that aren't used by the given
- internal instance. */
-@InternalUse
-private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> clazz, String path) {
-  // Checks if any default values in the file are missing from the enum.
-  for (String yamlPath : yaml.getKeys()) {
-
-    // Checks if the enum contains the key outlined in the file.
-    boolean contains = false;
-
-    for (Instance instanceEnum : clazz.getEnumConstants()) {
-      if (!yamlPath.equals(instanceEnum.getYamlPath())) continue;
-
-      contains = true;
-      break;
-    }
-
-    // Logs a warning if there's an unused path.
-    if (contains) continue;
-
-    logger.log(LogType.INTERNAL_UNUSED_PATH, Lang.unusedYamlPath(yamlPath, path));
-  }
-}
-
 
 /**
  Gets the value at the given key from the parsed yaml.
@@ -148,8 +99,8 @@ private static void warnUnusedKeys(ReadYaml yaml, Class<? extends Instance> claz
  @return The value at the given key.
  @throws NotInitiatedException If the value hasn't been initiated. */
 @InternalUse
-public @NotNull Object getValue(String key) throws NotInitiatedException {
-  if (yaml == null) throw new NotInitiatedException(path);
+public @NotNull Object getValue(@NotNull String key) throws NotInitiatedException {
+  if (yaml == null) throw new NotInitiatedException();
 
   Object value = yaml.getValue(key);
   // Shouldn't get thrown as this method is only called from instances.
@@ -157,6 +108,5 @@ public @NotNull Object getValue(String key) throws NotInitiatedException {
 
   return value;
 }
-
 
 }

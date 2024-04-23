@@ -2,18 +2,21 @@ package io.github.tye.easyconfigs.yamls;
 
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.Instance;
+import io.github.tye.easyconfigs.instances.persistent.PersistentInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.nodes.MappingNode;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.nodes.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +25,88 @@ import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.l
 public class WriteYaml extends ReadYaml {
 
 /**
- Takes the given input steam &amp;parses it into a yaml format.
- @param yamlInputStream The input stream containing the data of the yaml.
- @throws IOException If there was an error reading the input stream. */
-public WriteYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
-  super(yamlInputStream);
+ Takes the given input steam &amp; parses it into a yaml format.
+ @param internalPath The path to the internal file the yaml data is read from.
+ @param externalFile The external file the yaml data is read from.
+ @param yamlEnum     The enum that represents the yaml file.
+ @throws IOException            If there was an error reading the input stream.
+ @throws ConfigurationException If there was an error in the yamls.
+ @throws NullPointerException   If either of the given input streams are null. */
+public WriteYaml(@NotNull String internalPath, @NotNull File externalFile, @NotNull Class<? extends Instance> yamlEnum) throws IOException, ConfigurationException, NullPointerException {
+  super(Files.newInputStream(externalFile.toPath()));
+
+  try (InputStream internalInputStream = yamlEnum.getResourceAsStream(internalPath)) {
+    if (internalInputStream == null) throw new IOException(Lang.configNotReadable(internalPath));
+
+    ReadYaml internalYaml = new ReadYaml(internalInputStream);
+    internalYaml.warnUnusedKeys(yamlEnum, internalPath);
+    removeUnusedKeys(internalYaml, externalFile);
+    addMissingKeys(internalYaml, externalFile);
+  }
+}
+
+/**
+ Removes any keys from this yaml that aren't in the given default yaml.
+ @param defaultYaml  The default yaml to check keys against.
+ @param externalFile The external file that is having the keys removed. (This is purely for logging
+ purposes). */
+@InternalUse
+private void removeUnusedKeys(@NotNull ReadYaml defaultYaml, @NotNull File externalFile) {
+  if (this.equals(defaultYaml)) return;
+
+  ArrayList<String> toRemove = new ArrayList<>();
+
+  for (String key : this.getKeys()) {
+    if (defaultYaml.yamlMap.containsKey(key)) continue;
+
+    toRemove.add(key);
+    // Logs that a key was removed
+    logger.log(LogType.EXTERNAL_UNUSED_PATH, Lang.removingExternalUnusedKey(externalFile.getPath(), key));
+  }
+
+  // Performed in separate loop to avoid concurrent modification.
+  for (String key : toRemove) {
+    yamlMap.remove(key);
+  }
+
+  parsedYaml = removeKeysRecursive(parsedYaml, "", toRemove);
+}
+
+
+/**
+ Removes keys from the nested yaml data that represents the parsed yaml.
+ @param rootNode     The root node to remove keys relative to.
+ @param currentKey   The current key leading to the root node, from the initial root node.
+ @param keysToRemove The list of keys that will be removed from the yaml.
+ @return The new yaml data with the specified keys removed. */
+@InternalUse
+private @NotNull MappingNode removeKeysRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull ArrayList<String> keysToRemove) {
+  ArrayList<NodeTuple> newValues = new ArrayList<>();
+
+  for (NodeTuple currentTuple : rootNode.getValue()) {
+    // Create the key to this node by combining the key of this node & the key path to this node.
+    String nodeKey = currentKey + getNodeKey(currentTuple);
+    Node nodeValue = currentTuple.getValueNode();
+
+    // If the node is a MappingNode then it contains sub-keys.
+    if (nodeValue instanceof MappingNode) {
+      NodeTuple nodeTuple = new NodeTuple(
+          currentTuple.getKeyNode(),
+          removeKeysRecursive((MappingNode) nodeValue, nodeKey + ".", keysToRemove));
+
+      newValues.add(nodeTuple);
+      continue;
+    }
+
+    // If it's a node to remove then don't add it.
+    if (keysToRemove.contains(nodeKey)) continue;
+
+    newValues.add(currentTuple);
+
+  }
+
+  rootNode.setValue(newValues);
+  return rootNode;
 }
 
 
@@ -35,168 +115,246 @@ public WriteYaml(@NotNull InputStream yamlInputStream) throws IOException, Confi
  <p>
  This method doesn't add any missing comments. The only comments that will be added are those that
  belong to a missing key.
- @param fullYaml The yaml to get the keys from. */
-public void addMissingKeys(@NotNull WriteYaml fullYaml) {
-  ArrayList<String> missingKeys = getMissingKeys(fullYaml);
+ @param fullYaml     The yaml to get the keys from.
+ @param externalFile The external file that is having the keys added. (This is purely for logging
+ purposes). */
+private void addMissingKeys(@NotNull ReadYaml fullYaml, @NotNull File externalFile) {
+  if (this.equals(fullYaml)) return;
 
-  // Adds the missing nodes comment nodes to this yaml.
-  ArrayList<NodeTuple> commentNodes = new ArrayList<>(parsedYaml.getValue());
+  ArrayList<String> keys = new ArrayList<>();
+  ArrayList<Object> values = new ArrayList<>();
+  ArrayList<Node> nodeValues = new ArrayList<>();
 
-  for (String missingKey : missingKeys) {
-    NodeTuple missingNode = fullYaml.getNodeTuple(missingKey);
-    commentNodes.add(missingNode);
-  }
-
-  parsedYaml.setValue(commentNodes);
-
-  // Recalculates the new keys.
-  createMap();
-}
-
-/**
- Gets the keys that the given yaml has, but this yaml doesn't.
- @param fullYaml The given yaml to get the missing keys from.
- @return The keys that are in the given yaml, but aren't in this yaml. */
-private @NotNull ArrayList<String> getMissingKeys(@NotNull WriteYaml fullYaml) {
-  ArrayList<String> missingKeys = new ArrayList<>();
-
-
-  yamlLoop:
-  for (String key : fullYaml.yamlMap.keySet()) {
+  for (String key : fullYaml.getKeys()) {
     if (yamlMap.containsKey(key)) continue;
 
-    for (int i = 0; i < missingKeys.size(); i++) {
-      String missingKey = missingKeys.get(i);
+    keys.add(key);
+    values.add(fullYaml.yamlMap.get(key).parsedValue);
 
-      // If the key is a sub-key of a missing key, then don't add it.
-      if (key.startsWith(missingKey)) {
-        continue yamlLoop;
-      }
-
-      // If a missing key is a sub-key of this key then remove the sub-key.
-      if (missingKey.startsWith(key)) {
-        missingKeys.remove(i);
-        i--;
-      }
-    }
-
-    missingKeys.add(key);
+    // Gets the node containing the value from the full yaml.
+    NodeTuple nodeTuple = fullYaml.getNodeTuple(key);
+    NullCheck.notNull(nodeTuple, "node tuple");
+    nodeValues.add(nodeTuple.getValueNode());
   }
-  return missingKeys;
+
+  for (int i = 0; i < keys.size(); i++) {
+    String key = keys.get(i);
+    Object value = values.get(i);
+    Node tuple = nodeValues.get(i);
+
+    parsedYaml = addKeysRecursive(parsedYaml, "", key, value, tuple, new ArrayList<>());
+
+    // Logs that a missing key was added.
+    logger.log(LogType.EXTERNAL_MISSING_PATH, Lang.addingExternalMissingKey(externalFile.getPath(), key));
+  }
 }
 
 /**
- Sets the given key to the given value within the yaml.
- @param key   The yaml key to set the value of.
- @param value The string representation of the object to set the value as.
- @throws NullPointerException If either the key or value is null. */
-public void setValue(@NotNull String key, @NotNull String value) throws NullPointerException {
-  NullCheck.notNull(key, "key");
-  NullCheck.notNull(value, "value");
-
-  parsedYaml = setValueRecursive(key, parsedYaml, value);
-}
-
-/**
- Sets the given key to the given value within the yaml.
+ Adds the given key &amp; it's given value to the given root node.
  <p>
- <strong>This method should only be called by itself or {@link #setValue(String, String)}</strong>
- @param remainingKey A string containing a section of the key that needs to be matched by nodes
- within rootNode.
- @param rootNode     The node that contains the key &amp; value to set.
- @param value        The string value to set.
- @return A modified {@link MappingNode} that contains the newly set value. */
-private @NotNull MappingNode setValueRecursive(@NotNull String remainingKey, @NotNull MappingNode rootNode, @NotNull String value) {
-  // Stores the nodes that the root will have set as the value.
-  ArrayList<NodeTuple> modifiedNodes = new ArrayList<>();
+ This method does not support replacing existing keys.
+ @param rootNode        The root node to add keys relative to.
+ @param currentKey      The current key leading to the root node, from the initial root node.
+ @param key             The key being added to the yaml.
+ @param value           The value being added to the yaml, as its intended class.
+ @param copiedNodeValue The value node from the internal yaml that will be added to the root node.
+ @param indexPath       The index path to the new key.
+ @return The root node with the given key &amp; value added. */
+private @NotNull MappingNode addKeysRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull String key, @NotNull Object value, @NotNull Node copiedNodeValue, @NotNull ArrayList<Integer> indexPath) {
+  ArrayList<NodeTuple> newValues = new ArrayList<>();
+  boolean noneMatching = true;
 
-  // Iterates over the nodes that contain the current fragment of the key.
-  List<NodeTuple> nodes = rootNode.getValue();
-  for (int i = 0; i < nodes.size(); i++) {
+  List<NodeTuple> rootNodeValue = rootNode.getValue();
+  for (int index = 0; index < rootNodeValue.size(); index++) {
+    NodeTuple currentTuple = rootNodeValue.get(index);
 
-    NodeTuple node = nodes.get(i);
-    String nodeKey = getNodeKey(node);
+    // Create the key to this node by combining the key of this node & the key path to this node.
+    String nodeKey = currentKey + getNodeKey(currentTuple);
+    Node nodeValue = currentTuple.getValueNode();
 
-    // Checks if any of the keys match
-    if (!remainingKey.startsWith(nodeKey)) {
-      modifiedNodes.add(node);
+    // The fullstop is added to ensure it doesn't match part of a key.
+    if (!key.startsWith(nodeKey + ".")) {
+      newValues.add(currentTuple);
       continue;
     }
 
-    // If the index is bigger than the length of the key then the full key has been reached.
-    if (!remainingKey.contains("\\.")) {
-      ScalarNode oldValue = (ScalarNode) node.getValueNode();
+    // One node key matched so don't add the new value on this "layer".
+    noneMatching = false;
+
+    // If the node is a MappingNode then it contains sub-keys.
+    if (!(nodeValue instanceof MappingNode)) continue;
+
+    // Can be suppressed since the copy will return the same class.
+    @SuppressWarnings("unchecked") ArrayList<Integer> indexPathClone = (ArrayList<Integer>) indexPath.clone();
+    indexPathClone.add(index);
+
+    NodeTuple nodeTuple = new NodeTuple(
+        currentTuple.getKeyNode(),
+        addKeysRecursive((MappingNode) nodeValue, nodeKey + ".", key, value, nodeValue, indexPathClone));
+
+    newValues.add(nodeTuple);
+  }
+
+
+  if (noneMatching) {
+    // Calculates the new key for the node.
+    String tupleKey = key.substring(currentKey.length());
+    ScalarNode keyNode = new ScalarNode(Tag.STR, tupleKey, null, null, DumperOptions.ScalarStyle.PLAIN);
+
+    newValues.add(new NodeTuple(keyNode, copiedNodeValue));
+
+    indexPath.add(newValues.size());
+    yamlMap.put(key, new Value<>(indexPath, value));
+  }
+
+  rootNode.setValue(newValues);
+  return rootNode;
+}
+
+
+/**
+ Replaces the value at the given key with the given value. The replacement value needs to be an
+ instance of the class it is marked as.
+ @param key              The key to replace the value at.
+ @param replacementValue The new value of the key. */
+@InternalUse
+public void replaceValue(@NotNull String key, @NotNull Object replacementValue) {
+  if (!yamlMap.containsKey(key)) return;
+
+  Value<?> value = yamlMap.get(key);
+  replaceMapValueRecursive(parsedYaml, new ArrayList<>(value.yamlIndexPath), replacementValue);
+
+  yamlMap.put(key, new Value<>(value.yamlIndexPath, replacementValue));
+}
+
+
+/**
+ Sets the value of an existing key to the new value.
+ @param rootNode     The node to replace the value in.
+ @param indexPath    The path to the value being replaced.
+ @param replaceValue The value to override the old value with.
+ @return The root node with the specified value replaced. */
+@InternalUse
+private @NotNull MappingNode replaceMapValueRecursive(@NotNull MappingNode rootNode, @NotNull ArrayList<Integer> indexPath, @NotNull Object replaceValue) {
+  // The list will always have elements to remove, as recursion only occurs on mapping nodes,
+  // and the list is a path though the mapping nodes.
+  Integer nextIndex = indexPath.remove(0);
+
+  List<NodeTuple> nodes = rootNode.getValue();
+  NodeTuple pathTuple = nodes.get(nextIndex);
+  Node pathValue = pathTuple.getValueNode();
+
+  if (pathValue instanceof MappingNode) {
+    return replaceMapValueRecursive(rootNode, indexPath, replaceValue);
+  }
+
+  // Non-recursive section //
+
+  ArrayList<NodeTuple> newTuples = new ArrayList<>();
+  for (int i = 0; i < nodes.size(); i++) {
+    NodeTuple oldTuple = nodes.get(i);
+
+    // If it isn't the value to replace don't change it
+    if (i != indexPath.get(0)) {
+      newTuples.add(oldTuple);
+      continue;
+    }
+
+
+    // If it's a scalar node then just replace the value.
+    if (pathValue instanceof ScalarNode) {
+      ScalarNode value = (ScalarNode) pathValue;
 
       ScalarNode newValue = new ScalarNode(
-          oldValue.getTag(),
-          value,
-          // Even tho the marks contains line info in them, it's only used for debugging.
-          oldValue.getStartMark(),
-          oldValue.getEndMark(),
-          oldValue.getScalarStyle()
+          value.getTag(),
+          replaceValue.toString(),
+          value.getStartMark(),
+          value.getEndMark(),
+          value.getScalarStyle()
       );
 
-      modifiedNodes.add(new NodeTuple(node.getKeyNode(), newValue));
+      newTuples.add(new NodeTuple(oldTuple.getKeyNode(), newValue));
       continue;
     }
 
-    // This node will always be a mapping node, since only mapping nodes can have key-fragments
-    // and this code will only execute if there are more key-fragments to find.
-    MappingNode nextNode = ((MappingNode) node.getValueNode());
 
-    // Iterates over the modified rootNode
-    i = 0;
-    String subKey = remainingKey.substring(nodeKey.length());
-    rootNode = setValueRecursive(subKey, nextNode, value);
+    if (pathValue instanceof SequenceNode) {
+      SequenceNode value = (SequenceNode) pathValue;
+
+      // Create Scalar nodes from the replacement values.
+      ArrayList<Node> newNodes = new ArrayList<>();
+      for (String replacingValue : toStringList(replaceValue)) {
+
+        ScalarNode newNode = new ScalarNode(
+            Tag.STR, // Write the value as a string.
+            replacingValue,
+            null,
+            null,
+            DumperOptions.ScalarStyle.DOUBLE_QUOTED
+        );
+
+        newNodes.add(newNode);
+      }
+
+      // Create a new Sequence node with the new elements.
+      SequenceNode newValue = new SequenceNode(
+          value.getTag(),
+          newNodes,
+          value.getFlowStyle()
+      );
+
+      newTuples.add(new NodeTuple(oldTuple.getKeyNode(), newValue));
+    }
   }
 
-  rootNode.setValue(modifiedNodes);
+  // Update the content of the root node with the modified value.
+  rootNode.setValue(newTuples);
   return rootNode;
 }
 
 /**
+ Gets the string representation of all the values in a list.
+ @param list The list to get the string representation of the values from.
+ @return A list containing the string representation of the values. */
+private static @NotNull List<String> toStringList(@NotNull Object list) {
+  ArrayList<String> stringList = new ArrayList<>();
+
+  for (Object value : (List<?>) list) {
+    stringList.add(value.toString());
+  }
+
+  return stringList;
+}
+
+
+/**
  Parses the values within the yaml to the classes specified by the given yamlEnum.
  <p>
- <p></p>
- If any of the following scenarios occur, then a warning is logged and values parsed from the default
- yaml are used as a fallback.
- <p>
- - There is a key in the yaml enum that isn't in the parsed yaml.
- <p>
- - A value can't be parsed as the class it is marked as in the yaml enum.
+ If a value can't be parsed as the class it is marked as in the yaml enum, then a warning is output
+ to the logger &amp; the value inside the internal yaml is used as a fallback.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
- @param resourcePath The path to the parsed file. (only used for logging purposes) */
-@Override
-public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) {
-  Instance[] enums = yamlEnum.getEnumConstants();
+ @param externalYaml The path to the parsed file. (only used for logging purposes) */
+public void parseValues(@NotNull Class<? extends PersistentInstance> yamlEnum, @NotNull String internalYaml, @NotNull String externalYaml) throws DefaultConfigurationException {
+  // Parses the values from the default yaml first.
+  parseValues(yamlEnum, internalYaml);
 
-  for (Instance instanceEnum : enums) {
-
-    // Checks if the value exists in the file.
+  PersistentInstance[] enums = yamlEnum.getEnumConstants();
+  for (PersistentInstance instanceEnum : enums) {
     String keyPath = instanceEnum.getYamlPath();
-    if (!yamlMap.containsKey(keyPath)) {
-      logger.log(LogType.EXTERNAL_UNUSED_PATH, Lang.notInDefaultYaml(keyPath, resourcePath));
-      continue;
-    }
 
-    // Doesn't check if the class will be supported since it'll have been checked before.
-    SupportedClasses enumRepresentation;
-    try {
-      enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
-    }
-    catch (DefaultConfigurationException ignore) {continue;}
+    // An error should never be thrown from this as parsing the default values would throw it.
+    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
 
     // Checks if the value can be parsed as its intended class.
     Object rawValue = yamlMap.get(keyPath).parsedValue;
     boolean canParse = enumRepresentation.canParse(rawValue);
+    // If it can't then leave the default value parsed from the internal yaml.
     if (!canParse) {
-      logger.log(
-          LogType.USING_FALLBACK_VALUE,
-          Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), instanceEnum.getAssingedClass().getName()));
+      logger.log(LogType.USING_FALLBACK_VALUE, Lang.invalidExternalKey(keyPath, externalYaml, rawValue.getClass()));
       continue;
     }
 
-    // Parses the value as it's intended class & replaces it within that HashMap.
+    // Replaces the value from the internal yaml with the one from the external yaml.
     Object parsedValue = enumRepresentation.parse(rawValue);
     List<Integer> yamlIndexPath = yamlMap.get(keyPath).yamlIndexPath;
     yamlMap.put(keyPath, new Value<>(yamlIndexPath, parsedValue));

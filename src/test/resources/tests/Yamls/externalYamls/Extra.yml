@@ -2,20 +2,25 @@
 test:
   hmm: "Weee"
   nah: "..." #No comment
+  maybe: "?"
 
 eh: "idk"
 ehh: "idk" # guess i still don't know
 
 # lovely...
 ehhhhhh: "idkkkkkkkkkk"
+loop.sci: "with extra"
+
+# Reach for the stars!
+jump: "boing!"
+
+bigJump: "BOING!!" # Truly reach for the stars!
 
 #eiaou
 this:
   - "Is" #Not
   - "Sparta"
 
-multiple.keys.in.one: "Cats"
-
-# I almost forgot numbers existed
-number: 1
-numbers: [ 1, 2 ]
+multiple.keys:
+  in.one: "Cats"
+  with.two: "Dogs"

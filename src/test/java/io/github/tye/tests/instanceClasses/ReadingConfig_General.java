@@ -1,10 +1,10 @@
 package io.github.tye.tests.instanceClasses;
 
-import io.github.tye.easyconfigs.instances.ConfigInstance;
+import io.github.tye.easyconfigs.instances.reading.ReadingConfigInstance;
 
 import java.time.LocalDateTime;
 
-public enum Config_General implements ConfigInstance {
+public enum ReadingConfig_General implements ReadingConfigInstance {
   example(int.class, "example"),
   another_one(String.class, "another.one"),
   another_two(String.class, "another.two"),
@@ -16,7 +16,7 @@ public enum Config_General implements ConfigInstance {
   floats(float.class, "floatingAround"),
   note(String[].class, "note");
 
-Config_General(Class<?> markedClazz, String yamlPath) {
+ReadingConfig_General(Class<?> markedClazz, String yamlPath) {
   init(markedClazz, yamlPath);
 }
 }

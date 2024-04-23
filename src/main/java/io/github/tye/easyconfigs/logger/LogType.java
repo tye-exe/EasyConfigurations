@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 
 /**
- This enum contains the possible situations in which EasyConfigurations might output a log message &amp;
- the severity of the output message. */
+ This enum contains the possible situations in which EasyConfigurations might output a log message
+ &amp; the severity of the output message. */
 @InternalUse
 public enum LogType {
   /**
@@ -19,7 +19,12 @@ public enum LogType {
   /**
    This log is output when there are unused paths in the external config files for the implementing
    program. */
-  EXTERNAL_UNUSED_PATH(Level.WARNING),
+  EXTERNAL_UNUSED_PATH(Level.INFO),
+
+  /**
+   This log is output when an external yaml was missing keys compared to the internal yaml, so the
+   missing keys are appended to the external file, using the default value. */
+  EXTERNAL_MISSING_PATH(Level.INFO),
 
   /**
    This log is output when a value from an external config file cannot be parsed, so the default

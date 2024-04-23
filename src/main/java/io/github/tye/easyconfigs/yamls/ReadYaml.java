@@ -8,6 +8,7 @@ import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
+import io.github.tye.easyconfigs.logger.LogType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
@@ -24,6 +25,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.*;
+
+import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
 /**
  This class is for reading values from <a href="https://yaml.org/">yaml</a> data.
@@ -43,6 +46,7 @@ static {
   // Parses the Yaml with the comments.
   LoaderOptions loaderOptions = new LoaderOptions();
   loaderOptions = loaderOptions.setProcessComments(true);
+
   DumperOptions dumperOptions = new DumperOptions();
   dumperOptions.setProcessComments(true);
 
@@ -80,6 +84,27 @@ protected static class Value<T> {
     this.yamlIndexPath = yamlIndexPath;
     this.parsedValue = parsedValue;
   }
+}
+
+
+/**
+ Tests if a file is a valid yaml file.
+ @param yamlInputStream An inputStream containing the data of the yaml file.
+ @return True if the given inputStream contains a valid yaml file. Otherwise, false is returned.
+ @throws NullPointerException If the given input stream was null. */
+@InternalUse
+public static boolean isValidYaml(@NotNull InputStream yamlInputStream) throws NullPointerException {
+  NullCheck.notNull(yamlInputStream, "yaml input stream");
+  MappingNode parsed;
+
+  try {
+    parsed = (MappingNode) commentYaml.compose(new InputStreamReader(yamlInputStream));
+  }
+  catch (Exception ignore) {
+    return false;
+  }
+
+  return parsed != null;
 }
 
 
@@ -132,8 +157,8 @@ protected void createMap() {
  @param currentKey The current string key path that leads to the given mapping node.
  @param indexPath  Contains a list the stores the path of indexes to take to get to the value of the
  key.
- @return A {@link HashMap} containing the yaml keys in the keys &amp; the values containing a list with
- the indexes to take to get to the keys in the yaml node.
+ @return A {@link HashMap} containing the yaml keys in the keys &amp; the values containing a list
+ with the indexes to take to get to the keys in the yaml node.
  @see #yamlMap */
 @InternalUse
 private @NotNull HashMap<String, Value<?>> getMapRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull ArrayList<Integer> indexPath) {
@@ -183,7 +208,7 @@ protected @NotNull String getNodeKey(@NotNull NodeTuple node) throws NullPointer
  @param valueNode The node to get the value of.
  @return A string or List of strings that is the value of the given node. */
 @InternalUse
-private static @NotNull Object getNodeValue(@NotNull Node valueNode) {
+protected static @NotNull Object getNodeValue(@NotNull Node valueNode) {
   Object unparsedValue;
 
   // If a node is a ScalarNode then it only has one value.
@@ -248,9 +273,9 @@ public Set<String> getKeys() {
 @InternalUse
 public boolean identical(@Nullable Object otherYaml) {
   if (this == otherYaml) return true;
-  if (otherYaml == null || getClass() != otherYaml.getClass()) return false;
+  if (!(otherYaml instanceof ReadYaml)) return false;
 
-  WriteYaml identicalYaml = (WriteYaml) otherYaml;
+  ReadYaml identicalYaml = (ReadYaml) otherYaml;
   return this.getKeys().equals(identicalYaml.getKeys());
 }
 
@@ -264,9 +289,9 @@ public boolean identical(@Nullable Object otherYaml) {
 @Override
 public boolean equals(@Nullable Object otherYaml) {
   if (this == otherYaml) return true;
-  if (otherYaml == null || getClass() != otherYaml.getClass()) return false;
+  if (!(otherYaml instanceof ReadYaml)) return false;
 
-  WriteYaml equalYaml = (WriteYaml) otherYaml;
+  ReadYaml equalYaml = (ReadYaml) otherYaml;
   return this.getKeys().equals(equalYaml.getKeys());
 }
 
@@ -362,6 +387,34 @@ protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
 
 
 /**
+ Outputs a warning message to the logger if the given yaml contains keys that aren't used by the
+ given internal instance.
+ @param clazz The internal instance.
+ @param path  The path to the internal instance, this is purely used for logging purposes. */
+@InternalUse
+public void warnUnusedKeys(@NotNull Class<? extends Instance> clazz, @NotNull String path) {
+  // Checks if any default values in the file are missing from the enum.
+  for (String yamlPath : this.getKeys()) {
+
+    // Checks if the enum contains the key outlined in the file.
+    boolean contains = false;
+
+    for (Instance instance : clazz.getEnumConstants()) {
+      if (!yamlPath.equals(instance.getYamlPath())) continue;
+
+      contains = true;
+      break;
+    }
+
+    // Logs a warning if there's an unused path.
+    if (contains) continue;
+
+    logger.log(LogType.INTERNAL_UNUSED_PATH, Lang.unusedYamlPath(yamlPath, path));
+  }
+}
+
+
+/**
  Parses the values within the yaml to the classes specified by the given yamlEnum.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param resourcePath The path to the parsed file. (only used for logging purposes)
@@ -379,27 +432,27 @@ protected @Nullable NodeTuple getNodeTuple(@NotNull String key) {
 public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) throws DefaultConfigurationException {
   Instance[] enums = yamlEnum.getEnumConstants();
 
-  for (Instance instanceEnum : enums) {
+  for (Instance readingInstanceEnum : enums) {
 
     // Checks if the value exists in the default file.
-    String keyPath = instanceEnum.getYamlPath();
+    String keyPath = readingInstanceEnum.getYamlPath();
     if (!yamlMap.containsKey(keyPath)) {
       throw new DefaultConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
     }
 
     // Checks if the class is one supported by EasyConfigurations.
-    if (!SupportedClasses.existsAsEnum(instanceEnum.getAssingedClass())) {
-      String className = ClassName.getName(instanceEnum.getAssingedClass());
+    if (!SupportedClasses.existsAsEnum(readingInstanceEnum.getAssingedClass())) {
+      String className = ClassName.getName(readingInstanceEnum.getAssingedClass());
       throw new DefaultConfigurationException(Lang.classNotSupported(className));
     }
 
-    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
+    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(readingInstanceEnum.getAssingedClass());
 
     // Checks if the value can be parsed as its intended class.
     Object rawValue = yamlMap.get(keyPath).parsedValue;
     boolean canParse = enumRepresentation.canParse(rawValue);
     if (!canParse) {
-      throw new DefaultConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), instanceEnum.getAssingedClass().getName()));
+      throw new DefaultConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), readingInstanceEnum.getAssingedClass().getName()));
     }
 
     // Parses the value as it's intended class & replaces it within that HashMap.

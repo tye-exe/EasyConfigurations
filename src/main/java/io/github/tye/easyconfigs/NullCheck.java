@@ -19,7 +19,7 @@ public class NullCheck {
  @param object     The given object.
  @param objectName The name of the given object.
  @throws NullPointerException If the given object is null */
-@Contract("null, _ -> fail; !null, _ -> _")
+@Contract(value="null, _ -> fail; _, _ -> _")
 @InternalUse
 public static void notNull(@Nullable Object object, @NotNull String objectName) throws NullPointerException {
   if (object == null) throw new NullPointerException(Lang.notNull(objectName));

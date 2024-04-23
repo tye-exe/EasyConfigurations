@@ -1,5 +1,6 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
+import io.github.tye.easyconfigs.ClassName;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -25,31 +26,6 @@ public static @NotNull String configNotReadable(@NotNull String path) {
   default: return "";
   }
 }
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String externalConfigNotFound(@NotNull String path) {
-  switch (Config.getLanguage()) {
-
-  case ENGLISH: return "Unable to locate external configuration file at \"" + path + "\".";
-  default: return "";
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String externalConfigNotFile(@NotNull String path) {
-  switch (Config.getLanguage()) {
-
-  case ENGLISH: return "Item at \"" + path + "\" must be a file.";
-  default: return "";
-  }
-}
-
 
 /**
  @see Lang */
@@ -193,6 +169,63 @@ public static @NotNull String errorWhileParsingYaml() {
   switch (Config.getLanguage()) {
 
   case ENGLISH: return "An error was thrown when parsing the yaml.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String invalidExternalKey(String key, String filePath, Class<?> assignedClass) {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: {
+    return "\"" + key + "\" in \"" + filePath + "\" could not be parsed as the assigned class \"" + ClassName.getName(assignedClass) +
+           "\". The value in the default yaml will be used as a fallback.";
+  }
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String invalidYaml() {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "invalid-yaml";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String removingExternalUnusedKey(String filePath, String key) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "\"" + filePath + "\" contains the key \"" + key + "\". This key isn't used. It will be removed.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String addingExternalMissingKey(String filePath, String key) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "\"" + filePath + "\" is missing the key \"" + key + "\". This key will be added to the yaml with the default value.";
   default: return "";
 
   }

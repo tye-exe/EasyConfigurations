@@ -1,4 +1,4 @@
-package io.github.tye.easyconfigs.instances;
+package io.github.tye.easyconfigs.instances.reading;
 
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
@@ -6,9 +6,7 @@ import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.keys.Keys;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-import static io.github.tye.easyconfigs.EasyConfigurations.langInstance;
+import static io.github.tye.easyconfigs.EasyConfigurations.readOnlyLangInstance;
 
 /**
  This interface must be implemented by an enum to define it as an enum containing the different lang
@@ -20,7 +18,7 @@ import static io.github.tye.easyconfigs.EasyConfigurations.langInstance;
 @SuppressWarnings("unused")
 // These methods are intended for use projects using Easy Configurations as a dependency.
 @ExternalUse
-public interface LangInstance extends Instance {
+public interface ReadingLangInstance extends ReadingInstance {
 
 /**
  Gets the string response for the selected enum, with any matching keys replaced.
@@ -28,14 +26,14 @@ public interface LangInstance extends Instance {
  @return The modified string.
  @throws NotInitiatedException If a lang is retrieved before it is registered with
  {@link
- io.github.tye.easyconfigs.EasyConfigurations#registerLang(Class,
-     String) EasyConfigurations#registerLang(Class, String)} */
+ io.github.tye.easyconfigs.EasyConfigurations#registerReadOnlyLang(Class,
+     String) EasyConfigurations#registerReadOnlyLang(Class, String)} */
 @ExternalUse
 default @NotNull String get(@NotNull Keys... keys) throws NotInitiatedException {
   NullCheck.notNull(keys, "keys");
 
   // Won't be null as the lang will be initialized.
-  String response = Objects.requireNonNull(langInstance.getValue(getYamlPath())).toString();
+  String response = readOnlyLangInstance.getValue(getYamlPath()).toString();
 
   // Replaces the keys within the response with their set replace value.
   for (Keys registeredKey : keys) {
@@ -60,7 +58,13 @@ default @NotNull String get(@NotNull Keys... keys) throws NotInitiatedException 
  @param yamlPath The key path of the yaml value to parse as the lang. */
 @ExternalUse
 default void init(@NotNull String yamlPath) {
-  Instance.super.init(String.class, yamlPath);
+  ReadingInstanceHandler.yamlPath.put(this, yamlPath);
+}
+
+
+@Override
+default Class<?> getAssingedClass() {
+  return String.class;
 }
 }
 

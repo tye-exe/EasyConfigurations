@@ -39,9 +39,9 @@ ___
 Let’s look at a bare-bones implementation for configuration, observe the following code snippet:
 
 ```java
-import io.github.tye.easyconfigs.instances.ConfigInstance;
+import io.github.tye.easyconfigs.instances.reading.ReadingConfigInstance;
 
-public enum Configs implements ConfigInstance {
+public enum Configs implements ReadingConfigInstance {
 
   USERNAME(String.class, "username");
 
@@ -74,7 +74,8 @@ The second value is the path to a value(s) inside the configuration yaml file. T
 if the path traverses any sub-keys, then they **must** be separated by a `.`. The `:` char **must not** be included. An
 example: `startup.updates.check`.
 
-The name of the enum instance can be anything, but I'd recommend having it match the yaml key. If you decide to use the
+The name of the enum readingInstance can be anything, but I'd recommend having it match the yaml key. If you decide to
+use the
 yaml key, remember to swap `.` for `_`, as `.` aren't allowed in enum names.
 
 ___
@@ -83,9 +84,9 @@ ___
 A basic implementation of lang would appear as follows:
 
 ```java
-import io.github.tye.easyconfigs.instances.LangInstance;
+import io.github.tye.easyconfigs.instances.reading.ReadingLangInstance;
 
-public enum Langs implements LangInstance {
+public enum Langs implements ReadingLangInstance {
 
   WELCOME("welcome");
 
@@ -189,10 +190,10 @@ public class Main() {
 public static void main(String[] args) throws Exception {
 
   // Registers Configs
-  EasyConfigurations.registerConfig(myConfigs.class, "/myResourceConfigPath/my_configs.yml");
+  EasyConfigurations.registerReadOnlyConfig(myConfigs.class, "/myResourceConfigPath/my_configs.yml");
 
   // Registers Lang
-  EasyConfigurations.registerLang(myLangs.class, "/myResourceLangPath/my_lang.yml");
+  EasyConfigurations.registerReadOnlyLang(myLangs.class, "/myResourceLangPath/my_lang.yml");
 
 
   // Optional //

@@ -3,7 +3,7 @@ package io.github.tye.tests;
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
-import io.github.tye.easyconfigs.instances.InstanceHandler;
+import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
 import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.tests.instanceClasses.*;
@@ -19,9 +19,11 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
-public class ReadingYamlTests {
+public class ReadYamlTests {
 
 
+/**
+ Empty file should throw exception. */
 @Test
 public void empty() throws IOException {
   InputStream yamlData = EasyConfigurations.class.getResourceAsStream("/tests/Yamls/internalYamls/Config_Empty.yml");
@@ -35,21 +37,25 @@ public void empty() throws IOException {
   yamlData.close();
 }
 
+/**
+ Yaml with null in it should throw exception */
 @Test
 public void containsNull() {
   // Nulls aren't allowed by EasyConfigurations.
   assertThrowsExactly(
       DefaultConfigurationException.class,
-      () -> InstanceHandler.defaultYaml("/tests/Yamls/internalYamls/Config_HasNull.yml", Config_HasNull.class));
+      () -> new ReadingInstanceHandler("/tests/Yamls/internalYamls/Config_HasNull.yml", ReadingConfig_HasNull.class));
 }
 
+/**
+ A warning should be output for the extra keys */
 @Test
 public void warnExtra() throws IOException, DefaultConfigurationException {
   // Redirects the logs to a custom logger.
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
 
-  EasyConfigurations.registerConfig(Config_General.class, "/tests/Yamls/internalYamls/Config_ExtraKey.yml");
+  EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_ExtraKey.yml");
 
   // Gets the log output & verifies that it was the correct log.
   DebugLogger.LogContainer logged = debugLogger.output.get(0);
@@ -60,13 +66,17 @@ public void warnExtra() throws IOException, DefaultConfigurationException {
       logged.logMessage);
 }
 
+/**
+ Error should be thrown if values are missing from the yaml file. */
 @Test
 public void missing() {
   assertThrowsExactly(
       DefaultConfigurationException.class,
-      () -> EasyConfigurations.registerConfig(Config_General.class, "/tests/Yamls/internalYamls/Config_Missing.yml"));
+      () -> EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_Missing.yml"));
 }
 
+/**
+ Error should be thrown if the file can't be parsed as a yaml file. */
 @Test
 public void invalidData() {
   ByteArrayInputStream invalidData = new ByteArrayInputStream("This string does not AT ALL follow the yaml format :).".getBytes());
@@ -77,14 +87,18 @@ public void invalidData() {
 }
 
 
+/**
+ Error should be thrown if a class is marked as one EasyConfigs doesn't support. */
 @Test
 public void unsupportedClass() {
   assertThrowsExactly(
       DefaultConfigurationException.class,
-      () -> EasyConfigurations.registerConfig(Config_Unsupported.class, "/tests/Yamls/internalYamls/Config_UnsupportedClass.yml"));
+      () -> EasyConfigurations.registerReadOnlyConfig(ReadingConfig_Unsupported.class, "/tests/Yamls/internalYamls/Config_UnsupportedClass.yml"));
 }
 
 
+/**
+ The parsed content of the general file. */
 private static final HashMap<String, Object> config_General;
 
 static {
@@ -102,18 +116,21 @@ static {
   config_General = preFormattedValues;
 }
 
+/**
+ Tests if the values are parsed into their correct classes. */
 @Test
 public void genericConfig() throws IOException, DefaultConfigurationException {
-  EasyConfigurations.registerConfig(Config_General.class, "/tests/Yamls/internalYamls/Config_General.yml");
+  EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_General.yml");
 
-  for (Config_General value : Config_General.values()) {
+  for (ReadingConfig_General value : ReadingConfig_General.values()) {
     assertEquals(
         config_General.get(value.getYamlPath()),
         value.getValue());
   }
 }
 
-
+/**
+ Content of lang file */
 private static final HashMap<String, Object> lang_General;
 
 static {
@@ -126,11 +143,13 @@ static {
   lang_General = preFormattedValues;
 }
 
+/**
+ Tests parsing the lang file correctly */
 @Test
 public void genericLang() throws IOException, DefaultConfigurationException {
-  EasyConfigurations.registerLang(Lang_General.class, "/tests/Yamls/internalYamls/Lang_General.yml");
+  EasyConfigurations.registerReadOnlyLang(ReadingLang_General.class, "/tests/Yamls/internalYamls/Lang_General.yml");
 
-  for (Lang_General value : Lang_General.values()) {
+  for (ReadingLang_General value : ReadingLang_General.values()) {
     assertEquals(
         lang_General.get(value.getYamlPath()),
         value.get());
@@ -138,51 +157,55 @@ public void genericLang() throws IOException, DefaultConfigurationException {
   }
 }
 
+/**
+ Arrays in lang should throw errors */
 @Test
 public void lang_arrayError() {
   assertThrowsExactly(
       DefaultConfigurationException.class,
-      () -> EasyConfigurations.registerLang(Lang_ArrayFail.class, "/tests/Yamls/internalYamls/Lang_ArrayFail.yml"));
+      () -> EasyConfigurations.registerReadOnlyLang(ReadingLang_ArrayFail.class, "/tests/Yamls/internalYamls/Lang_ArrayFail.yml"));
 }
 
+/**
+ Tests using the keys within the lang. */
 @Test
 public void lang_keys() throws IOException, DefaultConfigurationException {
-  EasyConfigurations.registerLang(Lang_Keys.class, "/tests/Yamls/internalYamls/Lang_Keys.yml");
+  EasyConfigurations.registerReadOnlyLang(ReadingLang_Keys.class, "/tests/Yamls/internalYamls/Lang_Keys.yml");
 
   assertEquals(
       "I know a good joke! {joke}",
-      Lang_Keys.joke.get()
+      ReadingLang_Keys.joke.get()
               );
 
   assertEquals(
       "I know a good joke! ",
-      Lang_Keys.joke.get(Keys.joke)
+      ReadingLang_Keys.joke.get(Keys.joke)
               );
 
   assertEquals(
       "I know a good joke! My life!",
-      Lang_Keys.joke.get(Keys.joke.replaceWith("My life!"))
+      ReadingLang_Keys.joke.get(Keys.joke.replaceWith("My life!"))
               );
 
   assertEquals(
       "I know a good joke! Big oxygen!",
-      Lang_Keys.joke.get(Keys.joke.replaceWith("Big oxygen!"))
+      ReadingLang_Keys.joke.get(Keys.joke.replaceWith("Big oxygen!"))
               );
 
   // Keys don't persist.
   assertEquals(
       "I know a good joke! ",
-      Lang_Keys.joke.get(Keys.joke)
+      ReadingLang_Keys.joke.get(Keys.joke)
               );
 
   assertEquals(
       "I know a bad joke! Potato",
-      Lang_Keys.unJoke.get(Keys.unJoke.replaceWith("Potato"))
+      ReadingLang_Keys.unJoke.get(Keys.unJoke.replaceWith("Potato"))
               );
 
   assertEquals(
       "I know a bad joke! ",
-      Lang_Keys.unJoke.get(Keys.unJoke)
+      ReadingLang_Keys.unJoke.get(Keys.unJoke)
               );
 
 }

@@ -1,8 +1,8 @@
 package io.github.tye.tests.instanceClasses;
 
-import io.github.tye.easyconfigs.instances.LangInstance;
+import io.github.tye.easyconfigs.instances.reading.ReadingLangInstance;
 
-public enum Lang_General implements LangInstance {
+public enum ReadingLang_General implements ReadingLangInstance {
   lyrics_never("lyrics.never"),
   lyrics_give("lyrics.give"),
   lyrics_up("lyrics.up"),
@@ -11,7 +11,7 @@ public enum Lang_General implements LangInstance {
 
   basics("backToBasics");
 
-Lang_General(String yamlPath) {
+ReadingLang_General(String yamlPath) {
   init(yamlPath);
 }
 }
