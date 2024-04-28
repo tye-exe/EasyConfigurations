@@ -1,11 +1,8 @@
 package io.github.tye.easyconfigs.exceptions;
 
 /**
- This exception is thrown if a config or lang value is access before it has been registered with
- {@link io.github.tye.easyconfigs.EasyConfigurations#registerReadOnlyConfig(Class, String)
- EasyConfigurations#registerReadOnlyConfig(Class, String)} or
- {@link io.github.tye.easyconfigs.EasyConfigurations#registerReadOnlyLang(Class, String)
- EasyConfigurations#registerReadOnlyLang(Class, String)} */
+ This exception is thrown if a config or lang value is access before it has been registered within
+ {@link io.github.tye.easyconfigs.EasyConfigurations EasyConfigurations} */
 public class NotInitiatedException extends RuntimeException {
 
 /**

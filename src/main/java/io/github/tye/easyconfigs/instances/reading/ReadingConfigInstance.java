@@ -20,7 +20,7 @@ import java.util.List;
 import static io.github.tye.easyconfigs.EasyConfigurations.readOnlyConfigInstance;
 
 /**
- This interface must be implemented by an enum to define it as an enum containing the different
+ This interface must be implemented by an enum to define it as an enum containing different read only
  config options.
  <p>
  Please reference the <a

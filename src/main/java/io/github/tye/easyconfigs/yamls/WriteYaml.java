@@ -4,7 +4,6 @@ import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.instances.persistent.PersistentInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
@@ -22,6 +21,8 @@ import java.util.List;
 
 import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
+/**
+ This class is for reading &amp; writing values from <a href="https://yaml.org/">yaml</a> data. */
 public class WriteYaml extends ReadYaml {
 
 /**
@@ -33,6 +34,7 @@ public class WriteYaml extends ReadYaml {
  @throws ConfigurationException If there was an error in the yamls.
  @throws NullPointerException   If either of the given input streams are null. */
 public WriteYaml(@NotNull String internalPath, @NotNull File externalFile, @NotNull Class<? extends Instance> yamlEnum) throws IOException, ConfigurationException, NullPointerException {
+  // Should never throw an exception as the file is checked if it is valid before this constructor is called.
   super(Files.newInputStream(externalFile.toPath()));
 
   try (InputStream internalInputStream = yamlEnum.getResourceAsStream(internalPath)) {
@@ -245,7 +247,7 @@ private @NotNull MappingNode replaceMapValueRecursive(@NotNull MappingNode rootN
   Node pathValue = pathTuple.getValueNode();
 
   if (pathValue instanceof MappingNode) {
-    return replaceMapValueRecursive(rootNode, indexPath, replaceValue);
+    return replaceMapValueRecursive((MappingNode) pathValue, indexPath, replaceValue);
   }
 
   // Non-recursive section //
@@ -254,8 +256,8 @@ private @NotNull MappingNode replaceMapValueRecursive(@NotNull MappingNode rootN
   for (int i = 0; i < nodes.size(); i++) {
     NodeTuple oldTuple = nodes.get(i);
 
-    // If it isn't the value to replace don't change it
-    if (i != indexPath.get(0)) {
+    // If it isn't the value to replace don't change it.
+    if (i != nextIndex) {
       newTuples.add(oldTuple);
       continue;
     }
@@ -334,7 +336,7 @@ private static @NotNull List<String> toStringList(@NotNull Object list) {
  to the logger &amp; the value inside the internal yaml is used as a fallback.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param externalYaml The path to the parsed file. (only used for logging purposes) */
-public void parseValues(@NotNull Class<? extends PersistentInstance> yamlEnum, @NotNull String internalYaml, @NotNull String externalYaml) throws DefaultConfigurationException {
+public void parseValues(@NotNull Class<? extends PersistentInstance> yamlEnum, @NotNull String internalYaml, @NotNull String externalYaml) throws ConfigurationException {
   // Parses the values from the default yaml first.
   parseValues(yamlEnum, internalYaml);
 

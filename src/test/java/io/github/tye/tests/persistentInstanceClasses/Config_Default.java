@@ -2,7 +2,7 @@ package io.github.tye.tests.persistentInstanceClasses;
 
 import io.github.tye.easyconfigs.instances.persistent.PersistentConfigInstance;
 
-public enum DefaultConfig implements PersistentConfigInstance {
+public enum Config_Default implements PersistentConfigInstance {
   hmm(String.class, "test.hmm"),
   nah(String.class, "test.nah"),
   eh(String.class, "eh"),
@@ -16,7 +16,7 @@ public enum DefaultConfig implements PersistentConfigInstance {
   ;
 
 
-DefaultConfig(Class<?> instanceOf, String yamlPath) {
+Config_Default(Class<?> instanceOf, String yamlPath) {
   init(instanceOf, yamlPath);
 }
 }

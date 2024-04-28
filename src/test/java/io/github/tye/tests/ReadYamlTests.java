@@ -2,11 +2,14 @@ package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
+import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.instances.persistent.PersistentInstanceHandler;
 import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
 import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.tests.instanceClasses.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -16,11 +19,17 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReadYamlTests {
 
+@BeforeEach
+public void reset_environment() {
+  EasyConfigurations.persistentConfigInstance = new PersistentInstanceHandler();
+  EasyConfigurations.persistentLangInstance = new PersistentInstanceHandler();
+  EasyConfigurations.readOnlyLangInstance = new ReadingInstanceHandler();
+  EasyConfigurations.readOnlyConfigInstance = new ReadingInstanceHandler();
+}
 
 /**
  Empty file should throw exception. */
@@ -43,14 +52,14 @@ public void empty() throws IOException {
 public void containsNull() {
   // Nulls aren't allowed by EasyConfigurations.
   assertThrowsExactly(
-      DefaultConfigurationException.class,
+      ConfigurationException.class,
       () -> new ReadingInstanceHandler("/tests/Yamls/internalYamls/Config_HasNull.yml", ReadingConfig_HasNull.class));
 }
 
 /**
  A warning should be output for the extra keys */
 @Test
-public void warnExtra() throws IOException, DefaultConfigurationException {
+public void warnExtra() throws IOException, ConfigurationException {
   // Redirects the logs to a custom logger.
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
@@ -71,7 +80,7 @@ public void warnExtra() throws IOException, DefaultConfigurationException {
 @Test
 public void missing() {
   assertThrowsExactly(
-      DefaultConfigurationException.class,
+      ConfigurationException.class,
       () -> EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_Missing.yml"));
 }
 
@@ -92,7 +101,7 @@ public void invalidData() {
 @Test
 public void unsupportedClass() {
   assertThrowsExactly(
-      DefaultConfigurationException.class,
+      ConfigurationException.class,
       () -> EasyConfigurations.registerReadOnlyConfig(ReadingConfig_Unsupported.class, "/tests/Yamls/internalYamls/Config_UnsupportedClass.yml"));
 }
 
@@ -119,7 +128,7 @@ static {
 /**
  Tests if the values are parsed into their correct classes. */
 @Test
-public void genericConfig() throws IOException, DefaultConfigurationException {
+public void genericConfig() throws IOException, ConfigurationException {
   EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_General.yml");
 
   for (ReadingConfig_General value : ReadingConfig_General.values()) {
@@ -146,7 +155,7 @@ static {
 /**
  Tests parsing the lang file correctly */
 @Test
-public void genericLang() throws IOException, DefaultConfigurationException {
+public void genericLang() throws IOException, ConfigurationException {
   EasyConfigurations.registerReadOnlyLang(ReadingLang_General.class, "/tests/Yamls/internalYamls/Lang_General.yml");
 
   for (ReadingLang_General value : ReadingLang_General.values()) {
@@ -162,14 +171,14 @@ public void genericLang() throws IOException, DefaultConfigurationException {
 @Test
 public void lang_arrayError() {
   assertThrowsExactly(
-      DefaultConfigurationException.class,
+      ConfigurationException.class,
       () -> EasyConfigurations.registerReadOnlyLang(ReadingLang_ArrayFail.class, "/tests/Yamls/internalYamls/Lang_ArrayFail.yml"));
 }
 
 /**
  Tests using the keys within the lang. */
 @Test
-public void lang_keys() throws IOException, DefaultConfigurationException {
+public void lang_keys() throws IOException, ConfigurationException {
   EasyConfigurations.registerReadOnlyLang(ReadingLang_Keys.class, "/tests/Yamls/internalYamls/Lang_Keys.yml");
 
   assertEquals(
@@ -208,5 +217,23 @@ public void lang_keys() throws IOException, DefaultConfigurationException {
       ReadingLang_Keys.unJoke.get(Keys.unJoke)
               );
 
+}
+
+/**
+ Tests if the config hasn't been initiated it should throw the respective exception. */
+@Test
+public void notInitiated() {
+  assertThrowsExactly(NotInitiatedException.class, ReadingConfig_General.time::getValue);
+}
+
+/**
+ Tests if a config is got as the incorrect type the respective exception should be thrown. */
+@Test
+public void wrongClazz() throws IOException, ConfigurationException {
+  EasyConfigurations.registerReadOnlyConfig(ReadingConfig_General.class, "/tests/Yamls/internalYamls/Config_General.yml");
+
+  assertThrowsExactly(NotOfClassException.class, ReadingConfig_General.floats::getAsString);
+  assertThrowsExactly(NotOfClassException.class, ReadingConfig_General.floats::getAsFloatList);
+  assertDoesNotThrow(ReadingConfig_General.floats::getAsFloat);
 }
 }

@@ -5,7 +5,6 @@ import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
@@ -95,16 +94,16 @@ protected static class Value<T> {
 @InternalUse
 public static boolean isValidYaml(@NotNull InputStream yamlInputStream) throws NullPointerException {
   NullCheck.notNull(yamlInputStream, "yaml input stream");
-  MappingNode parsed;
 
   try {
-    parsed = (MappingNode) commentYaml.compose(new InputStreamReader(yamlInputStream));
+    Node composed = commentYaml.compose(new InputStreamReader(yamlInputStream));
+    // If it's not a mapping node then it's not counted as valid.
+    // This also acts as a null check.
+    return composed instanceof MappingNode;
   }
   catch (Exception ignore) {
     return false;
   }
-
-  return parsed != null;
 }
 
 
@@ -119,19 +118,22 @@ public static boolean isValidYaml(@NotNull InputStream yamlInputStream) throws N
 public ReadYaml(@NotNull InputStream yamlInputStream) throws IOException, ConfigurationException {
   if (yamlInputStream == null) throw new IOException(Lang.notNull("yamlInputStream"));
 
+  Node composed;
   try {
     // Parses the Yaml with the comments.
-    parsedYaml = (MappingNode) commentYaml.compose(new InputStreamReader(yamlInputStream));
+    composed = commentYaml.compose(new InputStreamReader(yamlInputStream));
   }
   catch (Exception e) {
     // If there was an error / runtime error parsing the yaml data then format it into an exception.
     throw new ConfigurationException(Lang.errorWhileParsingYaml(), e.getCause());
   }
 
-  // If the returned value is null then that should also be counted as an error.
-  if (parsedYaml == null) {
+  // If the returned value is null or not a MappingNode, then that should also be counted as an error.
+  if (!(composed instanceof MappingNode)) {
     throw new ConfigurationException(Lang.errorWhileParsingYaml());
   }
+
+  parsedYaml = (MappingNode) composed;
 
   // Computes a HashMap representation of the yaml.
   createMap();
@@ -418,7 +420,7 @@ public void warnUnusedKeys(@NotNull Class<? extends Instance> clazz, @NotNull St
  Parses the values within the yaml to the classes specified by the given yamlEnum.
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param resourcePath The path to the parsed file. (only used for logging purposes)
- @throws DefaultConfigurationException If:
+ @throws ConfigurationException If:
  <p>
  - There is a key in the yaml enum that isn't in the parsed
  yaml.
@@ -429,7 +431,7 @@ public void warnUnusedKeys(@NotNull Class<? extends Instance> clazz, @NotNull St
  - A value can't be parsed as the class it is marked as in the
  yaml enum. */
 @InternalUse
-public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) throws DefaultConfigurationException {
+public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) throws ConfigurationException {
   Instance[] enums = yamlEnum.getEnumConstants();
 
   for (Instance readingInstanceEnum : enums) {
@@ -437,13 +439,13 @@ public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull St
     // Checks if the value exists in the default file.
     String keyPath = readingInstanceEnum.getYamlPath();
     if (!yamlMap.containsKey(keyPath)) {
-      throw new DefaultConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
+      throw new ConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
     }
 
     // Checks if the class is one supported by EasyConfigurations.
     if (!SupportedClasses.existsAsEnum(readingInstanceEnum.getAssingedClass())) {
       String className = ClassName.getName(readingInstanceEnum.getAssingedClass());
-      throw new DefaultConfigurationException(Lang.classNotSupported(className));
+      throw new ConfigurationException(Lang.classNotSupported(className));
     }
 
     SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(readingInstanceEnum.getAssingedClass());
@@ -452,7 +454,7 @@ public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull St
     Object rawValue = yamlMap.get(keyPath).parsedValue;
     boolean canParse = enumRepresentation.canParse(rawValue);
     if (!canParse) {
-      throw new DefaultConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), readingInstanceEnum.getAssingedClass().getName()));
+      throw new ConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), readingInstanceEnum.getAssingedClass().getName()));
     }
 
     // Parses the value as it's intended class & replaces it within that HashMap.

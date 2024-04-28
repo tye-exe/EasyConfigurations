@@ -2,10 +2,14 @@ package io.github.tye.tests;
 
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.instances.persistent.PersistentInstanceHandler;
+import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.easyconfigs.yamls.WriteYaml;
-import io.github.tye.tests.persistentInstanceClasses.DefaultConfig;
+import io.github.tye.tests.persistentInstanceClasses.Config_Default;
+import io.github.tye.tests.persistentInstanceClasses.Lang_Default;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -22,6 +26,14 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WriteYamlTests {
+
+@BeforeEach
+public void reset_environment() {
+  EasyConfigurations.persistentConfigInstance = new PersistentInstanceHandler();
+  EasyConfigurations.persistentLangInstance = new PersistentInstanceHandler();
+  EasyConfigurations.readOnlyLangInstance = new ReadingInstanceHandler();
+  EasyConfigurations.readOnlyConfigInstance = new ReadingInstanceHandler();
+}
 
 /**
  Gets an input stream from an internal resource. */
@@ -51,11 +63,11 @@ public void extra() throws IOException, ConfigurationException {
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
 
-  ReadYaml fullYaml = new ReadYaml(getResource("/tests/Yamls/externalYamls/DefaultYaml.yml"));
+  ReadYaml fullYaml = new ReadYaml(getResource("/tests/Yamls/externalYamls/Config_DefaultYaml.yml"));
   WriteYaml yaml = new WriteYaml(
-      "/tests/Yamls/externalYamls/DefaultYaml.yml", // Full yaml
-      getFile("/tests/Yamls/externalYamls/Extra.yml"), // Broken yaml
-      DefaultConfig.class
+      "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", // Full yaml
+      getFile("/tests/Yamls/externalYamls/Config_Extra.yml"), // Broken yaml
+      Config_Default.class
   );
 
   assertEquals(fullYaml, yaml);
@@ -84,11 +96,11 @@ public void messedUp() throws IOException, ConfigurationException {
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
 
-  ReadYaml fullYaml = new ReadYaml(getResource("/tests/Yamls/externalYamls/DefaultYaml.yml"));
+  ReadYaml fullYaml = new ReadYaml(getResource("/tests/Yamls/externalYamls/Config_DefaultYaml.yml"));
   WriteYaml yaml = new WriteYaml(
-      "/tests/Yamls/externalYamls/DefaultYaml.yml", // Full yaml
-      getFile("/tests/Yamls/externalYamls/MessedUp.yml"), // External yaml
-      DefaultConfig.class
+      "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", // Full yaml
+      getFile("/tests/Yamls/externalYamls/Config_MessedUp.yml"), // External yaml
+      Config_Default.class
   );
 
   assertEquals(fullYaml, yaml);
@@ -117,8 +129,8 @@ public void invalidInternal() {
   File invalidTest = new File(tempDir, "beep.test"); // Exception will be thrown before anything is done with the file.
 
   assertThrowsExactly(
-      DefaultConfigurationException.class,
-      () -> EasyConfigurations.registerPersistentConfig(DefaultConfig.class, "/tests/Yamls/Invalid.yml", invalidTest)
+      ConfigurationException.class,
+      () -> EasyConfigurations.registerPersistentConfig(Config_Default.class, "/tests/Yamls/Invalid.yml", invalidTest)
                      );
 }
 
@@ -156,7 +168,7 @@ public void invalidExternal() throws IOException, ConfigurationException {
     fileWriter.write("This is really not valid data.");
   }
 
-  EasyConfigurations.registerPersistentConfig(DefaultConfig.class, "/tests/Yamls/externalYamls/DefaultYaml.yml", invalidTest);
+  EasyConfigurations.registerPersistentConfig(Config_Default.class, "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", invalidTest);
 
   String replacedData = new String(Files.readAllBytes(invalidTest.toPath()));
   assertEquals(correctData, replacedData);
@@ -176,7 +188,7 @@ public void invalidExternal() throws IOException, ConfigurationException {
 public void completeCopy() throws IOException, ConfigurationException {
   File copyTest = new File(tempDir, "completeCopy.test");
 
-  EasyConfigurations.registerPersistentConfig(DefaultConfig.class, "/tests/Yamls/externalYamls/DefaultYaml.yml", copyTest);
+  EasyConfigurations.registerPersistentConfig(Config_Default.class, "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", copyTest);
 
   String fileData = new String(Files.readAllBytes(copyTest.toPath()));
   assertEquals(correctData, fileData);
@@ -206,9 +218,12 @@ static {
  Tests if the correct values were parsed as their respective classes from the default yaml. */
 @Test
 public void parsedClazz() throws IOException, ConfigurationException {
-  EasyConfigurations.registerPersistentConfig(DefaultConfig.class, "/tests/Yamls/externalYamls/DefaultYaml.yml", getFile("/tests/Yamls/externalYamls/DefaultYaml.yml"));
+  EasyConfigurations.registerPersistentConfig(
+      Config_Default.class,
+      "/tests/Yamls/externalYamls/Config_DefaultYaml.yml",
+      getFile("/tests/Yamls/externalYamls/Config_DefaultYaml.yml"));
 
-  for (DefaultConfig yamlValue : DefaultConfig.values()) {
+  for (Config_Default yamlValue : Config_Default.values()) {
     Object correctValue = preFormattedValues.get(yamlValue.getYamlPath());
 
     assertEquals(correctValue, yamlValue.getValue());
@@ -216,5 +231,68 @@ public void parsedClazz() throws IOException, ConfigurationException {
 
 }
 
+/**
+ Test lang parsing. */
+@Test
+public void parsingLang() throws IOException, ConfigurationException {
+  EasyConfigurations.registerPersistentLang(Lang_Default.class, "/tests/Yamls/externalYamls/Lang_Default.yml", getFile("/tests/Yamls/externalYamls/Lang_Default.yml"));
 
+  assertEquals("Many, a many word!", Lang_Default.word.get());
+  assertEquals("Many, a many more words!", Lang_Default.words.get());
+}
+
+
+@Test
+public void replaceTest() throws IOException, ConfigurationException, InterruptedException {
+  File externalFile = getFile("/tests/Yamls/externalYamls/Config_DefaultYaml.yml");
+
+  EasyConfigurations.registerPersistentConfig(
+      Config_Default.class,
+      "/tests/Yamls/externalYamls/Config_DefaultYaml.yml",
+      externalFile);
+
+  // Tests replacing invalid values
+  assertThrowsExactly(NotOfClassException.class, () -> Config_Default.hmm.replaceValue(2));
+  assertThrowsExactly(NotOfClassException.class, () -> Config_Default.numbers.replaceValue(9));
+
+  // Tests replacing a value
+  assertEquals(
+      preFormattedValues.get("test.nah"),
+      Config_Default.nah.getAsString());
+
+  Config_Default.nah.replaceValue("Yar in fact");
+
+  assertEquals(
+      "Yar in fact",
+      Config_Default.nah.getAsString());
+
+  // Tests replacing an array value
+  assertEquals(
+      preFormattedValues.get("numbers"),
+      Config_Default.numbers.getAsIntegerList());
+
+  Config_Default.numbers.replaceValue(Arrays.asList(1, 2, 3));
+
+  assertEquals(
+      Arrays.asList(1, 2, 3),
+      Config_Default.numbers.getAsIntegerList());
+
+
+  // Sleep for one second, so the thread can update the file.
+  Thread.sleep(1000);
+
+  // Tests writing the value to the file
+  EasyConfigurations.registerPersistentConfig(
+      Config_Default.class,
+      "/tests/Yamls/externalYamls/Config_DefaultYaml.yml",
+      externalFile);
+
+  assertEquals(
+      "Yar in fact",
+      Config_Default.nah.getAsString());
+
+  assertEquals(
+      Arrays.asList(1, 2, 3),
+      Config_Default.numbers.getAsIntegerList());
+}
 }

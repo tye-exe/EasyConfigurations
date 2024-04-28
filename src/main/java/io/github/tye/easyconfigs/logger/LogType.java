@@ -30,7 +30,11 @@ public enum LogType {
    This log is output when a value from an external config file cannot be parsed, so the default
    internal value is used as a fallback. */
   USING_FALLBACK_VALUE(Level.SEVERE),
-  ;
+
+  /**
+   This log is output when a value is replaced within a persistent yaml &amp; the updated value is
+   unable to be written to the external file. */
+  FAILED_EXTERNAL_UPDATE(Level.WARNING);
 
 /**
  The severity of the log message. */

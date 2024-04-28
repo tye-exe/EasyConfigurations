@@ -1,7 +1,7 @@
 package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
+import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
@@ -455,9 +455,9 @@ public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
  Matches the given class to an enum inside {@link SupportedClasses}.
  @param classToMatch The given class.
  @return The enum that represents the given class.
- @throws DefaultConfigurationException If the given class doesn't match any supported classes. */
+ @throws ConfigurationException If the given class doesn't match any supported classes. */
 @InternalUse
-public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws DefaultConfigurationException {
+public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch) throws ConfigurationException {
   SupportedClasses[] supportedClasses = SupportedClasses.class.getEnumConstants();
 
   // Loops over this class to find if any enums support the class to match.
@@ -468,7 +468,7 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
   }
 
   String className = ClassName.getName(classToMatch);
-  throw new DefaultConfigurationException(Lang.classNotSupported(className));
+  throw new ConfigurationException(Lang.classNotSupported(className));
 }
 
 

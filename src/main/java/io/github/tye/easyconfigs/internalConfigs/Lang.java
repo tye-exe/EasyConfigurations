@@ -58,19 +58,6 @@ public static @NotNull String containsNull(@Nullable String objectName) {
  @see Lang */
 @Contract(pure=true)
 @InternalUse
-public static @NotNull String notInstantiated(@Nullable String objectName) {
-  switch (Config.getLanguage()) {
-
-  case ENGLISH: return "\"" + objectName + "\" hasn't been instantiated.";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
 public static @NotNull String nullInYaml(@NotNull String yamlPath) {
   switch (Config.getLanguage()) {
 
@@ -130,19 +117,6 @@ public static @NotNull String notAssignedClass(@NotNull String path, @NotNull St
 
   case
       ENGLISH: return "\"" + path + "\" in \"" + resourcePath + "\" is of class \"" + rawValueClass + "\". Therefore, cannot be parsed as given class, \"" + clazzName + "\".";
-  default: return "";
-
-  }
-}
-
-/**
- @see Lang */
-@Contract(pure=true)
-@InternalUse
-public static @NotNull String internalYamlFail(@NotNull String resourcePath) {
-  switch (Config.getLanguage()) {
-
-  case ENGLISH: return "Unable to parsed required yaml file at \"" + resourcePath + "\".";
   default: return "";
 
   }
@@ -226,6 +200,20 @@ public static @NotNull String addingExternalMissingKey(String filePath, String k
 
   case
       ENGLISH: return "\"" + filePath + "\" is missing the key \"" + key + "\". This key will be added to the yaml with the default value.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String failedExternalWrite(String filePath) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "An error occurred when trying to update the external yaml file \"" + filePath + "\"";
   default: return "";
 
   }

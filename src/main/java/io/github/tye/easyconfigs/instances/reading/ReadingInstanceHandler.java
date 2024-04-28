@@ -2,7 +2,6 @@ package io.github.tye.easyconfigs.instances.reading;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
-import io.github.tye.easyconfigs.exceptions.DefaultConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
@@ -14,7 +13,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 /**
- Contains information about a parsed yaml file. */
+ Contains information about a parsed read only yaml file. */
 @InternalUse
 public class ReadingInstanceHandler {
 
@@ -30,11 +29,6 @@ public static final HashMap<ReadingInstance, Class<?>> assignedClass = new HashM
 @NotNull
 public static final HashMap<ReadingInstance, String> yamlPath = new HashMap<>();
 
-
-/**
- The string to the location of the internal configuration file. */
-@InternalUse
-private @NotNull String path = "";
 
 /**
  The yaml parsed from a default file. */
@@ -58,7 +52,7 @@ public ReadingInstanceHandler() {
  @param clazz The class of the enum that represents the default yaml file.
  @throws IOException                   If there was an error reading the input stream, or if the
  given path doesn't lead to any files.
- @throws DefaultConfigurationException If:
+ @throws ConfigurationException If:
  <p>
  - There was an error parsing the given inputStream as a yaml.
  <p>
@@ -71,7 +65,7 @@ public ReadingInstanceHandler() {
  - A value can't be parsed as the class it is marked as in the
  yaml enum. */
 @InternalUse
-public ReadingInstanceHandler(@NotNull String path, @NotNull Class<? extends ReadingInstance> clazz) throws IOException, DefaultConfigurationException {
+public ReadingInstanceHandler(@NotNull String path, @NotNull Class<? extends ReadingInstance> clazz) throws IOException, ConfigurationException {
   try (InputStream inputStream = clazz.getResourceAsStream(path)) {
     if (inputStream == null) throw new IOException(Lang.configNotReadable(path));
 
@@ -80,15 +74,7 @@ public ReadingInstanceHandler(@NotNull String path, @NotNull Class<? extends Rea
     yaml.warnUnusedKeys(clazz, path);
     yaml.parseValues(clazz, path);
 
-    this.path = path;
     this.yaml = yaml;
-  }
-  catch (ConfigurationException exception) {
-    if (exception instanceof DefaultConfigurationException) {
-      throw (DefaultConfigurationException) exception;
-    }
-
-    throw new DefaultConfigurationException(exception.getMessage(), exception.getCause());
   }
 }
 

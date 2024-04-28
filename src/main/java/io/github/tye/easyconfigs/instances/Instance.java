@@ -2,6 +2,9 @@ package io.github.tye.easyconfigs.instances;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 
+/**
+ An interface that all reading &amp; persistent instances extend. It's primarily used to allow either
+ a reading or persistent instance to be used interchangeably. */
 public interface Instance {
 
 /**

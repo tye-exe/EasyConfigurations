@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class EasyConfigurationsDefaultLogger implements EasyConfigurationsLogger {
 
 /**
- Contains the default logger used by EasyConfigurations. To override this logger use
+ Contains the logger used by EasyConfigurations. To override this logger use
  {@link
  io.github.tye.easyconfigs.EasyConfigurations#overrideEasyConfigurationsLogger(EasyConfigurationsLogger)
  EasyConfigurations#overrideEasyConfigurationsLogger(EasyConfigurationsLogger)} */

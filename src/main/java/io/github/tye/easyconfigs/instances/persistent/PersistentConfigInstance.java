@@ -12,6 +12,7 @@ import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
@@ -19,6 +20,17 @@ import java.util.List;
 
 import static io.github.tye.easyconfigs.EasyConfigurations.persistentConfigInstance;
 
+/**
+ This interface must be implemented by an enum to define it as an enum containing different
+ persistent config options.
+ <p>
+ Please reference the <a
+ href="https://github.com/tye-exe/EasyConfigurations?tab=readme-ov-file#setting-up-configs">README</a>
+ file on GitHub for more usage information. */
+@SuppressWarnings({"unused", "unchecked"})
+// Unused – These methods are intended for use projects using Easy Configurations as a dependency.
+// Unchecked – Suppresses the cast warnings for the Lists. As they are being cast to the correct class. This is ensured by the classCheck() preceding the cast & at config initiation.
+@ExternalUse
 public interface PersistentConfigInstance extends PersistentInstance {
 
 /**
@@ -36,6 +48,13 @@ default void init(@NotNull Class<?> markedClass, @NotNull String yamlPath) {
 }
 
 
+/**
+ Replaces this config value with the given value.
+ @param value The new value to overwrite the old value with.
+ @throws NotOfClassException   If the given value isn't of the same class as the marked class.
+ @throws NullPointerException  If the given value is null.
+ @throws NotInitiatedException If the persistent instance hasn't been registered yet. */
+@ExternalUse
 @Override
 default void replaceValue(@NotNull Object value) throws NotOfClassException, NullPointerException, NotInitiatedException {
   persistentConfigInstance.replaceValue(this, value);
@@ -45,7 +64,8 @@ default void replaceValue(@NotNull Object value) throws NotOfClassException, Nul
 /**
  @return The object in the config HashMap that this enum represents.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @InternalUse
 default @NotNull Object getValue() throws NotInitiatedException {
@@ -60,7 +80,8 @@ default @NotNull Object getValue() throws NotInitiatedException {
  @return Gets a {@link String} config response.
  @throws NotOfClassException   If the selected config isn't a String value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull String getAsString() throws NotOfClassException, NotInitiatedException {
@@ -72,7 +93,8 @@ default @NotNull String getAsString() throws NotOfClassException, NotInitiatedEx
  @return Gets a {@link Boolean} config response.
  @throws NotOfClassException   If the selected config isn't a Boolean value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default boolean getAsBoolean() throws NotOfClassException, NotInitiatedException {
@@ -84,7 +106,8 @@ default boolean getAsBoolean() throws NotOfClassException, NotInitiatedException
  @return Gets a {@link Integer} config response.
  @throws NotOfClassException   If the selected config isn't an Integer value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default int getAsInteger() throws NotOfClassException, NotInitiatedException {
@@ -96,7 +119,8 @@ default int getAsInteger() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Double} config response.
  @throws NotOfClassException   If the selected config isn't a Double value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default double getAsDouble() throws NotOfClassException, NotInitiatedException {
@@ -108,7 +132,8 @@ default double getAsDouble() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Float} config response.
  @throws NotOfClassException   If the selected config isn't a Float value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default float getAsFloat() throws NotOfClassException, NotInitiatedException {
@@ -120,7 +145,8 @@ default float getAsFloat() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Short} config response.
  @throws NotOfClassException   If the selected config isn't a Short value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default short getAsShort() throws NotOfClassException, NotInitiatedException {
@@ -132,7 +158,8 @@ default short getAsShort() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Long} config response.
  @throws NotOfClassException   If the selected config isn't a Long value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default long getAsLong() throws NotOfClassException, NotInitiatedException {
@@ -144,7 +171,8 @@ default long getAsLong() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Byte} config response.
  @throws NotOfClassException   If the selected config isn't a Byte value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default byte getAsByte() throws NotOfClassException, NotInitiatedException {
@@ -156,7 +184,8 @@ default byte getAsByte() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link Character} config response.
  @throws NotOfClassException   If the selected config isn't a Char value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default char getAsChar() throws NotOfClassException, NotInitiatedException {
@@ -168,7 +197,8 @@ default char getAsChar() throws NotOfClassException, NotInitiatedException {
  @return Gets a {@link LocalDateTime} config response.
  @throws NotOfClassException   If the selected config isn't a LocalDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException, NotInitiatedException {
@@ -180,7 +210,8 @@ default @NotNull LocalDateTime getAsLocalDateTime() throws NotOfClassException, 
  @return Gets a {@link OffsetDateTime} config response.
  @throws NotOfClassException   If the selected config isn't an OffsetDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException, NotInitiatedException {
@@ -192,7 +223,8 @@ default @NotNull OffsetDateTime getAsOffsetDateTime() throws NotOfClassException
  @return Gets a {@link ZonedDateTime} config response.
  @throws NotOfClassException   If the selected config isn't a ZonedDateTime value.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException, NotInitiatedException {
@@ -205,7 +237,8 @@ default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException, 
  @return Gets a {@link String} list config response.
  @throws NotOfClassException   If the selected config isn't a string list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<String> getAsStringList() {
@@ -217,7 +250,8 @@ default @NotNull List<String> getAsStringList() {
  @return Gets an {@link Boolean} list config response.
  @throws NotOfClassException   If the selected config isn't a boolean list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException, NotInitiatedException {
@@ -229,7 +263,8 @@ default @NotNull List<Boolean> getAsBooleanList() throws NotOfClassException, No
  @return Gets an {@link Integer} list config response.
  @throws NotOfClassException   If the selected config isn't an integer list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException, NotInitiatedException {
@@ -241,7 +276,8 @@ default @NotNull List<Integer> getAsIntegerList() throws NotOfClassException, No
  @return Gets a {@link Double} list config response.
  @throws NotOfClassException   If the selected config isn't a double list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Double> getAsDoubleList() throws NotOfClassException, NotInitiatedException {
@@ -253,7 +289,8 @@ default @NotNull List<Double> getAsDoubleList() throws NotOfClassException, NotI
  @return Gets a {@link Float} list config response.
  @throws NotOfClassException   If the selected config isn't a float list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Float> getAsFloatList() throws NotOfClassException, NotInitiatedException {
@@ -265,7 +302,8 @@ default @NotNull List<Float> getAsFloatList() throws NotOfClassException, NotIni
  @return Gets a {@link Short} list config response.
  @throws NotOfClassException   If the selected config isn't a short list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Short> getAsShortList() throws NotOfClassException, NotInitiatedException {
@@ -277,7 +315,8 @@ default @NotNull List<Short> getAsShortList() throws NotOfClassException, NotIni
  @return Gets a {@link Long} list config response.
  @throws NotOfClassException   If the selected config isn't a long list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Long> getAsLongList() throws NotOfClassException, NotInitiatedException {
@@ -289,7 +328,8 @@ default @NotNull List<Long> getAsLongList() throws NotOfClassException, NotIniti
  @return Gets a {@link Byte} list config response.
  @throws NotOfClassException   If the selected config isn't a byte list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Byte> getAsByteList() throws NotOfClassException, NotInitiatedException {
@@ -301,7 +341,8 @@ default @NotNull List<Byte> getAsByteList() throws NotOfClassException, NotIniti
  @return Gets a {@link Character} list config response.
  @throws NotOfClassException   If the selected config isn't a char list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<Character> getAsCharList() throws NotOfClassException, NotInitiatedException {
@@ -313,7 +354,8 @@ default @NotNull List<Character> getAsCharList() throws NotOfClassException, Not
  @return Gets a {@link LocalDateTime} list config response.
  @throws NotOfClassException   If the selected config isn't a local date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassException, NotInitiatedException {
@@ -325,7 +367,8 @@ default @NotNull List<LocalDateTime> getAsLocalDateTimeList() throws NotOfClassE
  @return Gets a {@link OffsetDateTime} list config response.
  @throws NotOfClassException   If the selected config isn't an offset date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClassException, NotInitiatedException {
@@ -337,7 +380,8 @@ default @NotNull List<OffsetDateTime> getAsOffsetDateTimeList() throws NotOfClas
  @return Gets a {@link ZonedDateTime} list config response.
  @throws NotOfClassException   If the selected config isn't a zoned date time list.
  @throws NotInitiatedException If a config is retrieved before it is registered with
- {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+ {@link EasyConfigurations#registerPersistentConfig(Class, String,
+     File)}. */
 @Contract(pure=true)
 @ExternalUse
 default @NotNull List<ZonedDateTime> getAsZonedDateTimeList() throws NotOfClassException, NotInitiatedException {
