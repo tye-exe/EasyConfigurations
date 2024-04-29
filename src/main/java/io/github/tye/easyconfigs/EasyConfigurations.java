@@ -85,7 +85,7 @@ public static @NotNull ReadingInstanceHandler readOnlyConfigInstance = new Readi
  values.
  @throws ConfigurationException If the yaml has an error, or a value couldn't be parsed. enum.
  @throws IOException            If there was an error reading the input stream, or if the given path
- doesn't lead to any files
+ doesn't lead to any files.
  @throws NullPointerException   If any of the arguments are null. */
 @ExternalUse
 public static void registerReadOnlyConfig(@NotNull Class<? extends ReadingConfigInstance> configEnum, @NotNull String resourcePath) throws ConfigurationException, IOException, NullPointerException {
@@ -110,7 +110,7 @@ public static @NotNull ReadingInstanceHandler readOnlyLangInstance = new Reading
  values.
  @throws ConfigurationException If the yaml has an error, or a value couldn't be parsed.
  @throws IOException            If there was an error reading the input stream, or if the given path
- doesn't lead to any files
+ doesn't lead to any files.
  @throws NullPointerException   If any of the arguments are null. */
 @ExternalUse
 public static void registerReadOnlyLang(@NotNull Class<? extends ReadingLangInstance> langEnum, @NotNull String resourcePath) throws IOException, ConfigurationException, NullPointerException {
@@ -144,7 +144,7 @@ public static @NotNull PersistentInstanceHandler persistentConfigInstance = new 
  @param externalConfigFile The external config file that will be used to store persistent changes.
  @throws ConfigurationException If there was an error when parsing the default yaml file.
  @throws IOException            If there was an error reading the input stream, or if the given path
- doesn't lead to any files
+ doesn't lead to any files.
  @throws NullPointerException   If any of the arguments are null. */
 @ExternalUse
 public static void registerPersistentConfig(@NotNull Class<? extends PersistentConfigInstance> configEnum, @NotNull String resourcePath, @NotNull File externalConfigFile) throws IOException, ConfigurationException {
@@ -166,7 +166,7 @@ public static @NotNull PersistentInstanceHandler persistentLangInstance = new Pe
  {@link #registerReadOnlyLang(Class, String)} lang won't work.
  <p>
  <p>
- Lang is used to store lang responses within a program. This allows for easy translation &
+ Lang is used to store lang responses within a program. This allows for easy translation &amp;
  centralization of lang data.
  <p>
  When using this method, lang responses are editable by both the program &amp; the user. This is
@@ -177,7 +177,7 @@ public static @NotNull PersistentInstanceHandler persistentLangInstance = new Pe
  @param externalLangFile The external lang file that will be used to store persistent changes.
  @throws ConfigurationException If there was an error when parsing the default yaml file.
  @throws IOException            If there was an error reading the input stream, or if the given path
- doesn't lead to any files
+ doesn't lead to any files.
  @throws NullPointerException   If any of the arguments are null. */
 @ExternalUse
 public static void registerPersistentLang(@NotNull Class<? extends PersistentLangInstance> langEnum, @NotNull String resourcePath, @NotNull File externalLangFile) throws IOException, ConfigurationException, NullPointerException {
