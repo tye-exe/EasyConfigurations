@@ -83,6 +83,10 @@ public PersistentInstanceHandler(@NotNull String internalPath, @NotNull File ext
   yaml.parseValues(clazz, internalPath, externalFile.getPath());
   this.yaml = yaml;
   this.externalFile = externalFile;
+
+  // Updates the yaml if it had needed to be repaired.
+  YamlWriter writer = new YamlWriter(this.externalFile, yaml);
+  new Thread(writer).start();
 }
 
 /**
