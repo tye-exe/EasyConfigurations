@@ -1,9 +1,12 @@
 package io.github.tye.tests;
 
+import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
+import io.github.tye.easyconfigs.instances.reading.ReadingConfigInstance;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -100,5 +103,13 @@ void Enums_parse_respective_classes_correctly(Object valueToParse, Class<?> clas
   else {
     assertThrowsExactly(NotOfClassException.class, () -> representingEnum.parse(valueToParse), "The class should not have been parsed.");
   }
+}
+
+
+/**
+ Tests if giving a non-enum class would throw the appropriate exception. */
+@Test
+public void enumCheck() {
+  assertThrowsExactly(IllegalArgumentException.class, () -> EasyConfigurations.registerReadOnlyConfig(ReadingConfigInstance.class, "/tests/Yamls/Config_Custom.yml"));
 }
 }

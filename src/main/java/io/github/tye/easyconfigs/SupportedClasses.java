@@ -2,6 +2,7 @@ package io.github.tye.easyconfigs;
 
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
+import io.github.tye.easyconfigs.exceptions.InvalidDataException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import org.jetbrains.annotations.Contract;
@@ -32,6 +33,7 @@ public enum SupportedClasses {
   LOCAL_DATE_TIME(LocalDateTime.class),
   OFFSET_DATE_TIME(OffsetDateTime.class),
   ZONED_DATE_TIME(ZonedDateTime.class),
+  CONFIG_OBJECT(ConfigObject.class),
 
   STRING_LIST(String[].class),
   BOOLEAN_LIST(Boolean[].class, boolean[].class),
@@ -44,7 +46,8 @@ public enum SupportedClasses {
   CHAR_LIST(Character[].class, char[].class),
   LOCAL_DATE_TIME_LIST(LocalDateTime[].class),
   OFFSET_DATE_TIME_LIST(OffsetDateTime[].class),
-  ZONED_DATE_TIME_LIST(ZonedDateTime[].class);
+  ZONED_DATE_TIME_LIST(ZonedDateTime[].class),
+  CONFIG_OBJECT_LIST(ConfigObject[].class);
 
 /**
  Contains the class values for classes represented by this enum. */
@@ -79,7 +82,7 @@ public boolean representsArray() {
 
 
 /**
- Checks if the class this enum represents can parse the given value as represented class.
+ Checks if the class this enum represents can parse the given value as the represented class.
  @param rawValue The given value.
  @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
  or if the value is one EasyConfigurations hasn't accounted for. */
@@ -102,15 +105,17 @@ public boolean canParse(@NotNull Object rawValue) {
  @param rawValue The given value.
  @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
  or if the value is one EasyConfigurations hasn't accounted for. */
+@SuppressWarnings("ResultOfMethodCallIgnored")
+// Just checks if they can be parsed.
 @Contract(pure=true)
 @InternalUse
 private boolean canParseNonArray(@NotNull Object rawValue) {
-  String value = rawValue.toString();
-
   // Tries to parse the string value of the object based on the enum.
   // If there is an error parsing, then it's caught & false is returned.
   // If it parses successfully, then true is returned.
   try {
+    String value = rawValue.toString();
+
     switch (this) {
 
     // String & Boolean are handled uniquely due to the behaviour or their respective parsing method.
@@ -179,7 +184,7 @@ private boolean canParseNonArray(@NotNull Object rawValue) {
  or if the value is one EasyConfigurations hasn't accounted for. */
 @Contract(pure=true)
 @InternalUse
-private <T> boolean canParseArray(@NotNull T rawValue) {
+private boolean canParseArray(@NotNull Object rawValue) {
   List<String> value;
 
   try {
@@ -256,6 +261,100 @@ private <T> boolean canParseArray(@NotNull T rawValue) {
   return true;
 }
 
+
+/**
+ Checks if the given class is a class {@link #CONFIG_OBJECT} or {@link #CONFIG_OBJECT_LIST} enums
+ represent. And if the given value can be parsed as the represented class.
+ @param customClazz The marked class of the value.
+ @param rawValue    The given value.
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for.
+ @throws ConfigurationException If the given class doesn't extend {@link ConfigObject} and doesn't
+ have a public default constructor. */
+@SuppressWarnings({"UnreachableCode", "unchecked"})
+// The code is reachable as the unchecked cast may fail.
+@InternalUse
+public boolean canParseCustom(@NotNull Class<?> customClazz, @NotNull Object rawValue) throws ConfigurationException {
+  // If the class is an array then it won't get the correct constructor.
+  customClazz = Classes.getComponent(customClazz);
+
+  // Does manual casting here so input sanitation doesn't need to be performed.
+  // Either way this error shouldn't be thrown as validation is performed before.
+  Class<? extends ConfigObject> configClass;
+  try {
+    configClass = (Class<? extends ConfigObject>) customClazz;
+  }
+  catch (ClassCastException e) {
+    throw new ConfigurationException(Lang.classNotSupported(Classes.getName(customClazz)));
+  }
+
+  // If this enum doesn't represent a custom object, it can't be parsed as such.
+  if (this != CONFIG_OBJECT && this != CONFIG_OBJECT_LIST) {
+    return false;
+  }
+
+  // Creates a new instance of the config class.
+  // If it can't be created then there is an unrecoverable error.
+  ConfigObject configObject;
+  try {
+    configObject = configClass.getConstructor().newInstance();
+  }
+  catch (Exception e) {
+    throw new ConfigurationException(Lang.missingDefaultConstructor(Classes.getName(configClass)));
+  }
+
+  // Parsing is handled differently for array & non-array values.
+  if (this.representsArray()) {
+    return this.canParseCustomArray(configObject, rawValue);
+  }
+  else {
+    return this.canParseCustomNonArray(configObject, rawValue);
+  }
+}
+
+/**
+ If this method is used on an array enum then it will always return false.
+ <p>
+ Checks if the given value can be parsed as a {@link #CONFIG_OBJECT}.
+ @param configObject An initialized object of the value's marked class.
+ @param rawValue     The given value.
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for. */
+private boolean canParseCustomNonArray(@NotNull ConfigObject configObject, @NotNull Object rawValue) {
+  if (rawValue instanceof ConfigObject) return true;
+
+  try {
+    configObject.parseConfigString(rawValue.toString());
+    return true;
+  }
+  catch (InvalidDataException ignore) {
+    return false;
+  }
+}
+
+/**
+ If this method is used on a non-array enum then it will always return false.
+ <p>
+ Checks if the given value can be parsed as a {@link #CONFIG_OBJECT_LIST}.
+ @param configObject An initialized object of the value's marked class.
+ @param rawValue     The given array or List value.
+ @return True if it can be parsed.<br> False only if the value cannot be parsed as its intended class
+ or if the value is one EasyConfigurations hasn't accounted for. */
+private boolean canParseCustomArray(@NotNull ConfigObject configObject, @NotNull Object rawValue) {
+  try {
+    List<String> stringList = toList(rawValue);
+
+    for (String value : stringList) {
+      canParseCustomNonArray(configObject, value);
+    }
+
+    return true;
+  }
+  catch (Exception ignore) {
+    return false;
+  }
+}
+
 /**
  Parses the give value to the class specified by this enum.<br>
  <br>
@@ -276,8 +375,9 @@ public @NotNull Object parse(@NotNull Object rawValue) throws NotOfClassExceptio
 }
 
 /**
- If this method is used on an array enum then it will always throw {@link NotOfClassException}.<br>
- Checks if the given value can be parsed as the class this enum represents.
+ If this method is used on an array enum then it will always throw {@link NotOfClassException}.
+ <p>
+ Parses the given value as the class this enum represents.
  @param rawValue The given value.
  @return The value as its intended object.
  @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
@@ -342,9 +442,9 @@ private @NotNull Object parseNonArray(@NotNull Object rawValue) throws NotOfClas
 }
 
 /**
- If this method is used on a non-array enum then it will always throw
- {@link NotOfClassException}.<br> Checks if the given value can be parsed as the class this enum
- represents.
+ If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.
+ <p>
+ Parses the given value as the class this enum represents.
  @param value The given array or List value.
  @return The value as its intended object.
  @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
@@ -411,7 +511,7 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
 
       // If the switch statement can't match any of the above conditions then the object is invalid.
       default: {
-        String className = ClassName.getName(value.getClass());
+        String className = Classes.getName(value.getClass());
         throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
       }
       }
@@ -426,8 +526,109 @@ private @NotNull Object parseArray(@NotNull Object value) throws NotOfClassExcep
     if (e.getClass().equals(NotOfClassException.class)) throw e;
 
     // Else create a new NotOfClassException exception.
-    String className = ClassName.getName(value.getClass());
+    String className = Classes.getName(value.getClass());
     throw new NotOfClassException(Lang.notOfClass(className, this.toString()));
+  }
+}
+
+
+/**
+ Parses the given value as a custom {@link ConfigObject}.
+ <p>
+ Note: {@link #canParseCustom(Class, Object)} should be performed first to check if the object can be
+ parsed.
+ @param customClazz The marked class of the value.
+ @param rawValue    The given value.
+ @return The value as its intended object.
+ @throws NotOfClassException    If the object passed in isn't of a class this enum represents.
+ @throws ConfigurationException If the given class doesn't implement {@link ConfigObject}. */
+@SuppressWarnings({"UnreachableCode", "unchecked"})
+// The code is reachable as the unchecked cast may fail.
+@InternalUse
+public Object parseCustom(@NotNull Class<?> customClazz, @NotNull Object rawValue) throws NotOfClassException, ConfigurationException {
+  // If the class is an array then it won't get the correct constructor.
+  customClazz = Classes.getComponent(customClazz);
+
+  // Does manual casting here so input sanitation doesn't need to be performed.
+  // Either way this error shouldn't be thrown as validation is performed before.
+  Class<? extends ConfigObject> configClass;
+  try {
+    configClass = (Class<? extends ConfigObject>) customClazz;
+  }
+  catch (ClassCastException e) {
+    throw new ConfigurationException(Lang.classNotSupported(Classes.getName(customClazz)));
+  }
+
+  // If this enum doesn't represent a custom object, it can't be parsed as such.
+  if (this != CONFIG_OBJECT && this != CONFIG_OBJECT_LIST) {
+    throw new NotOfClassException(Lang.notOfClass(Classes.getName(customClazz), CONFIG_OBJECT + " or " + CONFIG_OBJECT_LIST));
+  }
+
+  // Creates a new instance of the config class.
+  // If it can't be created then there is an unrecoverable error.
+  ConfigObject configObject;
+  try {
+    configObject = configClass.newInstance();
+  }
+  catch (InstantiationException | IllegalAccessException e) {
+    throw new ConfigurationException(Lang.missingDefaultConstructor(Classes.getName(configClass)));
+  }
+
+  // Parsing is handled differently for array & non-array values.
+  if (this.representsArray()) {
+    return this.parseCustomArray(configObject, rawValue);
+  }
+  else {
+    return this.parseCustomNonArray(configObject, rawValue);
+  }
+}
+
+/**
+ If this method is used on an array enum then it will always throw {@link NotOfClassException}.
+ <p>
+ Parses the given value as the class this enum represents.
+ @param configObject An initialized object of the value's marked class.
+ @param rawValue     The given value.
+ @return The value as its intended object.
+ @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
+private ConfigObject parseCustomNonArray(@NotNull ConfigObject configObject, @NotNull Object rawValue) throws NotOfClassException {
+  if (rawValue instanceof ConfigObject) return (ConfigObject) rawValue;
+
+  try {
+    return configObject.parseConfigString(rawValue.toString());
+  }
+  catch (Exception ignore) {
+    String className = Classes.getName(rawValue.getClass());
+    throw new NotOfClassException(Lang.notOfClass(className, CONFIG_OBJECT.toString()));
+  }
+}
+
+/**
+ If this method is used on a non-array enum then it will always throw {@link NotOfClassException}.
+ <p>
+ Parses the given value as the class this enum represents.
+ @param configObject An initialized object of the value's marked class.
+ @param rawValue     The given value.
+ @return The value as its intended object.
+ @throws NotOfClassException If the object passed in isn't of a class this enum represents. */
+private List<ConfigObject> parseCustomArray(@NotNull ConfigObject configObject, @NotNull Object rawValue) {
+  try {
+    List<String> stringList = toList(rawValue);
+    ArrayList<ConfigObject> configObjects = new ArrayList<>(stringList.size());
+
+    for (String value : stringList) {
+      configObjects.add(parseCustomNonArray(configObject, value));
+    }
+
+    return configObjects;
+  }
+  catch (Exception e) {
+    // If the error was thrown by the parsing method then just throw that
+    if (e instanceof NotOfClassException) throw e;
+
+    // Else thrown a generic exception
+    String className = Classes.getName(rawValue.getClass());
+    throw new NotOfClassException(Lang.notOfClass(className, CONFIG_OBJECT.toString()));
   }
 }
 
@@ -446,6 +647,14 @@ public static boolean existsAsEnum(@NotNull Class<?> classToMatch) {
     for (Class<?> alikeClass : supportedClass.getClasses()) {
       if (classToMatch.equals(alikeClass)) return true;
     }
+  }
+
+  // If the class is an array then it won't get the correct interfaces.
+  Class<?> componentClass = Classes.getComponent(classToMatch);
+
+  // If it implements the interface then it's supported.
+  for (Class<?> interfaces : componentClass.getInterfaces()) {
+    if (interfaces.equals(ConfigObject.class)) return true;
   }
 
   return false;
@@ -467,13 +676,24 @@ public static @NotNull SupportedClasses getAsEnum(@NotNull Class<?> classToMatch
     }
   }
 
-  String className = ClassName.getName(classToMatch);
+  // If the class is an array then it won't get the correct interfaces.
+  Class<?> componentClass = Classes.getComponent(classToMatch);
+
+  // If it implements the interface then it's supported.
+  for (Class<?> interfaces : componentClass.getInterfaces()) {
+    if (!interfaces.equals(ConfigObject.class)) continue;
+
+    if (classToMatch.isArray()) {return CONFIG_OBJECT_LIST;}
+    else {return CONFIG_OBJECT;}
+  }
+
+  String className = Classes.getName(classToMatch);
   throw new ConfigurationException(Lang.classNotSupported(className));
 }
 
 
 /**
- Converts the given value to {@literal List<Object>}.
+ Converts the given value to {@literal List<String>}.
  @param value The given value. It must be an instance of {@link List} or an array of any type.
  @return The given value converted to an object list.
  @throws IllegalArgumentException If the given value isn't a list or an array. */

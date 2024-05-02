@@ -1,6 +1,6 @@
 package io.github.tye.easyconfigs.yamls;
 
-import io.github.tye.easyconfigs.ClassName;
+import io.github.tye.easyconfigs.Classes;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
@@ -278,7 +278,23 @@ public boolean identical(@Nullable Object otherYaml) {
   if (!(otherYaml instanceof ReadYaml)) return false;
 
   ReadYaml identicalYaml = (ReadYaml) otherYaml;
-  return this.getKeys().equals(identicalYaml.getKeys());
+
+  // If the keys don't match then the yamls aren't identical.
+  if (!identicalYaml.yamlMap.keySet().equals(this.yamlMap.keySet())) {
+    return false;
+  }
+
+  for (String key : this.yamlMap.keySet()) {
+    Object otherParsedValue = identicalYaml.yamlMap.get(key).parsedValue;
+    Object parsedValue = this.yamlMap.get(key).parsedValue;
+
+    // If the parsed values aren't equal then the yamls aren't identical.
+    if (!otherParsedValue.equals(parsedValue)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**
@@ -434,31 +450,48 @@ public void warnUnusedKeys(@NotNull Class<? extends Instance> clazz, @NotNull St
 public void parseValues(@NotNull Class<? extends Instance> yamlEnum, @NotNull String resourcePath) throws ConfigurationException {
   Instance[] enums = yamlEnum.getEnumConstants();
 
-  for (Instance readingInstanceEnum : enums) {
+  for (Instance instanceEnum : enums) {
 
     // Checks if the value exists in the default file.
-    String keyPath = readingInstanceEnum.getYamlPath();
+    String keyPath = instanceEnum.getYamlPath();
     if (!yamlMap.containsKey(keyPath)) {
       throw new ConfigurationException(Lang.notInDefaultYaml(keyPath, resourcePath));
     }
 
+    Class<?> assingedClass = instanceEnum.getAssingedClass();
+
     // Checks if the class is one supported by EasyConfigurations.
-    if (!SupportedClasses.existsAsEnum(readingInstanceEnum.getAssingedClass())) {
-      String className = ClassName.getName(readingInstanceEnum.getAssingedClass());
+    if (!SupportedClasses.existsAsEnum(assingedClass)) {
+      String className = Classes.getName(assingedClass);
       throw new ConfigurationException(Lang.classNotSupported(className));
     }
 
-    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(readingInstanceEnum.getAssingedClass());
+    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(assingedClass);
+    Object rawValue = yamlMap.get(keyPath).parsedValue;
 
     // Checks if the value can be parsed as its intended class.
-    Object rawValue = yamlMap.get(keyPath).parsedValue;
-    boolean canParse = enumRepresentation.canParse(rawValue);
+    boolean canParse;
+    if (enumRepresentation == SupportedClasses.CONFIG_OBJECT || enumRepresentation == SupportedClasses.CONFIG_OBJECT_LIST) {
+      canParse = enumRepresentation.canParseCustom(assingedClass, rawValue);
+    }
+    else {
+      canParse = enumRepresentation.canParse(rawValue);
+    }
+    // If it can't throw an exception
     if (!canParse) {
-      throw new ConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), readingInstanceEnum.getAssingedClass().getName()));
+      throw new ConfigurationException(Lang.notAssignedClass(keyPath, resourcePath, rawValue.getClass(), assingedClass.getName()));
     }
 
-    // Parses the value as it's intended class & replaces it within that HashMap.
-    Object parsedValue = enumRepresentation.parse(rawValue);
+    // Parses the value as it's intended class.
+    Object parsedValue;
+    if (enumRepresentation == SupportedClasses.CONFIG_OBJECT || enumRepresentation == SupportedClasses.CONFIG_OBJECT_LIST) {
+      parsedValue = enumRepresentation.parseCustom(assingedClass, rawValue);
+    }
+    else {
+      parsedValue = enumRepresentation.parse(rawValue);
+    }
+
+    // Replaces the value in the Hashmap with the value as the correct class.
     List<Integer> yamlIndexPath = yamlMap.get(keyPath).yamlIndexPath;
     yamlMap.put(keyPath, new Value<>(yamlIndexPath, parsedValue));
   }

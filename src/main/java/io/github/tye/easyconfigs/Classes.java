@@ -4,9 +4,9 @@ import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Contains a method to get the canonical name of a class. */
+ Contains methods that operate on {@link Class} objects. */
 @InternalUse
-public class ClassName {
+public class Classes {
 
 /**
  Tries to get the canonical name of the given class.
@@ -24,4 +24,12 @@ public static @NotNull String getName(@NotNull Class<?> givenClass) {
   return className;
 }
 
+/**
+ Gets the component of the class, if applicable. Otherwise, the given class is returned.
+ @param clazz The given class
+ @return The component of the class, if applicable. Otherwise, the given class is returned. */
+public static @NotNull Class<?> getComponent(@NotNull Class<?> clazz) {
+  if (!clazz.isArray()) return clazz;
+  return clazz.getComponentType();
+}
 }

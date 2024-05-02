@@ -10,6 +10,7 @@ import io.github.tye.easyconfigs.instances.reading.ReadingConfigInstance;
 import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
 import io.github.tye.easyconfigs.instances.reading.ReadingLangInstance;
 import io.github.tye.easyconfigs.internalConfigs.Config;
+import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.keys.KeyHandler;
 import io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger;
 import io.github.tye.easyconfigs.logger.EasyConfigurationsLogger;
@@ -86,11 +87,16 @@ public static @NotNull ReadingInstanceHandler readOnlyConfigInstance = new Readi
  @throws ConfigurationException If the yaml has an error, or a value couldn't be parsed. enum.
  @throws IOException            If there was an error reading the input stream, or if the given path
  doesn't lead to any files.
- @throws NullPointerException   If any of the arguments are null. */
+ @throws NullPointerException   If any of the arguments are null.
+ @throws IllegalArgumentException If the given class doesn't represent an enum. */
 @ExternalUse
-public static void registerReadOnlyConfig(@NotNull Class<? extends ReadingConfigInstance> configEnum, @NotNull String resourcePath) throws ConfigurationException, IOException, NullPointerException {
+public static void registerReadOnlyConfig(@NotNull Class<? extends ReadingConfigInstance> configEnum, @NotNull String resourcePath) throws ConfigurationException, IOException, NullPointerException, IllegalArgumentException {
   NullCheck.notNull(configEnum, "Config enum");
   NullCheck.notNull(resourcePath, "Resource path");
+
+  if (!configEnum.isEnum()) {
+    throw new IllegalArgumentException(Lang.notAnEnum(Classes.getName(configEnum)));
+  }
 
   readOnlyConfigInstance = new ReadingInstanceHandler(resourcePath, configEnum);
 }
@@ -111,11 +117,16 @@ public static @NotNull ReadingInstanceHandler readOnlyLangInstance = new Reading
  @throws ConfigurationException If the yaml has an error, or a value couldn't be parsed.
  @throws IOException            If there was an error reading the input stream, or if the given path
  doesn't lead to any files.
- @throws NullPointerException   If any of the arguments are null. */
+ @throws NullPointerException   If any of the arguments are null.
+ @throws IllegalArgumentException If the given class doesn't represent an enum. */
 @ExternalUse
 public static void registerReadOnlyLang(@NotNull Class<? extends ReadingLangInstance> langEnum, @NotNull String resourcePath) throws IOException, ConfigurationException, NullPointerException {
   NullCheck.notNull(langEnum, "Lang enum");
   NullCheck.notNull(resourcePath, "Resource path");
+
+  if (!langEnum.isEnum()) {
+    throw new IllegalArgumentException(Lang.notAnEnum(Classes.getName(langEnum)));
+  }
 
   readOnlyLangInstance = new ReadingInstanceHandler(resourcePath, langEnum);
 }
@@ -145,12 +156,17 @@ public static @NotNull PersistentInstanceHandler persistentConfigInstance = new 
  @throws ConfigurationException If there was an error when parsing the default yaml file.
  @throws IOException            If there was an error reading the input stream, or if the given path
  doesn't lead to any files.
- @throws NullPointerException   If any of the arguments are null. */
+ @throws NullPointerException   If any of the arguments are null.
+ @throws IllegalArgumentException If the given class doesn't represent an enum. */
 @ExternalUse
-public static void registerPersistentConfig(@NotNull Class<? extends PersistentConfigInstance> configEnum, @NotNull String resourcePath, @NotNull File externalConfigFile) throws IOException, ConfigurationException {
+public static void registerPersistentConfig(@NotNull Class<? extends PersistentConfigInstance> configEnum, @NotNull String resourcePath, @NotNull File externalConfigFile) throws IOException, ConfigurationException, NullPointerException, IllegalArgumentException {
   NullCheck.notNull(configEnum, "config enum");
   NullCheck.notNull(resourcePath, "resource path");
   NullCheck.notNull(externalConfigFile, "external config file");
+
+  if (!configEnum.isEnum()) {
+    throw new IllegalArgumentException(Lang.notAnEnum(Classes.getName(configEnum)));
+  }
 
   persistentConfigInstance = new PersistentInstanceHandler(resourcePath, externalConfigFile, configEnum);
 }
@@ -178,12 +194,17 @@ public static @NotNull PersistentInstanceHandler persistentLangInstance = new Pe
  @throws ConfigurationException If there was an error when parsing the default yaml file.
  @throws IOException            If there was an error reading the input stream, or if the given path
  doesn't lead to any files.
- @throws NullPointerException   If any of the arguments are null. */
+ @throws NullPointerException   If any of the arguments are null.
+ @throws IllegalArgumentException If the given class doesn't represent an enum. */
 @ExternalUse
-public static void registerPersistentLang(@NotNull Class<? extends PersistentLangInstance> langEnum, @NotNull String resourcePath, @NotNull File externalLangFile) throws IOException, ConfigurationException, NullPointerException {
+public static void registerPersistentLang(@NotNull Class<? extends PersistentLangInstance> langEnum, @NotNull String resourcePath, @NotNull File externalLangFile) throws IOException, ConfigurationException, NullPointerException, IllegalArgumentException {
   NullCheck.notNull(langEnum, "Lang enum");
   NullCheck.notNull(resourcePath, "Resource path");
   NullCheck.notNull(externalLangFile, "external config file");
+
+  if (!langEnum.isEnum()) {
+    throw new IllegalArgumentException(Lang.notAnEnum(Classes.getName(langEnum)));
+  }
 
   persistentLangInstance = new PersistentInstanceHandler(resourcePath, externalLangFile, langEnum);
 }

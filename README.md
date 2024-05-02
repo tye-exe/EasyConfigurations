@@ -1,5 +1,8 @@
 ## EasyConfigurations
 
+### Warning:
+These docs are slightly out of date!
+
 ___
 ### Synopsis:
 This java project provides an easy & simplistic way to implement a highly customizable config & lang system into your

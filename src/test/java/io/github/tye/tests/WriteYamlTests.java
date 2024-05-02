@@ -1,22 +1,22 @@
 package io.github.tye.tests;
 
+import io.github.tye.easyconfigs.ConfigObject;
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotOfClassException;
 import io.github.tye.easyconfigs.instances.persistent.PersistentInstanceHandler;
 import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
+import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
 import io.github.tye.easyconfigs.yamls.WriteYaml;
 import io.github.tye.tests.persistentInstanceClasses.Config_Default;
 import io.github.tye.tests.persistentInstanceClasses.Lang_Default;
+import io.github.tye.tests.persistentInstanceClasses.PersistentConfig_Custom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -56,10 +56,20 @@ private File getFile(String internalPath) throws IOException {
   }
 }
 
+private void waitForWrite() throws InterruptedException {
+  while (EasyConfigurations.persistentLangInstance.isWriting()) {
+    Thread.sleep(100);
+  }
+  while (EasyConfigurations.persistentConfigInstance.isWriting()) {
+    Thread.sleep(100);
+  }
+}
+
+
 /**
  Tests removing extra keys from the external file. */
 @Test
-public void extra() throws IOException, ConfigurationException {
+public void extra() throws IOException, ConfigurationException, InterruptedException {
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
 
@@ -87,12 +97,15 @@ public void extra() throws IOException, ConfigurationException {
   assertEquals(5, unusedKeys);
   // Should be two external missing keys
   assertEquals(2, missingKeys);
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 /**
  Test fixing a file that is oh so broken. */
 @Test
-public void messedUp() throws IOException, ConfigurationException {
+public void messedUp() throws IOException, ConfigurationException, InterruptedException {
   DebugLogger debugLogger = new DebugLogger();
   EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
 
@@ -120,6 +133,9 @@ public void messedUp() throws IOException, ConfigurationException {
   assertEquals(1, unusedKeys);
   // Should be six external missing keys
   assertEquals(6, missingKeys);
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 /**
@@ -161,7 +177,7 @@ String correctData = "# I wonder what this will do\n" +
 /**
  Tests if an invalid external file ahs been renamed & a new valid one created. */
 @Test
-public void invalidExternal() throws IOException, ConfigurationException {
+public void invalidExternal() throws IOException, ConfigurationException, InterruptedException {
   File invalidTest = new File(tempDir, "invalid.yml");
 
   try (FileWriter fileWriter = new FileWriter(invalidTest)) {
@@ -180,12 +196,15 @@ public void invalidExternal() throws IOException, ConfigurationException {
     String movedData = new String(Files.readAllBytes(file.toPath()));
     assertEquals("This is really not valid data.", movedData);
   }
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 /**
  Tests creating the external yaml file & copying the data from the internal yaml to it. */
 @Test
-public void completeCopy() throws IOException, ConfigurationException {
+public void completeCopy() throws IOException, ConfigurationException, InterruptedException {
   File copyTest = new File(tempDir, "completeCopy.test");
 
   EasyConfigurations.registerPersistentConfig(Config_Default.class, "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", copyTest);
@@ -193,7 +212,8 @@ public void completeCopy() throws IOException, ConfigurationException {
   String fileData = new String(Files.readAllBytes(copyTest.toPath()));
   assertEquals(correctData, fileData);
 
-
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 /**
@@ -217,7 +237,7 @@ static {
 /**
  Tests if the correct values were parsed as their respective classes from the default yaml. */
 @Test
-public void parsedClazz() throws IOException, ConfigurationException {
+public void parsedClazz() throws IOException, ConfigurationException, InterruptedException {
   EasyConfigurations.registerPersistentConfig(
       Config_Default.class,
       "/tests/Yamls/externalYamls/Config_DefaultYaml.yml",
@@ -229,16 +249,21 @@ public void parsedClazz() throws IOException, ConfigurationException {
     assertEquals(correctValue, yamlValue.getValue());
   }
 
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 /**
  Test lang parsing. */
 @Test
-public void parsingLang() throws IOException, ConfigurationException {
+public void parsingLang() throws IOException, ConfigurationException, InterruptedException {
   EasyConfigurations.registerPersistentLang(Lang_Default.class, "/tests/Yamls/externalYamls/Lang_Default.yml", getFile("/tests/Yamls/externalYamls/Lang_Default.yml"));
 
   assertEquals("Many, a many word!", Lang_Default.word.get());
   assertEquals("Many, a many more words!", Lang_Default.words.get());
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
 }
 
 
@@ -277,9 +302,8 @@ public void replaceTest() throws IOException, ConfigurationException, Interrupte
       Arrays.asList(1, 2, 3),
       Config_Default.numbers.getAsIntegerList());
 
-
-  // Sleep for one second, so the thread can update the file.
-  Thread.sleep(1000);
+  // Waits for any changes to be written to the file
+  waitForWrite();
 
   // Tests writing the value to the file
   EasyConfigurations.registerPersistentConfig(
@@ -294,5 +318,145 @@ public void replaceTest() throws IOException, ConfigurationException, Interrupte
   assertEquals(
       Arrays.asList(1, 2, 3),
       Config_Default.numbers.getAsIntegerList());
+}
+
+
+@Test
+public void externalShouldOverride() throws IOException, ConfigurationException, InterruptedException {
+  String content = "# I wonder what this will do\n" +
+                   "test:\n" +
+                   "  hmm: \"Weee\"\n" +
+                   "  nah: \"...\" #No comment\n" +
+                   "\n" +
+                   "eh: \"idk\"\n" +
+                   "ehh: \"idk\" # guess i still don't know\n" +
+                   "\n" +
+                   "# lovely...\n" +
+                   "ehhhhhh: \"idkkkkkkkkkk\"\n" +
+                   "\n" +
+                   "#eiaou\n" +
+                   "this:\n" +
+                   "  - \"Is\" #Not\n" +
+                   "  - \"Sparta\"\n" +
+                   "\n" +
+                   "multiple.keys.in.one: \"Cats\"\n" +
+                   "\n" +
+                   "# I almost forgot numbers existed\n" +
+                   "number: 2\n" +
+                   "numbers: [ 1, 2 ]";
+
+  File file = new File(tempDir, "file");
+  Files.copy(new ByteArrayInputStream(content.getBytes()), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+  EasyConfigurations.registerPersistentConfig(Config_Default.class, "/tests/Yamls/externalYamls/Config_DefaultYaml.yml", file);
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
+
+  assertEquals(
+      2,
+      Config_Default.number.getAsInteger());
+}
+
+
+/**
+ Tests if a {@link ConfigObject} &amp; a config object array can be parsed successfully. */
+@Test
+public void customObject() throws ConfigurationException, IOException, InterruptedException {
+  File externalFile = getFile("/tests/Yamls/Config_Custom.yml");
+  EasyConfigurations.registerPersistentConfig(PersistentConfig_Custom.class, "/tests/Yamls/Config_Custom.yml", externalFile);
+
+  // Checks if a single value can be parsed
+  assertEquals(
+      new CustomObject("Bob", 3),
+      PersistentConfig_Custom.NAME.getAsConfigObject());
+
+  // Checks if the array could be parsed
+  assertEquals(
+      new CustomObject("Anne", 0),
+      PersistentConfig_Custom.NAMES.getAsConfigObjectList().get(0));
+
+  assertEquals(
+      new CustomObject("Jacob", 0),
+      PersistentConfig_Custom.NAMES.getAsConfigObjectList().get(1));
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
+}
+
+/**
+ Tests handling {@link ConfigObject} &amp; config object arrays. */
+@Test
+public void customMissing() throws ConfigurationException, IOException, InterruptedException {
+  DebugLogger debugLogger = new DebugLogger();
+  EasyConfigurations.overrideEasyConfigurationsLogger(debugLogger);
+
+  // The file is missing values to test repairing.
+  File externalFile = getFile("/tests/Yamls/Config_MissingCustom.yml");
+  EasyConfigurations.registerPersistentConfig(PersistentConfig_Custom.class, "/tests/Yamls/Config_Custom.yml", externalFile);
+
+  // Checks if a single value can be parsed
+  assertEquals(
+      new CustomObject("Bob", 3),
+      PersistentConfig_Custom.NAME.getAsConfigObject());
+
+  // Checks if the array could be parsed
+  assertEquals(
+      new CustomObject("Anne", 0),
+      PersistentConfig_Custom.NAMES.getAsConfigObjectList().get(0));
+
+  assertEquals(
+      new CustomObject("Jacob", 0),
+      PersistentConfig_Custom.NAMES.getAsConfigObjectList().get(1));
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
+
+  // Checks that the changes were written correctly
+  ReadYaml externalYaml = new ReadYaml(Files.newInputStream(externalFile.toPath()));
+  ReadYaml internalYaml = new ReadYaml(getResource("/tests/Yamls/Config_Custom.yml"));
+
+  assertTrue(externalYaml.identical(internalYaml));
+
+  // Tests that the correct logs were output
+  assertSame(debugLogger.output.get(0).logType, LogType.EXTERNAL_UNUSED_PATH);
+  assertSame(debugLogger.output.get(1).logType, LogType.EXTERNAL_MISSING_PATH);
+  assertSame(debugLogger.output.get(2).logType, LogType.EXTERNAL_MISSING_PATH);
+}
+
+/**
+ Tests replacing {@link ConfigObject} &amp; config objects. */
+@Test
+public void customReplace() throws ConfigurationException, IOException, InterruptedException {
+  File externalFile = getFile("/tests/Yamls/Config_Custom.yml");
+  EasyConfigurations.registerPersistentConfig(PersistentConfig_Custom.class, "/tests/Yamls/Config_Custom.yml", externalFile);
+
+  assertEquals(
+      new CustomObject("Bob", 3),
+      PersistentConfig_Custom.NAME.getAsConfigObject());
+
+  PersistentConfig_Custom.NAME.replaceValue(new CustomObject("Jenny", 10));
+  PersistentConfig_Custom.NAMES.replaceValue(Arrays.asList(new CustomObject("Fred", 2), new CustomObject("Tim", 3)));
+
+  // Waits for any changes to be written to the file
+  waitForWrite();
+
+  assertEquals(
+      new CustomObject("Jenny", 10),
+      PersistentConfig_Custom.NAME.getAsConfigObject());
+
+  assertEquals(
+      Arrays.asList(new CustomObject("Fred", 2), new CustomObject("Tim", 3)),
+      PersistentConfig_Custom.NAMES.getAsConfigObjectList());
+
+  String fileContent = "name: \"Jenny:10\"\n" +
+                       "\n" +
+                       "names:\n" +
+                       "- \"Fred:2\"\n" +
+                       "- \"Tim:3\"\n";
+
+  assertEquals(
+      fileContent,
+      new String(Files.readAllBytes(externalFile.toPath())));
 }
 }

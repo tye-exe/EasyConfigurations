@@ -1,5 +1,6 @@
 package io.github.tye.easyconfigs.yamls;
 
+import io.github.tye.easyconfigs.Classes;
 import io.github.tye.easyconfigs.NullCheck;
 import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
@@ -8,6 +9,7 @@ import io.github.tye.easyconfigs.instances.Instance;
 import io.github.tye.easyconfigs.instances.persistent.PersistentInstance;
 import io.github.tye.easyconfigs.internalConfigs.Lang;
 import io.github.tye.easyconfigs.logger.LogType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.*;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
@@ -81,6 +84,7 @@ private void removeUnusedKeys(@NotNull ReadYaml defaultYaml, @NotNull File exter
  @param currentKey   The current key leading to the root node, from the initial root node.
  @param keysToRemove The list of keys that will be removed from the yaml.
  @return The new yaml data with the specified keys removed. */
+@Contract()
 @InternalUse
 private @NotNull MappingNode removeKeysRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull ArrayList<String> keysToRemove) {
   ArrayList<NodeTuple> newValues = new ArrayList<>();
@@ -162,6 +166,7 @@ private void addMissingKeys(@NotNull ReadYaml fullYaml, @NotNull File externalFi
  @param copiedNodeValue The value node from the internal yaml that will be added to the root node.
  @param indexPath       The index path to the new key.
  @return The root node with the given key &amp; value added. */
+@Contract()
 private @NotNull MappingNode addKeysRecursive(@NotNull MappingNode rootNode, @NotNull String currentKey, @NotNull String key, @NotNull Object value, @NotNull Node copiedNodeValue, @NotNull ArrayList<Integer> indexPath) {
   ArrayList<NodeTuple> newValues = new ArrayList<>();
   boolean noneMatching = true;
@@ -218,15 +223,16 @@ private @NotNull MappingNode addKeysRecursive(@NotNull MappingNode rootNode, @No
  Replaces the value at the given key with the given value. The replacement value needs to be an
  instance of the class it is marked as.
  @param key              The key to replace the value at.
- @param replacementValue The new value of the key. */
+ @param forStringReplacementValue The new string value of the key.
+ @param parsedReplacementValue The new value of the key as the correct class*/
 @InternalUse
-public void replaceValue(@NotNull String key, @NotNull Object replacementValue) {
+public void replaceValue(@NotNull String key, @NotNull Object forStringReplacementValue, @NotNull Object parsedReplacementValue) {
   if (!yamlMap.containsKey(key)) return;
 
   Value<?> value = yamlMap.get(key);
-  replaceMapValueRecursive(parsedYaml, new ArrayList<>(value.yamlIndexPath), replacementValue);
+  replaceMapValueRecursive(parsedYaml, new ArrayList<>(value.yamlIndexPath), forStringReplacementValue);
 
-  yamlMap.put(key, new Value<>(value.yamlIndexPath, replacementValue));
+  yamlMap.put(key, new Value<>(value.yamlIndexPath, parsedReplacementValue));
 }
 
 
@@ -337,29 +343,60 @@ private static @NotNull List<String> toStringList(@NotNull Object list) {
  @param yamlEnum     The enum that corresponds to the parsed yaml.
  @param externalYaml The path to the parsed file. (only used for logging purposes) */
 public void parseValues(@NotNull Class<? extends PersistentInstance> yamlEnum, @NotNull String internalYaml, @NotNull String externalYaml) throws ConfigurationException {
-  // Parses the values from the default yaml first.
-  parseValues(yamlEnum, internalYaml);
+  // Creates a temporary hashMap to put the external parsed values into.
+  HashMap<String, Value<?>> externalParsed = new HashMap<>();
 
   PersistentInstance[] enums = yamlEnum.getEnumConstants();
   for (PersistentInstance instanceEnum : enums) {
-    String keyPath = instanceEnum.getYamlPath();
 
-    // An error should never be thrown from this as parsing the default values would throw it.
-    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(instanceEnum.getAssingedClass());
+    String keyPath = instanceEnum.getYamlPath();
+    Class<?> assingedClass = instanceEnum.getAssingedClass();
+
+    // Checks if the class is one supported by EasyConfigurations.
+    if (!SupportedClasses.existsAsEnum(assingedClass)) {
+      String className = Classes.getName(assingedClass);
+      throw new ConfigurationException(Lang.classNotSupported(className));
+    }
+
+    SupportedClasses enumRepresentation = SupportedClasses.getAsEnum(assingedClass);
+    Object rawValue = yamlMap.get(keyPath).parsedValue;
 
     // Checks if the value can be parsed as its intended class.
-    Object rawValue = yamlMap.get(keyPath).parsedValue;
-    boolean canParse = enumRepresentation.canParse(rawValue);
-    // If it can't then leave the default value parsed from the internal yaml.
+    boolean canParse;
+    if (enumRepresentation == SupportedClasses.CONFIG_OBJECT || enumRepresentation == SupportedClasses.CONFIG_OBJECT_LIST) {
+      try {
+        canParse = enumRepresentation.canParseCustom(assingedClass, rawValue);
+      }
+      catch (ConfigurationException ignore) {canParse = false;}
+    }
+    else {
+      canParse = enumRepresentation.canParse(rawValue);
+    }
+
+    // If it can't then use the default value parsed from the internal yaml.
     if (!canParse) {
       logger.log(LogType.USING_FALLBACK_VALUE, Lang.invalidExternalKey(keyPath, externalYaml, rawValue.getClass()));
       continue;
     }
 
-    // Replaces the value from the internal yaml with the one from the external yaml.
-    Object parsedValue = enumRepresentation.parse(rawValue);
+    // Parses the values as its intended class.
+    Object parsedValue;
+    if (enumRepresentation == SupportedClasses.CONFIG_OBJECT || enumRepresentation == SupportedClasses.CONFIG_OBJECT_LIST) {
+      parsedValue = enumRepresentation.parseCustom(assingedClass, rawValue);
+    }
+    else {
+      parsedValue = enumRepresentation.parse(rawValue);
+    }
+
+    // Replaces the value in the Hashmap with the value as the correct class.
     List<Integer> yamlIndexPath = yamlMap.get(keyPath).yamlIndexPath;
-    yamlMap.put(keyPath, new Value<>(yamlIndexPath, parsedValue));
+    externalParsed.put(keyPath, new Value<>(yamlIndexPath, parsedValue));
   }
+
+  // Parses the internal yaml values to use as a fallback if needed.
+  parseValues(yamlEnum, internalYaml);
+
+  // Replaces the internal values with the parsed external ones (if they exist).
+  yamlMap.putAll(externalParsed);
 }
 }

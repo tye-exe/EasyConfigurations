@@ -1,7 +1,9 @@
 package io.github.tye.easyconfigs.instances.persistent;
 
-import io.github.tye.easyconfigs.ClassName;
+import io.github.tye.easyconfigs.Classes;
+import io.github.tye.easyconfigs.ConfigObject;
 import io.github.tye.easyconfigs.NullCheck;
+import io.github.tye.easyconfigs.SupportedClasses;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
@@ -22,8 +24,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static io.github.tye.easyconfigs.logger.EasyConfigurationsDefaultLogger.logger;
 
@@ -47,17 +51,23 @@ public static final HashMap<PersistentInstance, String> yamlPath = new HashMap<>
 /**
  The yaml parsed from a default file. */
 @InternalUse
-private @Nullable WriteYaml yaml;
+private final @Nullable WriteYaml yaml;
 
 /**
  The external file that contains the yaml */
 @InternalUse
-private @Nullable File externalFile;
+private final @Nullable File externalFile;
+
+private final @Nullable YamlWriter writer;
 
 /**
  Constructs an empty {@link PersistentInstanceHandler} with no yaml data. */
 @InternalUse
-public PersistentInstanceHandler() {}
+public PersistentInstanceHandler() {
+  yaml = null;
+  externalFile = null;
+  writer = null;
+}
 
 /**
  Constructs a new {@link PersistentInstanceHandler} that contains the data of the given yaml files.
@@ -78,15 +88,18 @@ public PersistentInstanceHandler(@NotNull String internalPath, @NotNull File ext
     copyContent(internalPath, externalFile, clazz);
   }
 
-  // Initializes the yaml
+  // Initializes the yaml.
   WriteYaml yaml = new WriteYaml(internalPath, externalFile, clazz);
   yaml.parseValues(clazz, internalPath, externalFile.getPath());
   this.yaml = yaml;
   this.externalFile = externalFile;
 
-  // Updates the yaml if it had needed to be repaired.
-  YamlWriter writer = new YamlWriter(this.externalFile, yaml);
+  // Instantiates the yaml writer.
+  writer = new YamlWriter(this.externalFile);
   new Thread(writer).start();
+
+  // Updates the yaml if it had needed to be repaired.
+  writer.writeYaml(yaml);
 }
 
 /**
@@ -195,74 +208,137 @@ public @NotNull Object getValue(@NotNull String key) throws NotInitiatedExceptio
  @throws NullPointerException  If any of the arguments are null.
  @throws NotInitiatedException If the yaml hasn't been registered. */
 public void replaceValue(@NotNull PersistentInstance instance, @NotNull Object newValue) throws NotOfClassException, NullPointerException, NotInitiatedException {
-  if (yaml == null) throw new NotInitiatedException();
+  if (yaml == null || writer == null) throw new NotInitiatedException();
 
   NullCheck.notNull(instance, "instance");
   NullCheck.notNull(newValue, "newValue");
 
-  // If the value is a list, check each element in the list is the correct class.
-  // And yes this will let any list of size 0 through. This is fine.
-  if (newValue instanceof List) {
-    for (Object listValue : ((List<?>) newValue)) {
+  Class<?> assingedClass = instance.getAssingedClass();
 
-      // Gets the component class if applicable, as the list values are marked as arrays.
-      Class<?> clazz = getComponent(instance.getAssingedClass());
-      if (clazz.equals(listValue.getClass())) {
-        continue;
-      }
+  // Checks that the given value is the same as the marked value for this instance.
+  try {
+    List<?> valueList = (List<?>) newValue;
+    // Checks that every value within the list is of the correct class.
+    for (Object value : valueList) {
+      if (value.getClass().equals(Classes.getComponent(assingedClass))) continue;
 
-      throw new NotOfClassException(Lang.notOfClass(newValue.toString(), ClassName.getName(instance.getAssingedClass())));
+      throw new NotOfClassException(Lang.notOfClass(newValue.toString(), Classes.getName(assingedClass)));
     }
   }
-  // If it's not a list check if it has the correct class directly.
-  else if (!instance.getAssingedClass().equals(newValue.getClass())) {
-    throw new NotOfClassException(Lang.notOfClass(newValue.toString(), ClassName.getName(instance.getAssingedClass())));
+  catch (ClassCastException ignore) {
+    // If it's not a list check that it can just be parsed.
+    if (!assingedClass.equals(newValue.getClass())) {
+      throw new NotOfClassException(Lang.notOfClass(newValue.toString(), Classes.getName(assingedClass)));
+    }
   }
 
-  // Updates the value within cache & external yaml file
-  yaml.replaceValue(instance.getYamlPath(), newValue);
-  YamlWriter writer = new YamlWriter(this.externalFile, yaml);
-  new Thread(writer).start();
+  try {
+    // Gets the enum that represents this class
+    SupportedClasses asEnum = SupportedClasses.getAsEnum(assingedClass);
+
+    // The string value or string list representation of the new value.
+    // By default if it's not a custom object then just use the new value.
+    Object stringValue = newValue;
+
+    switch (asEnum) {
+    case CONFIG_OBJECT: {
+      // Parses the custom object into a string.
+      stringValue = ((ConfigObject) newValue).getConfigString();
+      break;
+    }
+    case CONFIG_OBJECT_LIST: {
+      // Parses the custom objects into string values.
+      ArrayList<String> strings = new ArrayList<>();
+      @SuppressWarnings("unchecked") List<ConfigObject> listValue = (List<ConfigObject>) newValue;
+
+      for (ConfigObject configObject : listValue) {
+        strings.add(configObject.getConfigString());
+      }
+
+      stringValue = strings;
+      break;
+    }
+    }
+
+    // Updates the value within cache & external yaml file
+    yaml.replaceValue(instance.getYamlPath(), stringValue, newValue);
+    writer.writeYaml(yaml);
+  }
+  catch (ConfigurationException | ClassCastException e) {
+    throw new RuntimeException("Never should happen");
+  }
 }
 
 /**
- Gets the component of the class, if applicable. Otherwise, the given class is returned.
- @param clazz The given class
- @return The component of the class, if applicable. Otherwise, the given class is returned. */
-private static Class<?> getComponent(@NotNull Class<?> clazz) {
-  if (!clazz.isArray()) return clazz;
-  return clazz.getComponentType();
+ Contains if the external yaml is being written to. */
+private boolean isWriting;
+
+/**
+ @return True if the external yaml is being written to. */
+public boolean isWriting() {
+  return isWriting;
 }
 
 /**
  This class is used to write the changed data to the external yaml, as processing the yaml structure
  constantly if repeated changes are occurring will be intensive. */
-private static class YamlWriter implements Runnable {
+private class YamlWriter implements Runnable {
+
+  /**
+   A blocking queue with the yamls to write.
+   */
+  private final LinkedBlockingQueue<WriteYaml> writingQueue = new LinkedBlockingQueue<>();
 
   /**
    The file to write the data to.
    */
-  private final File fileToWrite;
+  private final @NotNull File externalFile;
+
+
+  public YamlWriter(@NotNull File externalFile) {
+    this.externalFile = externalFile;
+  }
 
   /**
-   The write yaml to get the data from.
+   Adds the yaml to write to the queue.
+   @param toWrite The yaml to add to the queue.
    */
-  private final WriteYaml writeYaml;
-
-  public YamlWriter(File fileToWrite, WriteYaml writeYaml) {
-    this.fileToWrite = fileToWrite;
-    this.writeYaml = writeYaml;
+  public void writeYaml(@NotNull WriteYaml toWrite) {
+    try {
+      isWriting = true;
+      writingQueue.put(toWrite);
+    }
+    // This error should never happen.
+    catch (InterruptedException e) {
+      logger.log(LogType.FAILED_EXTERNAL_UPDATE, Lang.failedExternalWrite(externalFile.getPath()));
+    }
   }
 
   @Override
   public void run() {
-    try {
-      Files.write(fileToWrite.toPath(), writeYaml.getYaml().getBytes());
-    }
-    catch (IOException e) {
-      logger.log(LogType.FAILED_EXTERNAL_UPDATE, Lang.failedExternalWrite(fileToWrite.getPath()));
+    // While the thread isn't interrupted write any updates to the external file.
+    while (!Thread.interrupted()) {
+      try {
+        // Blocks until there is new data to write.
+        WriteYaml yamlToWrite = writingQueue.take();
+        // Writes the data to the file
+        Files.write(externalFile.toPath(), yamlToWrite.getYaml().getBytes());
+      }
+      // If there is an error updating the external yaml output a log about it.
+      catch (IOException e) {
+        logger.log(LogType.FAILED_EXTERNAL_UPDATE, Lang.failedExternalWrite(externalFile.getPath()));
+      }
+      // If the thread is interrupted, then terminate the thread.
+      catch (InterruptedException e) {
+        return;
+      }
+      finally {
+        if (writingQueue.isEmpty()) {
+          isWriting = false;
+        }
+      }
     }
   }
-}
 
+}
 }

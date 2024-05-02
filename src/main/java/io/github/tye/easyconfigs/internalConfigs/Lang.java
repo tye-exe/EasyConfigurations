@@ -1,6 +1,6 @@
 package io.github.tye.easyconfigs.internalConfigs;
 
-import io.github.tye.easyconfigs.ClassName;
+import io.github.tye.easyconfigs.Classes;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -156,7 +156,7 @@ public static @NotNull String invalidExternalKey(String key, String filePath, Cl
   switch (Config.getLanguage()) {
 
   case ENGLISH: {
-    return "\"" + key + "\" in \"" + filePath + "\" could not be parsed as the assigned class \"" + ClassName.getName(assignedClass) +
+    return "\"" + key + "\" in \"" + filePath + "\" could not be parsed as the assigned class \"" + Classes.getName(assignedClass) +
            "\". The value in the default yaml will be used as a fallback.";
   }
   default: return "";
@@ -214,6 +214,33 @@ public static @NotNull String failedExternalWrite(String filePath) {
 
   case
       ENGLISH: return "An error occurred when trying to update the external yaml file \"" + filePath + "\"";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String missingDefaultConstructor(String className) {
+  switch (Config.getLanguage()) {
+
+  case
+      ENGLISH: return "Class \"" + className + "\" doesn't have a public constructor with no arguments.";
+  default: return "";
+
+  }
+}
+
+/**
+ @see Lang */
+@Contract(pure=true)
+@InternalUse
+public static @NotNull String notAnEnum(String className) {
+  switch (Config.getLanguage()) {
+
+  case ENGLISH: return "Class \"" + className + "\" does not extend the \"Enum\" class.";
   default: return "";
 
   }

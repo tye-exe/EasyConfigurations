@@ -1,9 +1,6 @@
 package io.github.tye.easyconfigs.instances.reading;
 
-import io.github.tye.easyconfigs.ClassName;
-import io.github.tye.easyconfigs.EasyConfigurations;
-import io.github.tye.easyconfigs.NullCheck;
-import io.github.tye.easyconfigs.SupportedClasses;
+import io.github.tye.easyconfigs.*;
 import io.github.tye.easyconfigs.annotations.ExternalUse;
 import io.github.tye.easyconfigs.annotations.InternalUse;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
@@ -191,6 +188,17 @@ default @NotNull ZonedDateTime getAsZonedDateTime() throws NotOfClassException, 
   return (ZonedDateTime) getValue();
 }
 
+/**
+ @return Gets a {@link ConfigObject} config response.
+ @throws NotOfClassException   If the selected config isn't a ConfigObject value.
+ @throws NotInitiatedException If a config is retrieved before it is registered with
+ {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+@ExternalUse
+default @NotNull ConfigObject getAsConfigObject() throws NotOfClassException, NotInitiatedException {
+  classCheck(SupportedClasses.CONFIG_OBJECT, this);
+  return (ConfigObject) getValue();
+}
+
 
 /**
  @return Gets a {@link String} list config response.
@@ -324,6 +332,17 @@ default @NotNull List<ZonedDateTime> getAsZonedDateTimeList() throws NotOfClassE
   return (List<ZonedDateTime>) getValue();
 }
 
+/**
+ @return Gets a {@link ConfigObject} list config response.
+ @throws NotOfClassException   If the selected config isn't a config object list.
+ @throws NotInitiatedException If a config is retrieved before it is registered with
+ {@link EasyConfigurations#registerReadOnlyConfig(Class, String)}. */
+@ExternalUse
+default @NotNull List<ConfigObject> getAsConfigObjectList() throws NotOfClassException, NotInitiatedException {
+  classCheck(SupportedClasses.CONFIG_OBJECT_LIST, this);
+  return (List<ConfigObject>) getValue();
+}
+
 
 /**
  Checks if the intendedType matches the actual object type in the map that the instance points to.
@@ -335,10 +354,17 @@ static void classCheck(@NotNull SupportedClasses intendedType, @NotNull ReadingI
   Class<?> assignedClass = ReadingInstanceHandler.assignedClass.get(readingInstance);
   StringBuilder classNames = new StringBuilder();
 
+  // Checks if the instance is parsed as the correct class.
   for (Class<?> clazz : intendedType.getClasses()) {
     if (assignedClass.equals(clazz)) return;
 
-    classNames.append(ClassName.getName(clazz))
+    // Checks if the class implements config object
+    for (Class<?> interfaces : Classes.getComponent(assignedClass).getInterfaces()) {
+      if (interfaces.equals(Classes.getComponent(clazz))) return;
+    }
+
+    // Constructs an error from the classes this instance should be.
+    classNames.append(Classes.getName(clazz))
               .append(" ");
   }
 

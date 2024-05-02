@@ -1,4 +1,4 @@
-package io.github.tye.tests.instanceClasses;
+package io.github.tye.tests.readingInstanceClasses;
 
 import io.github.tye.easyconfigs.instances.reading.ReadingConfigInstance;
 

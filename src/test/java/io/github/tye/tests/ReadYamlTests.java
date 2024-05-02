@@ -1,5 +1,6 @@
 package io.github.tye.tests;
 
+import io.github.tye.easyconfigs.ConfigObject;
 import io.github.tye.easyconfigs.EasyConfigurations;
 import io.github.tye.easyconfigs.exceptions.ConfigurationException;
 import io.github.tye.easyconfigs.exceptions.NotInitiatedException;
@@ -8,7 +9,7 @@ import io.github.tye.easyconfigs.instances.persistent.PersistentInstanceHandler;
 import io.github.tye.easyconfigs.instances.reading.ReadingInstanceHandler;
 import io.github.tye.easyconfigs.logger.LogType;
 import io.github.tye.easyconfigs.yamls.ReadYaml;
-import io.github.tye.tests.instanceClasses.*;
+import io.github.tye.tests.readingInstanceClasses.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -235,5 +236,26 @@ public void wrongClazz() throws IOException, ConfigurationException {
   assertThrowsExactly(NotOfClassException.class, ReadingConfig_General.floats::getAsString);
   assertThrowsExactly(NotOfClassException.class, ReadingConfig_General.floats::getAsFloatList);
   assertDoesNotThrow(ReadingConfig_General.floats::getAsFloat);
+}
+
+/**
+ Tests if a {@link ConfigObject} &amp; a config object array can be parsed successfully. */
+@Test
+public void customObject() throws ConfigurationException, IOException {
+  EasyConfigurations.registerReadOnlyConfig(ReadingConfig_Custom.class, "/tests/Yamls/Config_Custom.yml");
+
+  // Checks if a single value can be parsed
+  assertEquals(
+      new CustomObject("Bob", 3),
+      ReadingConfig_Custom.NAME.getAsConfigObject());
+
+  // Checks if the array could be parsed
+  assertEquals(
+      new CustomObject("Anne", 0),
+      ReadingConfig_Custom.NAMES.getAsConfigObjectList().get(0));
+
+  assertEquals(
+      new CustomObject("Jacob", 0),
+      ReadingConfig_Custom.NAMES.getAsConfigObjectList().get(1));
 }
 }
